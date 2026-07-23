@@ -46,7 +46,7 @@ db/
 ## Cómo se usa desde una ruta de Express
 
 ```js
-const { levels, scores } = require('../db/queries')
+const { levels, scores } = require('../backend-queries/db/queries')
 
 app.get('/levels', async (req, res) => {
   const data = await levels.getAllLevels()
