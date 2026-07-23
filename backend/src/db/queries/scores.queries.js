@@ -2,7 +2,7 @@ const pool = require('../pool')
 
 async function createScore({ level_id, session_id, player_name, moves, time_seconds }) {
   const { rows } = await pool.query(
-    `INSERT INTO scores (level_id, session_id, player_name, moves, time_seconds)
+    `INSERT INTO scores (level_id, player_name, moves, time_seconds)
      VALUES ($1, $2, $3, $4, $5)
      RETURNING *`,
     [level_id, session_id, player_name, moves, time_seconds]

@@ -1,23 +1,11 @@
 const pool = require('../pool')
 
-async function registerPistaUsada(session_id, pista_id) {
+async function registerPistaUsada(score_id, pista_id) {
   const { rows } = await pool.query(
     'INSERT INTO pistas_usadas (session_id, pista_id) VALUES ($1, $2) RETURNING *',
-    [session_id, pista_id]
+    [score_id, pista_id]
   )
   return rows[0]
-}
-
-async function getPistasUsadasBySession(session_id) {
-  const { rows } = await pool.query(
-    `SELECT pu.id, pu.used_at, p.texto, p.orden
-     FROM pistas_usadas pu
-     JOIN pistas p ON p.id = pu.pista_id
-     WHERE pu.session_id = $1
-     ORDER BY pu.used_at ASC`,
-    [session_id]
-  )
-  return rows
 }
 
 async function getPistaUsadaById(id) {
@@ -30,10 +18,22 @@ async function getAllPistasUsadas() {
   return rows
 }
 
-async function updatePistaUsada(id, { session_id, pista_id }) {
+async function getPistasUsadasByScore(score_id) {
   const { rows } = await pool.query(
-    `UPDATE pistas_usadas SET session_id = $1, pista_id = $2 WHERE id = $3 RETURNING *`,
-    [session_id, pista_id, id]
+    `SELECT pu.id, pu.used_at, p.texto, p.orden
+     FROM pistas_usadas pu
+     JOIN pistas p ON p.id = pu.pista_id
+     WHERE pu.score_id = $1
+     ORDER BY pu.used_at ASC`,
+    [score_id]
+  )
+  return rows
+}
+
+async function updatePistaUsada(id, { score_id, pista_id }) {
+  const { rows } = await pool.query(
+    `UPDATE pistas_usadas SET score_id = $1, pista_id = $2 WHERE id = $3 RETURNING *`,
+    [score_id, pista_id, id]
   )
   return rows[0] || null
 }
@@ -47,7 +47,7 @@ module.exports = {
   registerPistaUsada,
   getPistaUsadaById,
   getAllPistasUsadas,
-  getPistasUsadasBySession,
+  getPistasUsadasByScore,
   updatePistaUsada,
   deletePistaUsada,
 }

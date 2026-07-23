@@ -8,6 +8,11 @@ async function getPistasByLevel(level_id) {
   return rows
 }
 
+async function getPistaById(id) {
+  const { rows } = await pool.query('SELECT * FROM pistas WHERE id = $1', [id])
+  return rows[0] || null
+}
+
 async function createPista({ level_id, texto, orden }) {
   const { rows } = await pool.query(
     'INSERT INTO pistas (level_id, texto, orden) VALUES ($1, $2, $3) RETURNING *',
@@ -29,4 +34,4 @@ async function deletePista(id) {
   return rowCount > 0
 }
 
-module.exports = { getPistasByLevel, createPista, updatePista, deletePista }
+module.exports = { getPistasByLevel, getPistaById, createPista, updatePista, deletePista }
