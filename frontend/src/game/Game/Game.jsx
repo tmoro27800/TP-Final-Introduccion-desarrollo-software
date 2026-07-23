@@ -1,7 +1,6 @@
-import Board from './game/Board.jsx'
-import './App.css'
+import Board from '../Board/Board.jsx'
 
-function App() {
+export default function Game() {
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -20,5 +19,3 @@ function App() {
     </div>
   )
 }
-
-export default App

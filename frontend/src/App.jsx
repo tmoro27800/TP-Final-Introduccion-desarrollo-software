@@ -1,15 +1,28 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Menu from './game/Menu/Menu.jsx'
+import Game from './game/Game/Game.jsx'
+import Scores from './game/Score/Score.jsx'
 
-function App() {
+import './App.css'
+
+import NotFound from './errors/NotFound.jsx'
+
+export default function App() {
     return (
-    <BrowserRouter>
+        <BrowserRouter>
         <Routes>
-            <Route path="/" element={<Game />} />
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/puntajes" element={<Scores />} />
-        </Routes>
-    </BrowserRouter>
-    );
-}
+            <Route path="/" element={<Menu />} />
+            {/* RUTAS SIN VERIFICAR TODAVIA
+            <Route path="/seleccion-modo" element={<SeleccionModo />} />
+            <Route path="/seleccion-nivel/:dificultadId" element={<SeleccionNivel />} />
+            <Route path="/juego/:levelId" element={<Juego />} />
+            <Route path="/puntajes" element={<Puntajes />} />
+            <Route path="/perfil" element={<Perfil />} />
+            */}
 
-export default App;
+            {/* Esta va SIEMPRE al final */}
+            <Route path="*" element={<NotFound />} />
+        </Routes>
+        </BrowserRouter>
+    );
+};

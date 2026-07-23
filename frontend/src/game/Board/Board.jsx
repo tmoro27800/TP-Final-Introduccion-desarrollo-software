@@ -1,4 +1,4 @@
-import { GRID } from './constants.js'
+import { GRID } from '../Configuration/constants.js'
 import './Board.css'
 
 export default function Board() {
