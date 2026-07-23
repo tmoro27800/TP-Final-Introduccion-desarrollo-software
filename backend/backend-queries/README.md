@@ -10,7 +10,7 @@ Parado en la carpeta `backend/`:
 
 ```bash
 npm install pg dotenv
-cp .env.example .env   # ajustá los valores si tu Postgres no usa los defaults
+cp backend-queries/.env.example .env   # ajustá los valores si tu Postgres no usa los defaults
 ```
 
 ## Estructura
