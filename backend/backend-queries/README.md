@@ -10,7 +10,7 @@ Parado en la carpeta `backend/`:
 
 ```bash
 npm install pg dotenv
-cp .env.example .env   # ajustá los valores si tu Postgres no usa los defaults
+cp backend-queries/.env.example .env   # ajustá los valores si tu Postgres no usa los defaults
 ```
 
 ## Estructura
@@ -46,7 +46,7 @@ db/
 ## Cómo se usa desde una ruta de Express
 
 ```js
-const { levels, scores } = require('../db/queries')
+const { levels, scores } = require('../backend-queries/db/queries')
 
 app.get('/levels', async (req, res) => {
   const data = await levels.getAllLevels()
