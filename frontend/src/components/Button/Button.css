@@ -1,0 +1,31 @@
+
+.dark-button {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid #2e2e2e;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+.dark-button:hover:not(:disabled) {
+    background-color: #2e2e2e;
+}
+
+.dark-button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.dark-button:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+.dark-button:disabled {
+    background-color: #3f3f3f;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
