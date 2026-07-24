@@ -1,14 +1,15 @@
 const pool = require('../pool')
 
-async function createScore({ level_id, session_id, player_name, moves, time_seconds }) {
+async function createScore({ level_id, player_name, moves, time_seconds }) {
   const { rows } = await pool.query(
     `INSERT INTO scores (level_id, player_name, moves, time_seconds)
-     VALUES ($1, $2, $3, $4, $5)
+     VALUES ($1, $2, $3, $4)
      RETURNING *`,
-    [level_id, session_id, player_name, moves, time_seconds]
+    [level_id, player_name, moves, time_seconds]
   )
   return rows[0]
 }
+
 
 // Mejores puntajes de UN nivel puntual (ej. "mejores tiempos del nivel 3")
 async function getTopScoresByLevel(level_id, limit = 10) {
