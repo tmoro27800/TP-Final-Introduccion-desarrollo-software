@@ -4,28 +4,265 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 20px;
 }
 
 .modal-contenido {
-  background: white;
-  padding: 24px;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 90%;
+  background: #161616;
+  border: 1px solid #3a1010;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
   position: relative;
+  box-shadow: 0 0 50px rgba(179, 30, 30, 0.25), 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.modal-contenido h2 {
+  color: #f0f0f0;
+  font-size: 24px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  border-left: 4px solid #b31e1e;
+  padding-left: 12px;
 }
 
 .modal-cerrar {
   position: absolute;
-  top: 8px;
-  right: 12px;
-  background: none;
-  border: none;
-  font-size: 20px;
+  top: 18px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #232323;
+  border: 1px solid #3a3a3a;
+  border-radius: 50%;
+  color: #ccc;
+  font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.modal-cerrar:hover {
+  background: #b31e1e;
+  color: #ffffff;
+  border-color: #b31e1e;
+}
+
+.instrucciones-intro {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 1.75rem;
+  padding-left: 16px;
+}
+
+.controles-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.control-item {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background-color: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  border-left: 3px solid #b31e1e;
+  border-radius: 10px;
+  padding: 18px 22px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.control-item:hover {
+  border-left-color: #e04b4b;
+  background-color: #212121;
+}
+
+.teclas-grupo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.teclas-fila {
+  display: flex;
+  gap: 5px;
+}
+
+.tecla {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+  border: 1px solid #3a3a3a;
+  border-radius: 7px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #f0f0f0;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.control-texto h3 {
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+  color: #f0f0f0;
+}
+
+.control-texto p {
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+}
+
+
+
+.config-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 1.5rem 0;
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+
+.config-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.config-icono {
+  font-size: 18px;
+  color: #b31e1e;
+  width: 24px;
+  text-align: center;
+}
+
+.config-info h3 {
+  font-size: 14px;
+  color: #f0f0f0;
+  margin-bottom: 2px;
+}
+
+.config-info p {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+
+/* Botón "Cambiar" */
+.config-btn-secundario {
+  background: transparent;
+  border: 1px solid #3a3a3a;
+  color: #ccc;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.config-btn-secundario:hover {
+  border-color: #b31e1e;
+  color: #ffffff;
+}
+
+/* Select de idioma */
+.config-select {
+  background-color: #161616;
+  border: 1px solid #3a3a3a;
+  color: #f0f0f0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Toggle switch (música / sonido) */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #3a3a3a;
+  border-radius: 24px;
+  transition: background-color 0.2s ease;
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.toggle input:checked + .toggle-slider {
+  background-color: #b31e1e;
+}
+
+.toggle input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+}
+
+/* Botón guardar */
+.config-btn-guardar {
+  width: 100%;
+  background-color: #b31e1e;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.config-btn-guardar:hover {
+  background-color: #d63838;
 }

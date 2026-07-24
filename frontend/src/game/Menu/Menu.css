@@ -6,18 +6,15 @@
 }
 
 .menu-logo-wrapper {
-  width: 300px;
-  height: 150px;
-  border-radius: 10px;
-  overflow: hidden;
+  border-radius: 5px;
   margin-bottom: 3rem;
+  overflow: hidden;
   box-shadow: 0 0 30px rgba(179, 30, 30, 0.35);
 }
 
 .menu-logo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 25rem;
+  height: auto;
   display: block;
 }
 
@@ -28,4 +25,60 @@
   gap: 20px;
   width: 100%;
   max-width: 260px;
+}
+
+.reasignar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.reasignar-header h2 {
+  border-left: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.btn-volver {
+  background: #232323;
+  border: 1px solid #3a3a3a;
+  color: #ccc;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-volver:hover {
+  border-color: #b31e1e;
+  color: #ffffff;
+}
+
+.reasignar-hint {
+  font-size: 13px;
+  color: #888;
+  margin: 12px 0 1.5rem 0;
+}
+
+.controles-lista-reasignar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1.75rem;
+}
+
+.reasignar-footer {
+  display: flex;
+  gap: 10px;
+}
+
+.reasignar-footer .config-btn-secundario,
+.reasignar-footer .config-btn-guardar {
+  flex: 1;
+  width: auto;   /* pisa el width: 100% que .config-btn-guardar tiene por defecto */
 }
