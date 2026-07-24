@@ -26,7 +26,6 @@ CREATE TABLE levels (
 CREATE TABLE scores (
     id SERIAL PRIMARY KEY,
     level_id INTEGER REFERENCES levels(id) ON DELETE CASCADE,
-    session_id UUID REFERENCES play_sessions(id),
     player_name VARCHAR(50) NOT NULL,
     moves INTEGER,
     time_seconds INTEGER,
@@ -62,7 +61,7 @@ INSERT INTO powerups (nombre, tipo, valor) VALUES
 -- 6. pistas_usadas
 CREATE TABLE pistas_usadas (
     id SERIAL PRIMARY KEY,
-    session_id UUID REFERENCES play_sessions(id) ON DELETE CASCADE,
+    score_id INTEGER REFERENCES scores(id) ON DELETE CASCADE,
     pista_id INTEGER REFERENCES pistas(id),
     used_at TIMESTAMP DEFAULT NOW()
 );
@@ -70,7 +69,7 @@ CREATE TABLE pistas_usadas (
 -- 7. powerups_usados
 CREATE TABLE powerups_usados (
     id SERIAL PRIMARY KEY,
-    session_id UUID REFERENCES play_sessions(id) ON DELETE CASCADE,
+    score_id INTEGER REFERENCES scores(id) ON DELETE CASCADE,
     powerup_id INTEGER REFERENCES powerups(id),
     used_at TIMESTAMP DEFAULT NOW()
 );
