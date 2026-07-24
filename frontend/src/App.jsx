@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Menu from './game/Menu/Menu.jsx'
 import Game from './game/Game/Game.jsx'
-import Scores from './game/Score/Score.jsx'
+import Score from './game/Score/Score.jsx'
 import SelectionMode from './game/SelectionMode/SelectionMode.jsx'
 import SelectionLevel from './game/SelectionLevel/SelectionLevel.jsx'
 
@@ -15,7 +15,7 @@ export default function App() {
         <Routes>
             <Route path="/" element={<Menu />} />
             
-            <Route path='/puntaje' element={<Scores/>} />
+            <Route path='/puntajes' element={<Score/>} />
 
             <Route path="/seleccion-modo" element={<SelectionMode />} />
             <Route path="/seleccion-nivel/:modoId" element={<SelectionLevel />} />

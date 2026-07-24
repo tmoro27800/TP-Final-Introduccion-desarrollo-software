@@ -3,7 +3,8 @@ import ScoreRow from "../../components/ScoreRow/ScoreRow.jsx";
 
 import "./Score.css";
 
-export default function Puntajes() {
+export default function Score() {
+    // 0. Variables
     const [dificultades, setDificultades] = useState([]);
     const [niveles, setNiveles] = useState([]);
     const [dificultadId, setDificultadId] = useState(null);
