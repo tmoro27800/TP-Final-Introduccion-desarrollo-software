@@ -18,7 +18,10 @@ export default function SelectionLevel() {
 
     useEffect(() => {
         setCargando(true);
-        getLevelsByDifficultyMock(modoId).then((data) => setNiveles(data));
+        getLevelsByDifficultyMock(modoId).then((niveles) => {
+            setNiveles(niveles);
+            setCargando(false);
+        });
     }, [modoId]);
 
     return (
