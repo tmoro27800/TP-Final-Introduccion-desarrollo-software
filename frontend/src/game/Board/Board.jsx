@@ -54,7 +54,7 @@ function obtenerTipoCelda(valor) {
 export default function Board({ mapa = MAPA_INICIAL, jugador }) {
   const filas = mapa.length
   const columnas = mapa[0]?.length ?? 0
-
+  console.log("Mapa Actualizado: ", mapa);
   return (
     <div
       className="board"
