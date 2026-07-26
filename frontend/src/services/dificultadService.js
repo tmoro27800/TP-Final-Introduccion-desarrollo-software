@@ -2,12 +2,24 @@ import { api } from './api';
 
 // GET: Obtener todas las dificultades
 export const getDificultades = async () => {
-    const response = await api.get('/dificultades');
-    return response.data;
-};
+     return api.get('/dificultades');
 
+};
+// No hay ruta de "niveles por dificultad" en el backend todavía,
+// así que filtramos del lado del cliente.
 // GET: Obtener todos los niveles de una dificultad
 export const getNivelesPorDificultad = async (dificultadId) => {
-    const response = await api.get(`/niveles?dificultad=${dificultadId}`);
-    return response.data;
+    return api.get(`/niveles?dificultad=${dificultadId}`);
+};
+
+export const createDificultad = async ({ nombre, orden }) => {
+  return api.post('/dificultad', { nombre, orden });
+};
+
+export const updateDificultad = async (id, { nombre, orden }) => {
+  return api.put(`/dificultad/${id}`, { nombre, orden });
+};
+
+export const deleteDificultad = async (id) => {
+  return api.delete(`/dificultad/${id}`);
 };
