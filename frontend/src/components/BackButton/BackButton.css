@@ -1,0 +1,28 @@
+.back-button {
+  appearance: none;
+  border: 1px solid #2a2530;
+  background: transparent;
+  color: #8b8690;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  margin-bottom: 2rem;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.back-button:hover {
+  color: #f2ede4;
+  border-color: #e2453f;
+  background: #18151b;
+}
+
+.back-button:focus-visible {
+  outline: 2px solid #e2453f;
+  outline-offset: 2px;
+}

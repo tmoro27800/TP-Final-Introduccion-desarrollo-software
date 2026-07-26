@@ -10,11 +10,11 @@ export default function ScoreRow({ posicion, nombre, movimientos, tiempo }) {
     };
 
     return (
-        <div className={`score-row ${posicion === 1 ? "primer-puesto" : ""}`}>
-        <span className="score-posicion">{MEDALLAS[posicion] || posicion}</span>
-        <span className="score-nombre">{nombre}</span>
-        <span className="score-movimientos">{movimientos}</span>
-        <span className="score-tiempo">{formatearTiempo(tiempo)}</span>
-        </div>
+        <tr className={`score-row ${posicion === 1 ? "primer-puesto" : ""}`}>
+            <td className="score-posicion">{MEDALLAS[posicion] || posicion}</td>
+            <td className="score-nombre">{nombre}</td>
+            <td className="score-movimientos">{movimientos}</td>
+            <td className="score-tiempo">{formatearTiempo(tiempo)}</td>
+        </tr>
     );
 }

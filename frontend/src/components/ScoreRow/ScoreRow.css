@@ -1,39 +1,123 @@
 .score-row {
-  display: grid;
-  grid-template-columns: 32px 1fr 70px 60px;
-  gap: 8px;
-  align-items: center;
-  padding: 10px 8px;
-  border-top: 0.5px solid #2a2a2a;
+  border-bottom: 1px solid #2a2530;
+  transition: background 0.15s ease;
 }
-
-.score-row.primer-puesto {
-  background-color: #2a2210;
-  border-radius: 8px;
-  border-top: none;
+ 
+.score-row:last-child {
+  border-bottom: none;
 }
-
+ 
+.score-row:hover {
+  background: #1f1b23;
+}
+ 
+.score-row td {
+  padding: 0.85rem 1rem;
+  vertical-align: middle;
+}
+ 
+/* ------------------- posición ------------------- */
+ 
 .score-posicion {
-  font-size: 13px;
-  color: #888;
   text-align: center;
-}
-
-.score-nombre {
-  font-size: 14px;
-  color: #f0f0f0;
-  font-weight: 500;
-}
-
-.score-movimientos {
-  font-size: 14px;
-  color: #f0f0f0;
-  text-align: right;
+  font-family: "JetBrains Mono", monospace;
   font-weight: 600;
+  font-size: 0.95rem;
+  color: #8b8690;
 }
-
+ 
+/* medallas: emoji con un leve brillo propio de su metal */
+.score-medalla {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+ 
+.score-medalla-1 {
+  font-size: 1.35rem;
+  filter: drop-shadow(0 0 6px rgba(232, 185, 35, 0.55));
+}
+ 
+.score-medalla-2 {
+  font-size: 1.25rem;
+  filter: drop-shadow(0 0 5px rgba(201, 204, 209, 0.4));
+}
+ 
+.score-medalla-3 {
+  filter: drop-shadow(0 0 5px rgba(205, 127, 50, 0.45));
+}
+ 
+/* del puesto 4 en adelante: placa romboidal, referencia al "cubo" del juego */
+.score-cubo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #1f1b23, #18151b);
+  border: 1px solid #362f3b;
+  border-radius: 4px;
+}
+ 
+.score-cubo-num {
+  display: inline-block;
+  transform: rotate(-45deg);
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #8b8690;
+}
+ 
+/* ------------------- nombre ------------------- */
+ 
+.score-nombre {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #f2ede4;
+}
+ 
+/* ------------------- movimientos / tiempo ------------------- */
+ 
+.score-movimientos,
 .score-tiempo {
-  font-size: 13px;
-  color: #999;
   text-align: right;
+  font-family: "JetBrains Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  color: #f2ede4;
+}
+ 
+.score-tiempo {
+  color: #8b8690;
+}
+ 
+/* ------------------- primer puesto ------------------- */
+ 
+.primer-puesto {
+  background: linear-gradient(90deg, rgba(232, 185, 35, 0.1), transparent 65%);
+  border-left: 3px solid #e8b923;
+}
+ 
+.primer-puesto .score-nombre {
+  font-weight: 700;
+}
+ 
+.primer-puesto td:first-child {
+  padding-left: calc(1rem - 3px);
+}
+ 
+@media (max-width: 480px) {
+  .score-row td {
+    padding: 0.65rem 0.6rem;
+  }
+ 
+  .score-nombre {
+    font-size: 0.85rem;
+  }
+ 
+  .score-movimientos,
+  .score-tiempo {
+    font-size: 0.8rem;
+  }
 }

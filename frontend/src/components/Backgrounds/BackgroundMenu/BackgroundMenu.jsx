@@ -173,17 +173,17 @@ void main() {
 
 export default function PixelSnow({
   color = '#ffffff',
-  flakeSize = 0.01,
+  flakeSize = 0.02,
   minFlakeSize = 1.25,
-  pixelResolution = 200,
-  speed = 1.25,
-  depthFade = 8,
+  pixelResolution = 500,
+  speed = 2,
+  depthFade = 20,
   farPlane = 20,
-  brightness = 1,
+  brightness = 1.5,
   gamma = 0.4545,
-  density = 0.3,
+  density = 0.1,
   variant = 'square',
-  direction = 125,
+  direction = 155,
   className = '',
   style = {}
 }) {

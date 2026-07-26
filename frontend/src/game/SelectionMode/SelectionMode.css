@@ -1,87 +1,139 @@
-.seleccion-modo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2.5rem 2rem;
-  max-width: 700px;
-  width: 100%;
-}
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600&display=swap');
 
-.seleccion-modo h2 {
-  color: #f0f0f0;
-  font-size: 22px;
-  letter-spacing: 1px;
-  margin-bottom: 2rem;
-  border-left: 4px solid #b31e1e;
-  padding-left: 12px;
-}
+.selection-mode {
+  --sm-panel: #18151b;
+  --sm-borde: #2a2530;
+  --sm-texto: #f2ede4;
+  --sm-texto-tenue: #8b8690;
+  --sm-rojo: #b31e1e;
+  --sm-rojo-brillo: #e2453f;
+  --sm-oro: #e8b923;
 
-.modos-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  width: 100%;
-}
-
-.modo-card {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  aspect-ratio: 1;
-  background-color: #1c1c1c;
-  border: 1.5px solid #3a3a3a;
-  border-radius: 14px;
-  padding: 20px 14px;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+  padding: 2.5rem 1.5rem;
+  color: var(--sm-texto);
+  font-family: "Inter", sans-serif;
 }
 
-.modo-card:hover {
-  border-color: #b31e1e;
-  background-color: #221515;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(179, 30, 30, 0.25);
-}
-
-.modo-card:active {
-  transform: translateY(-1px);
-}
-
-.modo-icono {
-  font-size: 32px;
-}
-
-.modo-nombre {
-  font-size: 15px;
-  font-weight: 700;
-  color: #f0f0f0;
-  letter-spacing: 0.5px;
-}
-
-.modo-descripcion {
-  font-size: 12px;
-  color: #999;
+.selection-mode-container {
+  max-width: 460px;
+  width: 100%;
+  margin: 0 auto;
   text-align: center;
-  line-height: 1.4;
 }
 
-/* Responsive: apila en columna en pantallas chicas */
-@media (max-width: 600px) {
-  .modos-grid {
-    grid-template-columns: 1fr;
-  }
+.selection-mode h1 {
+  font-family: "Playfair Display", serif;
+  font-weight: 800;
+  font-size: 2.25rem;
+  margin: 0 0 2.5rem;
+}
 
-  .modo-card {
-    aspect-ratio: auto;
-    flex-direction: row;
-    justify-content: flex-start;
-    text-align: left;
-    padding: 16px 20px;
-  }
+.selection-mode-opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
 
-  .modo-descripcion {
-    text-align: left;
-  }
+.selection-mode-boton {
+  appearance: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  border: 1px solid var(--sm-borde);
+  background: var(--sm-panel);
+  color: var(--sm-texto);
+  padding: 1.1rem 1.3rem;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.selection-mode-boton:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.selection-mode-boton:focus-visible {
+  outline: 2px solid var(--sm-rojo-brillo);
+  outline-offset: 2px;
+}
+
+/* ícono romboidal, mismo motivo que las celdas del leaderboard */
+.selection-mode-icono {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  transform: rotate(45deg);
+}
+
+.selection-mode-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.selection-mode-titulo {
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.selection-mode-subtitulo {
+  font-size: 0.8rem;
+  color: var(--sm-texto-tenue);
+}
+
+/* --- variante Normal --- */
+.selection-mode-boton--normal .selection-mode-icono {
+  background: linear-gradient(135deg, #3a2f36, #2a2530);
+  border: 1px solid var(--sm-rojo-brillo);
+}
+
+.selection-mode-boton--normal:hover {
+  border-color: var(--sm-rojo-brillo);
+  box-shadow: 0 10px 24px -14px rgba(226, 69, 63, 0.5);
+}
+
+/* --- variante Dificil: acento más intenso, doble borde en el ícono --- */
+.selection-mode-boton--dificil .selection-mode-icono {
+  background: linear-gradient(135deg, var(--sm-rojo-brillo), var(--sm-rojo));
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+}
+
+.selection-mode-boton--dificil:hover {
+  border-color: var(--sm-rojo-brillo);
+  box-shadow: 0 10px 26px -12px rgba(179, 30, 30, 0.65);
+}
+
+/* --- variante Modo Libre: dorado, deshabilitado por ahora --- */
+.selection-mode-boton--libre {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.selection-mode-boton--libre .selection-mode-icono {
+  background: linear-gradient(135deg, #43331a, #2a2530);
+  border: 1px solid var(--sm-oro);
+}
+
+.selection-mode-badge {
+  position: absolute;
+  top: -8px;
+  right: 14px;
+  background: #1f1b23;
+  border: 1px solid var(--sm-oro);
+  color: var(--sm-oro);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
 }

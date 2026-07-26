@@ -1,51 +1,59 @@
 import { useNavigate } from "react-router-dom";
+import BackButton from "../../components/BackButton/BackButton.jsx";
 import "./SelectionMode.css";
 
-const MODOS = [
-    {
-        id: "normal",
-        nombre: "Modo Normal",
-        descripcion: "La experiencia clásica del puzzle",
-        icono: "🎮",
-    },
-    {
-        id: "dificil",
-        nombre: "Modo Difícil",
-        descripcion: "Menos movimientos, más desafío",
-        icono: "🔥",
-    },
-    {
-        id: "libre",
-        nombre: "Modo Libre",
-        descripcion: "Jugá sin límites, a tu ritmo",
-        icono: "∞",
-    },
-    ];
-
-    export default function SeleccionModo() {
+export default function SelectionMode() {
     const navigate = useNavigate();
 
-    const handleSeleccionar = (modoId) => {
-        navigate(`/seleccion-nivel/${modoId}`);
-    };
-
     return (
-        <div className="seleccion-modo">
-        <h2>Elegí tu modo de juego</h2>
+        <div className="selection-mode">
+            <div className="selection-mode-container">
+                <BackButton label="Volver al menú" onClick={() => navigate("/")} />
 
-        <div className="modos-grid">
-            {MODOS.map((modo) => (
-            <button
-                key={modo.id}
-                className="modo-card"
-                onClick={() => handleSeleccionar(modo.id)}
-            >
-                <span className="modo-icono">{modo.icono}</span>
-                <span className="modo-nombre">{modo.nombre}</span>
-                <span className="modo-descripcion">{modo.descripcion}</span>
-            </button>
-            ))}
-        </div>
+                <h1>Elegí un modo</h1>
+
+                <div className="selection-mode-opciones">
+                    <button
+                        className="selection-mode-boton selection-mode-boton--normal"
+                        onClick={() => navigate("/seleccion-nivel/normal")}
+                    >
+                        <span className="selection-mode-icono" aria-hidden="true"></span>
+                        <span className="selection-mode-texto">
+                            <span className="selection-mode-titulo">Normal</span>
+                            <span className="selection-mode-subtitulo">
+                                Ritmo pausado, ideal para practicar
+                            </span>
+                        </span>
+                    </button>
+
+                    <button
+                        className="selection-mode-boton selection-mode-boton--dificil"
+                        onClick={() => navigate("/seleccion-nivel/dificil")}
+                    >
+                        <span className="selection-mode-icono" aria-hidden="true"></span>
+                        <span className="selection-mode-texto">
+                            <span className="selection-mode-titulo">Dificil</span>
+                            <span className="selection-mode-subtitulo">
+                                Más obstáculos, menos margen de error
+                            </span>
+                        </span>
+                    </button>
+
+                    <button
+                        className="selection-mode-boton selection-mode-boton--libre"
+                        disabled
+                    >
+                        <span className="selection-mode-icono" aria-hidden="true"></span>
+                        <span className="selection-mode-texto">
+                            <span className="selection-mode-titulo">Modo Libre</span>
+                            <span className="selection-mode-subtitulo">
+                                Ranking único, sin niveles fijos
+                            </span>
+                        </span>
+                        <span className="selection-mode-badge">Próximamente</span>
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

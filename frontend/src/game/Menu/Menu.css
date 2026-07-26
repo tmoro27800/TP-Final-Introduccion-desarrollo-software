@@ -1,63 +1,59 @@
-.menu-fondo-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
- 
-.menu-fondo-pixelsnow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-}
- 
 .menu {
-  position: relative;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 3rem 2rem;
 }
- 
-.menu-logo-wrapper {
-  border-radius: 5px;
+
+.menu-titulo-wrapper {
   margin-bottom: 3rem;
-  overflow: hidden;
-  box-shadow: 0 0 30px rgba(179, 30, 30, 0.35);
 }
- 
-.menu-logo {
+
+.menu-titulo {
   width: 25rem;
   height: auto;
   display: block;
+  image-rendering: pixelated;
 }
- 
+
 .menu-botones {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 20px;
+  gap: 14px;
   width: 100%;
-  max-width: 260px;
+  max-width: 220px;
 }
- 
+
+.menu-botones-fila {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  width: 100%;
+}
+
+.menu-botones-fila .pixel-button {
+  flex: 1;
+}
+
+.menu-boton-fila {  
+  display: flex;
+  justify-content: center;
+}
+
 .reasignar-header {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 6px;
 }
- 
+
 .reasignar-header h2 {
   border-left: none;
   padding-left: 0;
   margin-bottom: 0;
 }
- 
+
 .btn-volver {
   background: #232323;
   border: 1px solid #3a3a3a;
@@ -71,30 +67,30 @@
   flex-shrink: 0;
   transition: border-color 0.15s ease, color 0.15s ease;
 }
- 
+
 .btn-volver:hover {
   border-color: #b31e1e;
   color: #ffffff;
 }
- 
+
 .reasignar-hint {
   font-size: 13px;
   color: #888;
   margin: 12px 0 1.5rem 0;
 }
- 
+
 .controles-lista-reasignar {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 1.75rem;
 }
- 
+
 .reasignar-footer {
   display: flex;
   gap: 10px;
 }
- 
+
 .reasignar-footer .config-btn-secundario,
 .reasignar-footer .config-btn-guardar {
   flex: 1;
