@@ -2,8 +2,15 @@
 // del backend/mock, y la reemplaza por piso libre (0) — porque la
 // posición del jugador va a vivir en estado de React, no en el mapa.
 export function prepararNivel(mapaOriginal) {
+    if (!Array.isArray(mapaOriginal) || !Array.isArray(mapaOriginal[0])) {
+        throw new Error(
+            "prepararNivel esperaba una matriz (array de arrays) y recibió: " +
+                JSON.stringify(mapaOriginal)
+        );
+    }
+
     const jugadorInicial = buscarJugador(mapaOriginal);
- 
+
     const mapa = mapaOriginal.map((fila, y) =>
         fila.map((valor, x) => {
             const esCeldaDelJugador =
@@ -11,10 +18,10 @@ export function prepararNivel(mapaOriginal) {
             return esCeldaDelJugador ? 0 : valor;
         })
     );
- 
+
     return { mapa, jugadorInicial: jugadorInicial ?? { fila: 1, columna: 1 } };
 }
- 
+
 function buscarJugador(mapa) {
     for (let fila = 0; fila < mapa.length; fila++) {
         for (let columna = 0; columna < mapa[fila].length; columna++) {
@@ -25,4 +32,3 @@ function buscarJugador(mapa) {
     }
     return null; // el mapa no tenía un 2 — se usa el fallback {1,1}
 }
- 

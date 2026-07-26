@@ -42,7 +42,7 @@
 .selection-level-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: start;
   gap: 14px;
 }
 
