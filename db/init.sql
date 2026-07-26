@@ -6,9 +6,8 @@ CREATE TABLE dificultad (
 );
 
 INSERT INTO dificultad (nombre, orden) VALUES
-    ('Facil', 1),
-    ('Media', 2),
-    ('Dificil', 3);
+    ('Normal', 1),
+    ('Dificil', 2);
 
 --2. niveles
 
@@ -58,20 +57,6 @@ INSERT INTO powerups (nombre, tipo, valor) VALUES
     ('Pista gratis', 'pista_gratis', '{"cantidad": 1}');
 
 
--- 6. pistas_usadas
-CREATE TABLE pistas_usadas (
-    id SERIAL PRIMARY KEY,
-    score_id INTEGER REFERENCES scores(id) ON DELETE CASCADE,
-    pista_id INTEGER REFERENCES pistas(id),
-    used_at TIMESTAMP DEFAULT NOW()
-);
 
--- 7. powerups_usados
-CREATE TABLE powerups_usados (
-    id SERIAL PRIMARY KEY,
-    score_id INTEGER REFERENCES scores(id) ON DELETE CASCADE,
-    powerup_id INTEGER REFERENCES powerups(id),
-    used_at TIMESTAMP DEFAULT NOW()
-);
 
 
