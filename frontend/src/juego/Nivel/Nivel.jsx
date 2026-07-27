@@ -1,5 +1,5 @@
 
-export default function Level() {
+export default function Nivel() {
     return (
         <div>
             <h1>Nivel</h1>

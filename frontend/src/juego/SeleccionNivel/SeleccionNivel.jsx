@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getLevelsByDifficultyMock } from "../../services/levelService.js";
-import BackButton from "../../components/BackButton/BackButton.jsx";
+import { getLevelsByDifficultyMock } from "../../services/nivelServicio.js";
+import BackButton from "../../componentes/BotonVuelta/BackButton.jsx";
 import "./SelectionLevel.css";
 
 const NOMBRES_MODO = {
@@ -9,7 +9,7 @@ const NOMBRES_MODO = {
     dificil: "Dificil",
 };
 
-export default function SelectionLevel() {
+export default function SeleccionNivel() {
     const navigate = useNavigate();
     const { modoId } = useParams();
 

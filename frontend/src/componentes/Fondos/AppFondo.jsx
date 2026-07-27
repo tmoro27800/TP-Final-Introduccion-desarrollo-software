@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
-import BackgroundMenu from "./BackgroundMenu/BackgroundMenu.jsx";
-import { BackgroundLevel } from "./BackgroundLevel/BackgroundLevel.jsx"; // TODO: ajustar nombre/ruta si tu Fondo 2 se llama distinto
+import BackgroundMenu from "./FondoMenu/FondoMenu.jsx";
+import { BackgroundLevel } from "./FondoNivel/FondoNivel.jsx"; // TODO: ajustar nombre/ruta si tu Fondo 2 se llama distinto
 import "./AppBackground.css";
 
 // Único lugar que hay que tocar para decidir qué pantallas usan el Fondo 2 (niveles).

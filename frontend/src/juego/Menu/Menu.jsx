@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import ControlRow from "../../components/ControlRow/ControlRow.jsx";
-import PixelButton from "../../components/PixelButton/PixelButton.jsx";
-import Modal from "../../components/Modal/Modal.jsx";
+import ControlRow from "../../componentes/ControlRow/ControlRow.jsx";
+import PixelButton from "../../componentes/PixelButton/PixelButton.jsx";
+import Modal from "../../componentes/Modal/Modal.jsx";
 
 import titulo from "../../assets/SpriteMenuPrincipal/Titulo.png";
 import botonJugar from "../../assets/SpriteMenuPrincipal/BotonJugar.png";
@@ -55,7 +55,7 @@ export default function Menu() {
             </div>
 
             <nav className="menu-botones">
-                <div className="menu-botones-fila">
+                <div className="menu-boton-fila">
                     <PixelButton
                         src={botonJugar}
                         //srcHover={botonJugarHover}

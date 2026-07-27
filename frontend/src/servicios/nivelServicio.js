@@ -1,17 +1,13 @@
 import { api } from './api';
  
-import nivelesMock from '../game/SelectionLevel/Niveles.mock.json';
-import nivelesDetalleMock from '../game/SelectionLevel/NivelesDetalle.mock.json';
+import nivelesMock from '../juego/SeleccionNivel/Niveles.mock.json';
+import nivelesDetalleMock from '../juego/SeleccionNivel/NivelesDetalle.mock.json';
  
 /**
  * Trae el listado completo de niveles.
  * Usado en: pantalla de selección de nivel.
  */
-export const getAllLevels = async () => {
-    const response = await api.get('/api/niveles');
-    return response.data;
-};
- 
+
 /**
  * Trae un nivel puntual (mapa + metadata) por su id.
  * Usado en: Game.jsx, al entrar a jugar un nivel.
@@ -20,18 +16,17 @@ export const getLevelById = async (nivelId) => {
     const response = await api.get(`/api/niveles/${nivelId}`);
     return response.data;
 };
- 
+
 /**
  * Trae los niveles filtrados por dificultad.
  * Usado en: pantalla de selección de nivel, filtrado por dificultad.
  */
-export const getLevelsByDifficulty = async (dificultadId) => {
-    const response = await api.get('/api/niveles', {
-        params: { dificultad: dificultadId },
-    });
+
+export const getNivelPorDificultad = async (dificultadId) => {
+    const response = await api.get(`/api/niveles?dificultad=${dificultadId}`);
     return response.data;
 };
- 
+
 /**
  * Trae un nivel puntual (mapa + metadata) por su id.
  * Usado en: Game.jsx, al entrar a jugar un nivel.

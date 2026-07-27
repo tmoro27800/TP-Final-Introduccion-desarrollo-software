@@ -1,4 +1,4 @@
-import { GRID } from '../Configuration/constants.js'
+import { GRID } from '../Configuracion/constantes.js'
 import './Board.css'
  
 // ----------------------------------------------------------------
@@ -51,7 +51,7 @@ function obtenerTipoCelda(valor) {
   return TIPOS_CELDA[valor] ?? 'desconocido'
 }
 
-export default function Board({ mapa = MAPA_INICIAL, jugador }) {
+export default function Tablero({ mapa = MAPA_INICIAL, jugador }) {
   const filas = mapa.length
   const columnas = mapa[0]?.length ?? 0
   console.log("Mapa Actualizado: ", mapa);

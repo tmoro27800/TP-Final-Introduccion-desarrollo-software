@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Board from "../Board/Board.jsx";
-import { getLevelByIdMock } from "../../services/levelService.js";
+import { getLevelByIdMock } from "../../services/nivelServicio.js";
 import { prepararNivel } from "./prepararNivel.js";
 import useJuego from "./useJuego.js";
 import "./Game.css";

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AppBackground from "./components/Backgrounds/AppBackground.jsx";
+import AppBackground from "./componentes/Fondos/AppBackground.jsx";
 import Menu from './game/Menu/Menu.jsx'
 import Game from './game/Game/Game.jsx'
 import Score from './game/Score/Score.jsx'

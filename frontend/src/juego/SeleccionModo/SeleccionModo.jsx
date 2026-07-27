@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import BackButton from "../../components/BackButton/BackButton.jsx";
+import BackButton from "../../componentes/BotonVuelta/BotonVuelta.jsx";
 import "./SelectionMode.css";
 
-export default function SelectionMode() {
+export default function SeleccionModo() {
     const navigate = useNavigate();
 
     return (
