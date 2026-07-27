@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useConfiguracion } from "../Configuracion/ConfiguracionContext.jsx";
-import { crearEstadoInicial, calcularSiguienteEstado, reiniciarNivel } from "./motorJuego.js";
+import { crearEstadoInicial, calcularSiguienteEstado, reiniciarNivel, reiniciarNivelCompleto } from "./motorJuego.js";
 
 // Las flechas son una alternativa FIJA a los controles configurables —
 // así lo anuncia el modal "Cómo jugar" en Menu.jsx ("Flechas: alternativa
@@ -43,7 +43,19 @@ export default function useJuego(nivelPreparado) {
 
     useEffect(() => {
         function manejarTecla(e) {
+            // Si el foco está en un <input>/<textarea> (ej. el nombre para
+            // guardar el puntaje al ganar), ninguna tecla del juego tiene que
+            // hacer nada — si no, escribir una "r" en el nombre reiniciaba
+            // el nivel en el medio de completar el formulario.
+            const enCampoDeTexto =
+                e.target instanceof HTMLElement &&
+                (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA");
+            if (enCampoDeTexto) return;
+
+            // R reinicia manualmente, pero solo mientras se está jugando —
+            // ya ganado el nivel, ninguna tecla debería alterar el estado.
             if (e.key.toUpperCase() === TECLA_REINICIO) {
+                if (estado.estado !== "jugando") return;
                 setEstado((prev) => reiniciarNivel(prev));
                 return;
             }
@@ -72,5 +84,8 @@ export default function useJuego(nivelPreparado) {
         estado: estado.estado,
         ultimoEvento: estado.ultimoEvento,
         reiniciar: () => setEstado((prev) => reiniciarNivel(prev)),
+        // "Repetir nivel" en la pantalla de victoria (Nivel.jsx): a diferencia
+        // de la tecla R, acá movimientos/muertes también vuelven a cero.
+        reiniciarCompleto: () => setEstado((prev) => reiniciarNivelCompleto(prev)),
     };
 }

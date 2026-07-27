@@ -20,7 +20,7 @@
 }
 
 .selection-mode-container {
-  max-width: 460px;
+  max-width: 520px;
   width: 100%;
   margin: 0 auto;
   text-align: center;
@@ -33,23 +33,26 @@
   margin: 0 0 2.5rem;
 }
 
+/* Uno al lado del otro, no apilados */
 .selection-mode-opciones {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  flex-direction: row;
+  gap: 16px;
 }
 
 .selection-mode-boton {
   appearance: none;
   position: relative;
+  flex: 1 1 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  text-align: left;
+  gap: 12px;
+  text-align: center;
   border: 1px solid var(--sm-borde);
   background: var(--sm-panel);
   color: var(--sm-texto);
-  padding: 1.1rem 1.3rem;
+  padding: 1.75rem 1rem;
   border-radius: 16px;
   cursor: pointer;
   transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
@@ -64,19 +67,17 @@
   outline-offset: 2px;
 }
 
-/* ícono romboidal, mismo motivo que las celdas del leaderboard */
+/* círculo detrás del emoji, para que no quede "flotando" solo */
 .selection-mode-icono {
   flex-shrink: 0;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  transform: rotate(45deg);
-}
-
-.selection-mode-texto {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  line-height: 1;
 }
 
 .selection-mode-titulo {
@@ -85,26 +86,22 @@
   font-size: 1.25rem;
 }
 
-.selection-mode-subtitulo {
-  font-size: 0.8rem;
-  color: var(--sm-texto-tenue);
-}
-
-/* --- variante Normal --- */
+/* --- variante Normal: calavera más apagada/gris --- */
 .selection-mode-boton--normal .selection-mode-icono {
-  background: linear-gradient(135deg, #3a2f36, #2a2530);
-  border: 1px solid var(--sm-rojo-brillo);
+  background: radial-gradient(circle, #3a2f36 0%, #2a2530 100%);
+  border: 1px solid var(--sm-borde);
+  filter: grayscale(0.6) brightness(0.9);
 }
 
 .selection-mode-boton--normal:hover {
-  border-color: var(--sm-rojo-brillo);
-  box-shadow: 0 10px 24px -14px rgba(226, 69, 63, 0.5);
+  border-color: var(--sm-texto-tenue);
+  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.5);
 }
 
-/* --- variante Dificil: acento más intenso, doble borde en el ícono --- */
+/* --- variante Dificil: calavera a pleno color, glow rojo --- */
 .selection-mode-boton--dificil .selection-mode-icono {
-  background: linear-gradient(135deg, var(--sm-rojo-brillo), var(--sm-rojo));
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+  background: radial-gradient(circle, rgba(226, 69, 63, 0.35) 0%, rgba(179, 30, 30, 0.15) 100%);
+  box-shadow: inset 0 0 0 2px rgba(226, 69, 63, 0.5), 0 0 18px rgba(226, 69, 63, 0.35);
 }
 
 .selection-mode-boton--dificil:hover {
@@ -121,34 +118,6 @@
 .selection-mode-boton--libre .selection-mode-icono {
   background: linear-gradient(135deg, #43331a, #2a2530);
   border: 1px solid var(--sm-oro);
-}
-
-/* Debug/QA: discreto a propósito, no es contenido real del juego */
-.selection-mode-debug-fila {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1.75rem;
-}
-
-.selection-mode-debug {
-  appearance: none;
-  display: block;
-  background: transparent;
-  border: 1px dashed var(--sm-borde);
-  color: var(--sm-texto-tenue);
-  font-family: "Inter", sans-serif;
-  font-size: 0.75rem;
-  padding: 0.5rem 0.9rem;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.selection-mode-debug:hover {
-  color: var(--sm-texto);
-  border-color: var(--sm-texto-tenue);
 }
 
 .selection-mode-badge {

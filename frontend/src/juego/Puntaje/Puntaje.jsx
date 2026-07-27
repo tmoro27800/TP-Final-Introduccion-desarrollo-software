@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import FilaPuntaje from "../../componentes/FilaPuntaje/FilaPuntaje.jsx";
 import { getNivelesPorDificultad } from "../../servicios/nivelServicio.js";
 import { getPuntajesPorNivel } from "../../servicios/puntajeServicio.js";
-import { getNivelesPorDificultadMock, getPuntajesPorNivelMock } from "./puntajesMock.js";
 import "./Puntaje.css";
 
 export default function Puntaje() {
@@ -15,26 +14,18 @@ export default function Puntaje() {
     const [puntajes, setPuntajes] = useState([]);
     const [cargando, setCargando] = useState(true);
 
-    // Debug/QA: mientras la base no esté conectada, este toggle cambia a
-    // datos hardcodeados (puntajesMock.js) sin tocar el resto de la
-    // pantalla — misma idea que nivelDePrueba.js para el motor de juego.
-    // Apagalo (o borrá este bloque) apenas la conexión real esté lista.
-    const [datosDePrueba, setDatosDePrueba] = useState(true);
-    const nivelesFn = datosDePrueba ? getNivelesPorDificultadMock : getNivelesPorDificultad;
-    const puntajesFn = datosDePrueba ? getPuntajesPorNivelMock : getPuntajesPorNivel;
-
-    // Al cambiar de dificultad (o de modo de datos), trae los niveles de esa
-    // dificultad para poblar el <select> y selecciona el primero por defecto.
+    // Al cambiar de dificultad, trae los niveles de esa dificultad para
+    // poblar el <select> y selecciona el primero por defecto.
     useEffect(() => {
         setNiveles([]);
         setNivelSeleccionado(null);
-        nivelesFn(dificultad).then((data) => {
+        getNivelesPorDificultad(dificultad).then((data) => {
             setNiveles(data);
             setNivelSeleccionado(data[0]?.id ?? null);
         });
-    }, [dificultad, datosDePrueba]);
+    }, [dificultad]);
 
-    // Al cambiar de nivel (o dificultad, o modo de datos), trae los puntajes de ese par.
+    // Al cambiar de nivel (o dificultad), trae los puntajes de ese par.
     useEffect(() => {
         if (!nivelSeleccionado) {
             setPuntajes([]);
@@ -42,11 +33,11 @@ export default function Puntaje() {
             return;
         }
         setCargando(true);
-        puntajesFn(nivelSeleccionado, dificultad).then((data) => {
+        getPuntajesPorNivel(nivelSeleccionado, dificultad).then((data) => {
             setPuntajes(data);
             setCargando(false);
         });
-    }, [nivelSeleccionado, dificultad, datosDePrueba]);
+    }, [nivelSeleccionado, dificultad]);
 
     // orden combinado: primero menos movimientos, y ante empate, menor tiempo
     // (el backend ya lo devuelve ordenado así, pero no cuesta nada repetirlo acá)
@@ -62,16 +53,6 @@ export default function Puntaje() {
                     <span aria-hidden="true">←</span> Volver al menú
                 </button>
                 <h1>Tabla de puntajes</h1>
-
-                {/* Debug/QA: ver puntajesMock.js. Sacar este botón (y el
-                    state datosDePrueba) cuando el backend esté conectado. */}
-                <button
-                    type="button"
-                    className="score-debug-toggle"
-                    onClick={() => setDatosDePrueba((v) => !v)}
-                >
-                    🧪 Datos de prueba: {datosDePrueba ? "ON" : "OFF"}
-                </button>
 
                 <div className="score-filtros">
                     <div className="score-dificultades">

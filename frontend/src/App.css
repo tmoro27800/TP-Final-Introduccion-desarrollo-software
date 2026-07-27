@@ -15,10 +15,12 @@ body {
   color: #f0f0f0;
 }
 
+/* Antes centraba con flex acá, pero cada pantalla (.game, .score,
+   .selection-mode, .selection-level, etc.) ya hace su propio
+   min-height:100vh + centrado interno — ese flex de más achicaba la
+   pantalla al ancho de su contenido en vez de ocupar el viewport
+   (ej: los botones de nivel colapsaban al ancho del número "1"/"2"). */
 #root {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
   text-align: center;
 }

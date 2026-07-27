@@ -8,6 +8,13 @@ import { getNivelesPorDificultad } from "../../servicios/nivelServicio.js";
 import "./SeleccionNivel.css";
 
 
+// modoId llega en minúsculas desde la URL (/seleccion-nivel/normal|dificil,
+// ver App.jsx) — esto es solo para mostrarlo lindo en el título.
+const NOMBRE_MODO = {
+    normal: "Normal",
+    dificil: "Dificil",
+};
+
 export default function SeleccionNivel() {
     const navigate = useNavigate();
     const { modoId } = useParams();
@@ -28,7 +35,7 @@ export default function SeleccionNivel() {
             <div className="selection-level-container">
                 <BotonVuelta label="Volver" onClick={() => navigate("/seleccion-modo")} />
 
-                <h1></h1>
+                <h1>Niveles {NOMBRE_MODO[modoId] ?? modoId}</h1>
 
                 {cargando && <PantallaCarga mensaje="Cargando niveles..." />}
 

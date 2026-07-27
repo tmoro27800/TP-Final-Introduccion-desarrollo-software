@@ -2,9 +2,7 @@ import { PARED, META, LAVA, VACIO, TELETRANSPORTADOR } from "./tiposCelda.js";
 
 // Motor puro del juego: no importa nada de React, no toca el DOM. Recibe un
 // estado y una dirección, devuelve el estado siguiente (o el mismo objeto
-// si el movimiento no tuvo ningún efecto). Así se puede probar jugando en
-// cualquier nivel (real o el de nivelDePrueba.js) sin depender del backend
-// ni de la UI.
+// si el movimiento no tuvo ningún efecto).
 //
 // Diseño: "terreno" (piso/pared/meta/lava/vacío/teletransportador) es fijo
 // durante toda la partida. Lo que se mueve o se consume (jugador, cajas,
@@ -62,6 +60,17 @@ export function reiniciarNivel(estado, { porMuerte = null } = {}) {
     movimientos: porMuerte ? estado.movimientos + 1 : estado.movimientos,
     muertes: porMuerte ? estado.muertes + 1 : estado.muertes,
     ultimoEvento: { tipo: porMuerte ? `muerte-${porMuerte}` : "reinicio-manual", id: Date.now() },
+  };
+}
+
+// "Repetir nivel" desde la pantalla de victoria: a diferencia de la tecla R
+// (que conserva movimientos/muertes porque reinicia a mitad de una partida
+// en curso), esto es un intento nuevo de verdad — arranca todo en cero.
+export function reiniciarNivelCompleto(estado) {
+  return {
+    ...reiniciarNivel(estado),
+    movimientos: 0,
+    muertes: 0,
   };
 }
 
