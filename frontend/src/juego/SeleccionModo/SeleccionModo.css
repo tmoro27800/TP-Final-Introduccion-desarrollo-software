@@ -123,6 +123,34 @@
   border: 1px solid var(--sm-oro);
 }
 
+/* Debug/QA: discreto a propósito, no es contenido real del juego */
+.selection-mode-debug-fila {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+}
+
+.selection-mode-debug {
+  appearance: none;
+  display: block;
+  background: transparent;
+  border: 1px dashed var(--sm-borde);
+  color: var(--sm-texto-tenue);
+  font-family: "Inter", sans-serif;
+  font-size: 0.75rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.selection-mode-debug:hover {
+  color: var(--sm-texto);
+  border-color: var(--sm-texto-tenue);
+}
+
 .selection-mode-badge {
   position: absolute;
   top: -8px;

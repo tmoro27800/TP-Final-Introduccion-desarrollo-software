@@ -15,6 +15,15 @@
   display: block;
   image-rendering: pixelated;
   pointer-events: none; /* el click lo maneja el <button>, no la imagen */
+  transition: transform 0.08s ease;
+}
+
+.pixel-button:hover img {
+  transform: translateY(-2px);
+}
+
+.pixel-button:active img {
+  transform: scale(0.96);
 }
 
 .pixel-button:focus-visible {

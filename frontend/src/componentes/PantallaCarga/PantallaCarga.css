@@ -1,0 +1,80 @@
+.carga {
+  --carga-oro: #e8b923;
+  --carga-rojo: #e2453f;
+  --carga-rojo-oscuro: #b31e1e;
+  --carga-texto-tenue: #8b8690;
+
+  min-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.carga-gemas {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  height: 46px;
+}
+
+/* mismo motivo "gema" que .tablero-llave (rombo, borde recto — nada de
+   curvas — para que se sienta pixel-art), rebotando en secuencia como las
+   estrellas del título "Cube of Stars" */
+.carga-gema {
+  display: block;
+  width: 18px;
+  height: 18px;
+  transform: rotate(45deg);
+  animation: carga-rebote 0.9s ease-in-out infinite;
+}
+
+.carga-gema--1 {
+  background: var(--carga-rojo);
+  box-shadow: 0 0 8px rgba(226, 69, 63, 0.7);
+  animation-delay: 0s;
+}
+
+.carga-gema--2 {
+  width: 24px;
+  height: 24px;
+  background: var(--carga-oro);
+  box-shadow: 0 0 10px rgba(232, 185, 35, 0.75);
+  animation-delay: 0.15s;
+}
+
+.carga-gema--3 {
+  background: var(--carga-rojo-oscuro);
+  box-shadow: 0 0 8px rgba(179, 30, 30, 0.7);
+  animation-delay: 0.3s;
+}
+
+@keyframes carga-rebote {
+  0%,
+  100% {
+    transform: rotate(45deg) translateY(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: rotate(45deg) translateY(-18px);
+    opacity: 1;
+  }
+}
+
+.carga-mensaje {
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--carga-texto-tenue);
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carga-gema {
+    animation: none;
+    opacity: 0.85;
+  }
+}

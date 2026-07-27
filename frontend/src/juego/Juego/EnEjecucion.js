@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useConfiguracion } from "../Configuracion/ConfiguracionContext.jsx";
+import { crearEstadoInicial, calcularSiguienteEstado, reiniciarNivel } from "./motorJuego.js";
 
 // Las flechas son una alternativa FIJA a los controles configurables —
 // así lo anuncia el modal "Cómo jugar" en Menu.jsx ("Flechas: alternativa
@@ -11,44 +12,19 @@ const DIRECCIONES_FIJAS = {
     ArrowRight: { df: 0, dc: 1 },
 };
 
-const VALOR_META = 3;
+// Reinicio manual del nivel, igual que en el boceto de referencia. Fija
+// (no configurable) por la misma razón que las flechas.
+const TECLA_REINICIO = "R";
 
-export default function useJuego(nivel) {
+// Wrapper fino de React sobre motorJuego.js: mantiene el estado de la
+// partida en useState y traduce teclado -> acciones del motor. Toda la
+// lógica de qué hace cada mecánica vive en motorJuego.js, no acá.
+export default function useJuego(nivelPreparado) {
     // Teclas configurables (por defecto WASD, reasignables desde el menú
     // de Configuración). Ver ConfiguracionContext.jsx / configuracionDefault.js.
     const { controles } = useConfiguracion();
 
-    const [jugador, setJugador] = useState(nivel.jugadorInicial);
-    const [movimientos, setMovimientos] = useState(0);
-    const [estado, setEstado] = useState("jugando"); // "jugando" | "ganado"
-
-    function esMovimientoValido(destino) {
-        const filaValida = destino.fila >= 0 && destino.fila < nivel.mapa.length;
-        const columnaValida = destino.columna >= 0 && destino.columna < nivel.mapa[0].length;
-        if (!filaValida || !columnaValida) return false; // se sale del tablero
-
-        const esPared = nivel.mapa[destino.fila][destino.columna] === 1;
-        if (esPared) return false;
-
-        return true;
-    }
-
-    function mover(direccion) {
-        if (estado !== "jugando") return; // ya ganaste, ignorar más teclas
-
-        const destino = {
-            fila: jugador.fila + direccion.df,
-            columna: jugador.columna + direccion.dc,
-        };
-
-        if (!esMovimientoValido(destino)) return; // movimiento inválido: no hace nada
-
-        setJugador(destino);
-        setMovimientos((m) => m + 1);
-
-        const llegoALaMeta = nivel.mapa[destino.fila][destino.columna] === VALOR_META;
-        if (llegoALaMeta) setEstado("ganado");
-    }
+    const [estado, setEstado] = useState(() => crearEstadoInicial(nivelPreparado));
 
     // Resuelve qué dirección corresponde a una tecla: primero mira las
     // flechas (fijas), después las teclas configurables (comparando en
@@ -67,18 +43,34 @@ export default function useJuego(nivel) {
 
     useEffect(() => {
         function manejarTecla(e) {
+            if (e.key.toUpperCase() === TECLA_REINICIO) {
+                setEstado((prev) => reiniciarNivel(prev));
+                return;
+            }
+
             const direccion = resolverDireccion(e.key);
             if (!direccion) return; // tecla que no nos interesa
-            mover(direccion);
+            setEstado((prev) => calcularSiguienteEstado(prev, direccion));
         }
 
         window.addEventListener("keydown", manejarTecla);
         return () => window.removeEventListener("keydown", manejarTecla);
-        // sin array de dependencias a propósito: así "mover" y "resolverDireccion"
-        // siempre usan el jugador/estado/controles más actualizados en cada
-        // tecla presionada (los controles pueden cambiar en cualquier momento
-        // si el usuario los reasigna desde el menú)
+        // sin array de dependencias a propósito: así "resolverDireccion" siempre
+        // usa los controles más actualizados en cada tecla presionada (pueden
+        // cambiar en cualquier momento si el usuario los reasigna desde el menú)
     });
 
-    return { jugador, movimientos, estado };
+    return {
+        jugador: estado.jugador,
+        cajas: estado.cajas,
+        llaves: estado.llaves,
+        pickups: estado.pickups,
+        totalLlaves: estado.totalLlaves,
+        habilidadActiva: estado.habilidadActiva,
+        movimientos: estado.movimientos,
+        muertes: estado.muertes,
+        estado: estado.estado,
+        ultimoEvento: estado.ultimoEvento,
+        reiniciar: () => setEstado((prev) => reiniciarNivel(prev)),
+    };
 }

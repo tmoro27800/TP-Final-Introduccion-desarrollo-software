@@ -34,6 +34,16 @@ INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
     ('Nivel 1', 1, 1, '[[1,1,1,1,1,1,1],[1,2,0,0,0,0,1],[1,0,0,0,0,0,1],[1,0,0,0,0,0,1],[1,0,0,0,0,0,1],[1,0,0,0,1,3,1]]'),
     ('Nivel 2', 2, 1, '[[1,1,1,1,1,1,1,1],[1,2,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,1,3,1,0,0,0,1]]');
 
+-- Nivel de prueba con las mecánicas nuevas (cajas, fantasma, teletransportador,
+-- invulnerabilidad, lava, vacío, llaves, fuerza — ver
+-- frontend/src/juego/Juego/motorJuego.js y tiposCelda.js). Mismo layout que
+-- frontend/src/juego/Juego/nivelDePrueba.js (usado ahí para poder probar el
+-- motor sin depender de esta base). Recorrido: llave -> empujar caja
+-- (bordear por arriba) -> atravesar pared con fantasma -> cruzar lava con
+-- invulnerabilidad -> destruir caja con fuerza -> teletransportador -> meta.
+INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
+    ('Nivel 3', 3, 2, '[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,0,0,0,0,1,1,1,1,13,1,1,1,1,1,1,1,1,1,1,1],[1,2,0,16,0,4,0,1,5,1,0,10,13,0,18,4,0,7,0,7,0,0,0,3,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,15,4,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,15,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]');
+
 --3. puntuaciones
 
 CREATE TABLE scores (

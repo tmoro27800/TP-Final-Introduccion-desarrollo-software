@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import BotonVuelta from "../../componentes/BotonVuelta/BotonVuelta.jsx";
+import PantallaCarga from "../../componentes/PantallaCarga/PantallaCarga.jsx";
 
 import { getNivelesPorDificultad } from "../../servicios/nivelServicio.js";
+import "./SeleccionNivel.css";
 
 
 export default function SeleccionNivel() {
@@ -28,7 +30,7 @@ export default function SeleccionNivel() {
 
                 <h1></h1>
 
-                {cargando && <p className="selection-level-cargando">Cargando niveles...</p>}
+                {cargando && <PantallaCarga mensaje="Cargando niveles..." />}
 
                 {!cargando && niveles.length === 0 && (
                     <p className="selection-level-cargando">Todavía no hay niveles para este modo</p>

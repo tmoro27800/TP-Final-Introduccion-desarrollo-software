@@ -6,14 +6,22 @@ import Ventana from "../../componentes/Ventana/Ventana.jsx";
 import { useConfiguracion } from "../Configuracion/ConfiguracionContext.jsx";
 
 import titulo from "../../assets/SpriteMenuPrincipal/Titulo.png";
+
 import botonJugar from "../../assets/SpriteMenuPrincipal/BotonJugar.png";
-//import botonJugarHover from "../../assets/SpriteMenuPrincipal/BotonJugarHover.png";
+import botonJugarHover from "../../assets/SpriteMenuPrincipal/Mouse/BotonJugar.png";
+import botonJugarClick from "../../assets/SpriteMenuPrincipal/Click/BotonJugar.png";
+
 import botonLeaderboard from "../../assets/SpriteMenuPrincipal/BotonLeaderboard.png";
-//import botonLeaderboardHover from "../../assets/SpriteMenuPrincipal/BotonLeaderboardHover.png";
+import botonLeaderboardHover from "../../assets/SpriteMenuPrincipal/Mouse/BotonLeaderboard.png";
+import botonLeaderboardClick from "../../assets/SpriteMenuPrincipal/Click/BotonLeaderboard.png";
+
 import botonAyuda from "../../assets/SpriteMenuPrincipal/BotonAyuda.png";
-//import botonAyudaHover from "../../assets/SpriteMenuPrincipal/BotonAyudaHover.png";
+import botonAyudaHover from "../../assets/SpriteMenuPrincipal/Mouse/BotonAyuda.png";
+import botonAyudaClick from "../../assets/SpriteMenuPrincipal/Click/BotonAyuda.png";
+
 import botonConfiguracion from "../../assets/SpriteMenuPrincipal/BotonConfiguracion.png";
-//import botonConfiguracionHover from "../../assets/SpriteMenuPrincipal/BotonConfiguracionHover.png";
+import botonConfiguracionHover from "../../assets/SpriteMenuPrincipal/Mouse/BotonConfiguracion.png";
+import botonConfiguracionClick from "../../assets/SpriteMenuPrincipal/Click/BotonConfiguracion.png";
 
 import "./Menu.css";
 
@@ -59,7 +67,8 @@ export default function Menu() {
                 <div className="menu-boton-fila">
                     <BotonPixelar
                         src={botonJugar}
-                        //srcHover={botonJugarHover}
+                        srcHover={botonJugarHover}
+                        srcActive={botonJugarClick}
                         alt="Jugar"
                         onClick={() => navigate("/seleccion-modo")}
                     />
@@ -68,19 +77,22 @@ export default function Menu() {
                 <div className="menu-botones-fila">
                     <BotonPixelar
                         src={botonLeaderboard}
-                        //srcHover={botonLeaderboardHover}
+                        srcHover={botonLeaderboardHover}
+                        srcActive={botonLeaderboardClick}
                         alt="Tabla de puntajes"
                         onClick={() => navigate("/puntajes")}
                     />
                     <BotonPixelar
                         src={botonAyuda}
-                        //srcHover={botonAyudaHover}
+                        srcHover={botonAyudaHover}
+                        srcActive={botonAyudaClick}
                         alt="Como jugar"
                         onClick={() => setMostrarInstrucciones(true)}
                     />
                     <BotonPixelar
                         src={botonConfiguracion}
-                        //srcHover={botonConfiguracionHover}
+                        srcHover={botonConfiguracionHover}
+                        srcActive={botonConfiguracionClick}
                         alt="Configurar"
                         onClick={() => setMostrarConfiguracion(true)}
                     />
@@ -126,6 +138,18 @@ export default function Menu() {
                     <div className="control-texto">
                     <h3>Flechas</h3>
                     <p>Alternativa a WASD</p>
+                    </div>
+                </div>
+
+                <div className="control-item">
+                    <div className="teclas-grupo">
+                    <div className="teclas-fila">
+                        <div className="tecla">R</div>
+                    </div>
+                    </div>
+                    <div className="control-texto">
+                    <h3>R</h3>
+                    <p>Reiniciar el nivel</p>
                     </div>
                 </div>
                 </div>

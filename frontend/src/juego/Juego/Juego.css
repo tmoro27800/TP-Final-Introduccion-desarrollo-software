@@ -21,10 +21,17 @@
 
 .game-container {
   width: 100%;
-  max-width: 480px;
+  max-width: min(560px, 96vw);
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* niveles más anchos (ej. los de prueba, con muchas columnas) necesitan más
+   lugar que el ancho "normal" de un nivel de juego — el tablero puede crecer
+   más que el resto del HUD, que se mantiene centrado y legible */
+.game-tablero-wrapper {
+  max-width: 96vw;
 }
 
 .game-cargando {
@@ -91,10 +98,10 @@
 
 .game-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
   gap: 10px;
   width: 100%;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .game-stat {
@@ -128,6 +135,55 @@
 
 .game-stat--peligro .game-stat-label {
   color: var(--game-rojo-brillo);
+}
+
+/* ------------------- habilidad activa ------------------- */
+
+.game-habilidad {
+  width: 100%;
+  text-align: center;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  margin-bottom: 1rem;
+  border: 1px solid var(--game-borde);
+  background: var(--game-panel);
+  color: var(--game-texto);
+}
+
+.game-habilidad--fantasma {
+  border-color: rgba(155, 89, 226, 0.6);
+  color: #c9a6f2;
+}
+
+.game-habilidad--invulnerabilidad {
+  border-color: rgba(232, 185, 35, 0.6);
+  color: var(--game-oro);
+}
+
+.game-habilidad--fuerza {
+  border-color: rgba(226, 69, 63, 0.6);
+  color: var(--game-rojo-brillo);
+}
+
+/* ------------------- toast de eventos ------------------- */
+
+.game-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--game-panel);
+  border: 1px solid var(--game-borde);
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--game-texto);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  z-index: 10;
 }
 
 /* ------------------- tablero ------------------- */

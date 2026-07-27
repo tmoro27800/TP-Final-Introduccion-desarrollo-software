@@ -1,7 +1,6 @@
 .tablero {
-  --celda-min: 28px;
-  --celda-max: 64px;
-
+  /* el tamaño de cada celda lo calcula Tablero.jsx (responsivo al tamaño
+     del nivel y de la ventana) e inyecta por gridTemplateColumns/Rows */
   display: grid;
   gap: 3px;
   width: fit-content;
@@ -22,17 +21,53 @@
   border-radius: 4px;
 }
 
-.tablero-celda--vacio {
-  background: #18151b;
+.tablero-celda--piso {
+  background: #100e12;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
+/* pared: tiene que ser inconfundible con el piso a simple vista — mucho
+   más clara, con relieve, para que se note de lejos qué es transitable */
 .tablero-celda--pared {
-  background: #2a2530;
+  background: linear-gradient(155deg, #5a5164, #3a3441);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), inset 0 -4px 6px rgba(0, 0, 0, 0.45),
+    inset 0 3px 4px rgba(255, 255, 255, 0.06);
 }
 
 .tablero-celda--meta {
+  background: radial-gradient(circle, #e8b923 0%, #b3860f 65%, #18151b 100%);
+  box-shadow: 0 0 14px 2px rgba(232, 185, 35, 0.75), inset 0 0 0 2px #fff3c4;
+  animation: meta-pulso 1.6s ease-in-out infinite;
+}
+
+@keyframes meta-pulso {
+  0%, 100% {
+    box-shadow: 0 0 14px 2px rgba(232, 185, 35, 0.75), inset 0 0 0 2px #fff3c4;
+  }
+  50% {
+    box-shadow: 0 0 22px 6px rgba(232, 185, 35, 0.95), inset 0 0 0 2px #fff3c4;
+  }
+}
+
+.tablero-celda--lava {
+  background: repeating-linear-gradient(
+    45deg,
+    #b31e1e,
+    #b31e1e 5px,
+    #e2453f 5px,
+    #e2453f 10px
+  );
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.tablero-celda--abismo {
+  background: #050308;
+  box-shadow: inset 0 0 12px 2px rgba(0, 0, 0, 0.9);
+}
+
+.tablero-celda--portal {
   background: #18151b;
-  box-shadow: inset 0 0 0 2px #e8b923;
+  box-shadow: inset 0 0 0 2px #3fd0e2, inset 0 0 10px rgba(63, 208, 226, 0.6);
 }
 
 /* piezas todavía no implementadas: se ven distintas a propósito,
@@ -51,5 +86,49 @@
   background: linear-gradient(135deg, #e2453f, #b31e1e);
   border-radius: 4px;
   box-shadow: 0 0 8px rgba(226, 69, 63, 0.6);
+  z-index: 3;
+}
+
+.tablero-caja {
+  background: linear-gradient(135deg, #c98a3f, #8a5a24);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
   z-index: 1;
+}
+
+.tablero-llave {
+  background: transparent;
+  z-index: 2;
+}
+
+.tablero-llave::after {
+  content: "";
+  display: block;
+  width: 45%;
+  height: 45%;
+  margin: 27.5%;
+  background: #e8b923;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  box-shadow: 0 0 6px rgba(232, 185, 35, 0.8);
+}
+
+.tablero-pickup {
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.tablero-pickup--fantasma {
+  background: rgba(155, 89, 226, 0.35);
+  box-shadow: inset 0 0 0 2px rgba(155, 89, 226, 0.8), 0 0 10px rgba(155, 89, 226, 0.6);
+}
+
+.tablero-pickup--invulnerabilidad {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 0 2px #e8b923, 0 0 10px rgba(232, 185, 35, 0.7);
+}
+
+.tablero-pickup--fuerza {
+  background: rgba(226, 69, 63, 0.25);
+  box-shadow: inset 0 0 0 2px #e2453f, 0 0 10px rgba(226, 69, 63, 0.6);
 }

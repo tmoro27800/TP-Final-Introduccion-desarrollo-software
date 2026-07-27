@@ -39,6 +39,26 @@ export default function SeleccionModo() {
                         </span>
                     </button>
                 </div>
+
+                {/* Debug/QA: niveles hardcodeados con las 8 mecánicas nuevas
+                    (cajas, fantasma, teletransportador, invulnerabilidad,
+                    lava, vacío, llaves, fuerza), no dependen del backend.
+                    Ver frontend/src/juego/Juego/nivelDePrueba.js y
+                    nivelDePruebaAislado.js. */}
+                <div className="selection-mode-debug-fila">
+                    <button
+                        className="selection-mode-debug"
+                        onClick={() => navigate("/juego/test")}
+                    >
+                        🧪 Nivel de prueba (recorrido completo)
+                    </button>
+                    <button
+                        className="selection-mode-debug"
+                        onClick={() => navigate("/juego/test-aislado")}
+                    >
+                        🧪 Nivel de prueba (mecánicas aisladas)
+                    </button>
+                </div>
             </div>
         </div>
     );
