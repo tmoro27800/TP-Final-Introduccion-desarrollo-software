@@ -6,13 +6,15 @@ CREATE TABLE dificultad (
     -- para mostrar en pantalla ("Normal", "Dificil").
     nombre VARCHAR(30) NOT NULL UNIQUE,
     nombre_visible VARCHAR(50) NOT NULL,
-    orden INTEGER NOT NULL
+    orden INTEGER NOT NULL,
+    descripcion VARCHAR(255) NOT NULL,
+    multiplicador_puntaje NUMERIC(4,2) NOT NULL DEFAULT 1.0
 );
 
 -- Dos dificultades (modo libre se descartó).
-INSERT INTO dificultad (nombre, nombre_visible, orden) VALUES
-    ('normal', 'Normal', 1),
-    ('dificil', 'Dificil', 2);
+INSERT INTO dificultad (nombre, nombre_visible, orden, descripcion, multiplicador_puntaje) VALUES
+    ('normal', 'Normal', 1, 'Ritmo pausado, ideal para practicar', 1.0),
+    ('dificil', 'Dificil', 2, 'Más obstáculos, menos margen de error', 1.5);
 
 --2. niveles
 
@@ -62,7 +64,15 @@ CREATE TABLE pistas (
     id SERIAL PRIMARY KEY,
     level_id INTEGER REFERENCES levels(id) ON DELETE CASCADE,
     texto VARCHAR(255) NOT NULL,
-    orden INTEGER NOT NULL
+    orden INTEGER NOT NULL,
+    -- tipo de pista: "texto" (solo el mensaje), "resaltado" (marca una celda
+    -- del mapa), "camino" (sugiere el próximo paso). Regla de negocio para
+    -- que Juego.jsx sepa cómo renderizar cada pista.
+    tipo VARCHAR(30) NOT NULL DEFAULT 'texto',
+    --contador de uso real: se incrementa cada vez que un jugador pide esta
+    -- pista puntual (GET /api/pistas/:id). Sirve para ver qué pistas se usan
+    -- más y, a futuro, detectar niveles mal balanceados (todos piden la misma).
+    veces_usada INTEGER NOT NULL DEFAULT 0
 );
 
 --5. powerups
@@ -72,11 +82,14 @@ CREATE TABLE powerups (
     nombre VARCHAR(50) NOT NULL,
     descripcion VARCHAR(255),
     tipo VARCHAR(30) NOT NULL,
-    valor JSONB
+    valor JSONB,
+    -- a qué dificultad pertenece este powerup (NULL = disponible en todas).
+    -- Le da a "powerups" la relación por FK que le faltaba.
+    dificultad_id INTEGER REFERENCES dificultad(id)
+
 );
 
-INSERT INTO powerups (nombre, tipo, valor) VALUES
-    ('Deshacer movimiento', 'deshacer', '{"cantidad": 1}'),
-    ('Tiempo extra', 'tiempo_extra', '{"segundos": 30}'),
-    ('Pista gratis', 'pista_gratis', '{"cantidad": 1}');
-
+INSERT INTO powerups (nombre, tipo, valor, dificultad_id) VALUES
+    ('Deshacer movimiento', 'deshacer', '{"cantidad": 1}', NULL),
+    ('Tiempo extra', 'tiempo_extra', '{"segundos": 30}', NULL),
+    ('Pista gratis', 'pista_gratis', '{"cantidad": 1}', (SELECT id FROM dificultad WHERE nombre = 'dificil'));
