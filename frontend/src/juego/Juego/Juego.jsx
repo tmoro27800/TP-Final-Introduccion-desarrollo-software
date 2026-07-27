@@ -1,11 +1,35 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Tablero from "../../componentes/Tablero/Tablero.jsx";
+import PantallaCarga from "../../componentes/PantallaCarga/PantallaCarga.jsx";
 import useJuego from "./EnEjecucion.js";
 import { prepararNivel } from "./PrepararNivel.js";
 import { getNivelPorId } from "../../servicios/nivelServicio.js";
 import { crearPuntaje } from "../../servicios/puntajeServicio.js";
+import { nivelDePrueba } from "./nivelDePrueba.js";
+import { nivelDePruebaAislado } from "./nivelDePruebaAislado.js";
+import "./Juego.css";
 
+// Niveles de debug/QA que no vienen del backend (ver nivelDePrueba.js y
+// nivelDePruebaAislado.js) — se accede por id fijo en vez de pedirlos a
+// getNivelPorId, así se puede probar el motor sin depender de la base.
+const NIVELES_LOCALES = {
+    [nivelDePrueba.id]: nivelDePrueba,
+    [nivelDePruebaAislado.id]: nivelDePruebaAislado,
+};
+
+// Texto del toast que se muestra un momento tras cada evento del motor
+// (ver motorJuego.js: ultimoEvento). No cubre "reinicio-manual" a propósito
+// (la tecla R ya es una acción explícita del jugador, no hace falta avisar).
+const MENSAJES_EVENTO = {
+    "muerte-lava": "💀 Te derritió la lava — nivel reiniciado",
+    "muerte-vacio": "💀 Caíste al vacío — nivel reiniciado",
+    "caja-destruida": "📦 Caja destruida",
+    llave: "🔑 Llave recolectada",
+    "pickup-fantasma": "👻 Modo fantasma activado",
+    "pickup-invulnerabilidad": "✨ Invulnerabilidad activada",
+    "pickup-fuerza": "💥 Modo fuerza activado",
+};
 
 export default function Game() {
     const navigate = useNavigate();
@@ -18,10 +42,17 @@ export default function Game() {
     useEffect(() => {
         setCargando(true);
         setError(null);
-        getNivelPorId(levelId)
+
+        // Los niveles locales de debug (ver NIVELES_LOCALES) no pegan contra
+        // el backend — sirven para probar el motor de juego completo sin
+        // depender de que la base de datos esté levantada.
+        const nivelLocal = NIVELES_LOCALES[levelId];
+        const promesaNivel = nivelLocal ? Promise.resolve(nivelLocal) : getNivelPorId(levelId);
+
+        promesaNivel
             .then((data) => {
-                const { mapa, jugadorInicial } = prepararNivel(data.mapa);
-                setNivel({ ...data, mapa, jugadorInicial });
+                const nivelPreparado = prepararNivel(data.mapa);
+                setNivel({ ...data, ...nivelPreparado });
                 setCargando(false);
             })
             .catch((err) => {
@@ -41,7 +72,7 @@ export default function Game() {
     if (cargando) {
         return (
             <div className="game">
-                <p className="game-cargando">Cargando nivel...</p>
+                <PantallaCarga mensaje="Cargando nivel..." />
             </div>
         );
     }
@@ -56,16 +87,29 @@ export default function Game() {
 
 function GameEngine({ nivel, onVolver }) {
     const navigate = useNavigate();
-    const { jugador, movimientos, estado } = useJuego(nivel);
+    const {
+        jugador,
+        cajas,
+        llaves,
+        pickups,
+        totalLlaves,
+        habilidadActiva,
+        movimientos,
+        muertes,
+        estado,
+        ultimoEvento,
+    } = useJuego(nivel);
 
     const [primerMovimiento, setPrimerMovimiento] = useState(false);
     const [tiempo, setTiempo] = useState(0);
-    const [muertes, setMuertes] = useState(0); // todavía sin lógica, próximo paso
+    const [mensajeToast, setMensajeToast] = useState(null);
 
     // Guardado del puntaje al ganar: se pide el nombre del jugador y se
     // manda a POST /api/puntajes (ver puntajeServicio.js). nivel/dificultad
     // viajan tal cual vinieron del backend en GET /api/niveles/:id, así
-    // coinciden con lo que espera la validación cruzada del backend.
+    // coinciden con lo que espera la validación cruzada del backend. El
+    // nivel de prueba (/juego/test) no existe en la base, así que no
+    // ofrece guardar puntaje.
     const [nombreJugador, setNombreJugador] = useState("");
     const [guardando, setGuardando] = useState(false);
     const [puntajeGuardado, setPuntajeGuardado] = useState(false);
@@ -83,6 +127,17 @@ function GameEngine({ nivel, onVolver }) {
         const intervalo = setInterval(() => setTiempo((t) => t + 1), 1000);
         return () => clearInterval(intervalo);
     }, [primerMovimiento, estado]);
+
+    // efecto 3: muestra un toast breve cada vez que el motor reporta un
+    // evento nuevo (muerte, pickup, llave, caja destruida — ver motorJuego.js)
+    useEffect(() => {
+        if (!ultimoEvento) return;
+        const mensaje = MENSAJES_EVENTO[ultimoEvento.tipo];
+        if (!mensaje) return;
+        setMensajeToast(mensaje);
+        const timeout = setTimeout(() => setMensajeToast(null), 2000);
+        return () => clearTimeout(timeout);
+    }, [ultimoEvento]);
 
     const formatearTiempo = (segundos) => {
         const min = Math.floor(segundos / 60);
@@ -139,11 +194,31 @@ function GameEngine({ nivel, onVolver }) {
                         <span className="game-stat-label">Muertes</span>
                         <span className="game-stat-valor">{muertes}</span>
                     </div>
+                    {totalLlaves > 0 && (
+                        <div className="game-stat">
+                            <span className="game-stat-label">Llaves</span>
+                            <span className="game-stat-valor">
+                                {totalLlaves - llaves.length}/{totalLlaves}
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                {/* Se reserva el espacio siempre (visibility, no display) para que
+                    el tablero no salte de lugar cada vez que se activa/consume
+                    una habilidad. */}
+                <div
+                    className={`game-habilidad ${habilidadActiva ? `game-habilidad--${habilidadActiva}` : ""}`}
+                    style={{ visibility: habilidadActiva ? "visible" : "hidden" }}
+                >
+                    Habilidad activa: {habilidadActiva || "—"}
                 </div>
 
                 <div className="game-tablero-wrapper">
-                    <Tablero mapa={nivel.mapa} jugador={jugador} />
+                    <Tablero mapa={nivel.terreno} jugador={jugador} cajas={cajas} llaves={llaves} pickups={pickups} />
                 </div>
+
+                {mensajeToast && <div className="game-toast">{mensajeToast}</div>}
 
                 {estado === "ganado" && (
                     <div className="game-victoria">
@@ -152,7 +227,9 @@ function GameEngine({ nivel, onVolver }) {
                             {movimientos} movimientos · {formatearTiempo(tiempo)}
                         </p>
 
-                        {!puntajeGuardado && (
+                        {NIVELES_LOCALES[nivel.id] && <p className="game-victoria-detalle">(nivel de prueba: no se guarda puntaje)</p>}
+
+                        {!NIVELES_LOCALES[nivel.id] && !puntajeGuardado && (
                             <form className="game-victoria-form" onSubmit={handleGuardarPuntaje}>
                                 <input
                                     type="text"
@@ -172,7 +249,7 @@ function GameEngine({ nivel, onVolver }) {
                             </form>
                         )}
 
-                        {puntajeGuardado && (
+                        {!NIVELES_LOCALES[nivel.id] && puntajeGuardado && (
                             <div className="game-victoria-guardado">
                                 <p>¡Puntaje guardado!</p>
                                 <button onClick={() => navigate("/puntajes")}>

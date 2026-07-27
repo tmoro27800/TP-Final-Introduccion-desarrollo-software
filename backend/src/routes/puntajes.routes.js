@@ -96,4 +96,62 @@ router.post('/', async (req, res) => {
   }
 })
 
+// GET /api/puntajes/:id — un puntaje puntual (para precargar el form de edición).
+router.get('/:id', async (req, res) => {
+  try {
+    const data = await puntajes.getPuntajeById(req.params.id)
+    if (!data) return res.status(404).json({ error: 'No encontrado' })
+    res.json(data)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// PUT /api/puntajes/:id  { jugador, movimientos, tiempo } — no permite
+// cambiar nivel/dificultad de un puntaje ya guardado, solo corregir datos.
+router.put('/:id', async (req, res) => {
+  try {
+    const existente = await puntajes.getPuntajeById(req.params.id)
+    if (!existente) return res.status(404).json({ error: 'No encontrado' })
+
+    const { jugador, movimientos, tiempo } = req.body
+
+    const jugadorLimpio = typeof jugador === 'string' ? jugador.trim() : ''
+    if (!jugadorLimpio) {
+      return res.status(400).json({ error: 'Falta "jugador" (nombre del jugador)' })
+    }
+    if (jugadorLimpio.length > JUGADOR_MAX_LEN) {
+      return res.status(400).json({
+        error: `"jugador" no puede tener más de ${JUGADOR_MAX_LEN} caracteres`,
+      })
+    }
+    if (!Number.isInteger(movimientos) || movimientos < 0) {
+      return res.status(400).json({ error: '"movimientos" tiene que ser un entero >= 0' })
+    }
+    if (!Number.isInteger(tiempo) || tiempo < 0) {
+      return res.status(400).json({ error: '"tiempo" tiene que ser un entero >= 0 (segundos)' })
+    }
+
+    const data = await puntajes.updatePuntaje(req.params.id, {
+      player_name: jugadorLimpio,
+      moves: movimientos,
+      time_seconds: tiempo,
+    })
+    res.json(data)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// DELETE /api/puntajes/:id
+router.delete('/:id', async (req, res) => {
+  try {
+    const deleted = await puntajes.deletePuntaje(req.params.id)
+    if (!deleted) return res.status(404).json({ error: 'No encontrado' })
+    res.status(204).send()
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 module.exports = router
