@@ -1,19 +1,5 @@
-import { GRID } from '../Configuracion/constantes.js'
-import './Board.css'
- 
-// ----------------------------------------------------------------
-// MOCK: esto se va a reemplazar por el mapa que llegue del backend.
-// Cada fila del array representa una fila del tablero.
-// ----------------------------------------------------------------
-const MAPA_INICIAL = [
-  [1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 1, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 1, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1],
-]
- 
+import './Tablero.css'
+
 // ----------------------------------------------------------------
 // PIEZAS DEL MAPA (referencia completa del diseño del juego).
 // A medida que se implementa cada mecánica, se suma acá.
@@ -21,7 +7,7 @@ const MAPA_INICIAL = [
 //  0  = Espacio libre                 (implementado)
 //  1  = Pared sólida                  (implementado)
 //  2  = Jugador (posición inicial)    (implementado — se extrae del
-//                                       mapa antes de llegar a Board,
+//                                       mapa antes de llegar a Tablero,
 //                                       ver prepararNivel.js)
 //  3  = Meta                          (implementado)
 //  4  = Caja deslizante               (pendiente)
@@ -40,41 +26,51 @@ const MAPA_INICIAL = [
 // 17  = Placa de presión (para cajas) (pendiente)
 // 18  = Potenciador: destruir caja    (pendiente)
 // ----------------------------------------------------------------
- 
+
 const TIPOS_CELDA = {
   0: 'vacio',
   1: 'pared',
   3: 'meta',
 }
- 
+
 function obtenerTipoCelda(valor) {
   return TIPOS_CELDA[valor] ?? 'desconocido'
 }
 
-export default function Tablero({ mapa = MAPA_INICIAL, jugador }) {
+export default function Tablero({ mapa, jugador }) {
+  // sin mapa todavía (ej: mientras el backend responde), mostramos
+  // un estado de carga en vez de intentar dibujar algo vacío
+  if (!mapa) {
+    return (
+      <div className="tablero-cargando">
+        Cargando mapa...
+      </div>
+    )
+  }
+
   const filas = mapa.length
   const columnas = mapa[0]?.length ?? 0
-  console.log("Mapa Actualizado: ", mapa);
+
   return (
     <div
-      className="board"
+      className="tablero"
       style={{
-        gridTemplateColumns: `repeat(${columnas}, ${GRID.CELL}px)`,
-        gridTemplateRows: `repeat(${filas}, ${GRID.CELL}px)`,
+        gridTemplateColumns: `repeat(${columnas}, minmax(var(--celda-min), var(--celda-max)))`,
+        gridTemplateRows: `repeat(${filas}, minmax(var(--celda-min), var(--celda-max)))`,
       }}
     >
       {mapa.map((fila, y) =>
         fila.map((valor, x) => (
           <div
             key={`${y}-${x}`}
-            className={`board-cell board-cell--${obtenerTipoCelda(valor)}`}
+            className={`tablero-celda tablero-celda--${obtenerTipoCelda(valor)}`}
           />
         ))
       )}
- 
+
       {jugador && (
         <div
-          className="board-jugador"
+          className="tablero-jugador"
           style={{
             gridRow: jugador.fila + 1,
             gridColumn: jugador.columna + 1,

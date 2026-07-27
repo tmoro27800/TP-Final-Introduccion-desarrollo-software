@@ -1,6 +1,6 @@
-import "./ControlRow.css";
+import "./FilaControl.css";
 
-export default function ControlRow({ icono, label, tecla, esperando, onClick }) {
+export default function FilaControl({ icono, label, tecla, esperando, onClick }) {
     return (
         <div className="control-row">
         <div className="control-row-info">

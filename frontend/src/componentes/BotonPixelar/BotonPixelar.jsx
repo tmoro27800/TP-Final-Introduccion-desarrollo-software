@@ -1,7 +1,7 @@
 import { useState } from "react";
-import "./PixelButton.css";
+import "./BotonPixelar.css";
 
-export default function PixelButton({ src, srcHover, alt, onClick }) {
+export default function BotonPixelar({ src, srcHover, alt, onClick }) {
     const [hover, setHover] = useState(false);
 
     return (

@@ -1,0 +1,55 @@
+.tablero {
+  --celda-min: 28px;
+  --celda-max: 64px;
+
+  display: grid;
+  gap: 3px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  position: relative;
+}
+
+.tablero-cargando {
+  color: #8b8690;
+  font-style: italic;
+  font-size: 0.9rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.tablero-celda {
+  border-radius: 4px;
+}
+
+.tablero-celda--vacio {
+  background: #18151b;
+}
+
+.tablero-celda--pared {
+  background: #2a2530;
+}
+
+.tablero-celda--meta {
+  background: #18151b;
+  box-shadow: inset 0 0 0 2px #e8b923;
+}
+
+/* piezas todavía no implementadas: se ven distintas a propósito,
+   para detectar rápido si al mapa se le coló un número sin manejar */
+.tablero-celda--desconocido {
+  background: repeating-linear-gradient(
+    45deg,
+    #2a2530,
+    #2a2530 4px,
+    #18151b 4px,
+    #18151b 8px
+  );
+}
+
+.tablero-jugador {
+  background: linear-gradient(135deg, #e2453f, #b31e1e);
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(226, 69, 63, 0.6);
+  z-index: 1;
+}

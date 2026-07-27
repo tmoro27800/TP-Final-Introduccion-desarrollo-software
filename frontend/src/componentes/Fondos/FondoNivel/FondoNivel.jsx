@@ -2,7 +2,7 @@ import * as faceapi from 'face-api.js';
 import { BloomEffect, ChromaticAberrationEffect, EffectComposer, EffectPass, RenderPass } from 'postprocessing';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import './BackgroundLevel.css';
+import './FondoNivel.css';
 
 const vert = `
 varying vec2 vUv;
@@ -269,7 +269,7 @@ void main(){
 }
 `;
 
-export const BackgroundLevel = ({
+export default function FondoNivel({
   enableWebcam = false,
   showPreview = false,
   modelsPath = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights',
@@ -298,7 +298,7 @@ export const BackgroundLevel = ({
   snapBackDelay = 250,
   className,
   style
-}) => {
+}) {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -804,7 +804,7 @@ export const BackgroundLevel = ({
       )}
     </div>
   );
-};
+}
 
 function srgbColor(hex) {
   const c = new THREE.Color(hex);

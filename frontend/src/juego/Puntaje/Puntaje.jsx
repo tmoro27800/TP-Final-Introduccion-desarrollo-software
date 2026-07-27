@@ -1,34 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import ScoreRow from "../../components/ScoreRow/ScoreRow.jsx";
+import FilaPuntaje from "../../componentes/FilaPuntaje/FilaPuntaje.jsx";
 
-import { getDificultades } from "../../services/dificultadService.js";
-
-
-import "./Score.css";
-
-const PUNTAJES_MOCK = [
-    { nivel: 1, dificultad: "facil", jugador: "Nacho", movimientos: 12, tiempo: 45 },
-    { nivel: 1, dificultad: "facil", jugador: "Sofi", movimientos: 15, tiempo: 38 },
-    { nivel: 1, dificultad: "facil", jugador: "Tomi", movimientos: 12, tiempo: 40 },
-    { nivel: 1, dificultad: "facil", jugador: "Lucia", movimientos: 20, tiempo: 60 },
- 
-    { nivel: 1, dificultad: "normal", jugador: "Nacho", movimientos: 18, tiempo: 70 },
-    { nivel: 1, dificultad: "normal", jugador: "Bauti", movimientos: 22, tiempo: 65 },
-    { nivel: 1, dificultad: "normal", jugador: "Sofi", movimientos: 18, tiempo: 68 },
- 
-    { nivel: 2, dificultad: "facil", jugador: "Tomi", movimientos: 9, tiempo: 30 },
-    { nivel: 2, dificultad: "facil", jugador: "Lucia", movimientos: 14, tiempo: 33 },
- 
-    { nivel: 2, dificultad: "normal", jugador: "Bauti", movimientos: 25, tiempo: 90 },
- 
-    { nivel: 1, dificultad: "libre", jugador: "Nacho", movimientos: 30, tiempo: 120 },
-    { nivel: 1, dificultad: "libre", jugador: "Sofi", movimientos: 28, tiempo: 110 },
-];
-
-const CANTIDAD_NIVELES = 10;
-
-export default function Score() {
+export default function Puntaje() {
 
     const navigate = useNavigate();
 
@@ -67,22 +41,16 @@ export default function Score() {
                 <div className="score-filtros">
                     <div className="score-dificultades">
                         <button
-                            className={dificultad === "facil" ? "activo" : ""}
-                            onClick={() => setDificultad("facil")}
-                        >
-                            Facil
-                        </button>
-                        <button
                             className={dificultad === "normal" ? "activo" : ""}
                             onClick={() => setDificultad("normal")}
                         >
                             Normal
                         </button>
                         <button
-                            className={dificultad === "libre" ? "activo" : ""}
-                            onClick={() => setDificultad("libre")}
+                            className={dificultad === "dificil" ? "activo" : ""}
+                            onClick={() => setDificultad("dificil")}
                         >
-                            Modo Libre
+                            Difícil
                         </button>
                     </div>
 

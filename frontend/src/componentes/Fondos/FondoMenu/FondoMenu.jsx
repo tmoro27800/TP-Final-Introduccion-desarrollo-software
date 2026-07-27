@@ -11,7 +11,7 @@ import {
   WebGLRenderer
 } from 'three';
 
-import './BackgroundMenu.css';
+import './FondoMenu.css';
 
 const vertexShader = `
 void main() {
@@ -171,7 +171,7 @@ void main() {
 }
 `;
 
-export default function PixelSnow({
+export default function FondoMenu({
   color = '#ffffff',
   flakeSize = 0.02,
   minFlakeSize = 1.25,

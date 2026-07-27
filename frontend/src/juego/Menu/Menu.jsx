@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import ControlRow from "../../componentes/ControlRow/ControlRow.jsx";
-import PixelButton from "../../componentes/PixelButton/PixelButton.jsx";
-import Modal from "../../componentes/Modal/Modal.jsx";
+import FilaControl from "../../componentes/FilaControl/FilaControl.jsx";
+import BotonPixelar from "../../componentes/BotonPixelar/BotonPixelar.jsx";
+import Ventana from "../../componentes/Ventana/Ventana.jsx";
 
 import titulo from "../../assets/SpriteMenuPrincipal/Titulo.png";
 import botonJugar from "../../assets/SpriteMenuPrincipal/BotonJugar.png";
@@ -56,7 +56,7 @@ export default function Menu() {
 
             <nav className="menu-botones">
                 <div className="menu-boton-fila">
-                    <PixelButton
+                    <BotonPixelar
                         src={botonJugar}
                         //srcHover={botonJugarHover}
                         alt="Jugar"
@@ -65,19 +65,19 @@ export default function Menu() {
                 </div>
 
                 <div className="menu-botones-fila">
-                    <PixelButton
+                    <BotonPixelar
                         src={botonLeaderboard}
                         //srcHover={botonLeaderboardHover}
                         alt="Tabla de puntajes"
                         onClick={() => navigate("/puntajes")}
                     />
-                    <PixelButton
+                    <BotonPixelar
                         src={botonAyuda}
                         //srcHover={botonAyudaHover}
                         alt="Como jugar"
                         onClick={() => setMostrarInstrucciones(true)}
                     />
-                    <PixelButton
+                    <BotonPixelar
                         src={botonConfiguracion}
                         //srcHover={botonConfiguracionHover}
                         alt="Configurar"
@@ -87,7 +87,7 @@ export default function Menu() {
             </nav>
 
             {/* Modal: Como jugar */}
-            <Modal visible={mostrarInstrucciones} onClose={() => setMostrarInstrucciones(false)}>
+            <Ventana visible={mostrarInstrucciones} onClose={() => setMostrarInstrucciones(false)}>
                 <h2>Como jugar</h2>
                 <p className="instrucciones-intro">
                 Mové tu personaje por el mapa para resolver el puzzle
@@ -128,10 +128,10 @@ export default function Menu() {
                     </div>
                 </div>
                 </div>
-            </Modal>
+            </Ventana>
 
             {/* Modal: Configuración (con dos vistas internas) */}
-            <Modal visible={mostrarConfiguracion} onClose={cerrarConfiguracion}>
+            <Ventana visible={mostrarConfiguracion} onClose={cerrarConfiguracion}>
                 {vistaConfig === "principal" && (
                 <>
                     <h2>Configuración</h2>
@@ -211,28 +211,28 @@ export default function Menu() {
                     </p>
 
                     <div className="controles-lista-reasignar">
-                    <ControlRow
+                    <FilaControl
                         icono="↑"
                         label="Mover arriba"
                         tecla={controles.arriba}
                         esperando={teclaEsperando === "arriba"}
                         onClick={() => setTeclaEsperando("arriba")}
                     />
-                    <ControlRow
+                    <FilaControl
                         icono="←"
                         label="Mover izquierda"
                         tecla={controles.izquierda}
                         esperando={teclaEsperando === "izquierda"}
                         onClick={() => setTeclaEsperando("izquierda")}
                     />
-                    <ControlRow
+                    <FilaControl
                         icono="↓"
                         label="Mover abajo"
                         tecla={controles.abajo}
                         esperando={teclaEsperando === "abajo"}
                         onClick={() => setTeclaEsperando("abajo")}
                     />
-                    <ControlRow
+                    <FilaControl
                         icono="→"
                         label="Mover derecha"
                         tecla={controles.derecha}
@@ -256,7 +256,7 @@ export default function Menu() {
                     </div>
                 </div>
                 )}
-            </Modal>
+            </Ventana>
         </div>
     );
 }

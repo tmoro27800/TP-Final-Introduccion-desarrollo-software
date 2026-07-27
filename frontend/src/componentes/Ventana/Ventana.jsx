@@ -1,6 +1,6 @@
-import "./Modal.css";
+import "./Ventana.css";
 
-export default function Modal({ visible, onClose, children }) {
+export default function Ventana({ visible, onClose, children }) {
     // Si "visible" es false, el componente no renderiza nada — literal null
     if (!visible) return null;
 

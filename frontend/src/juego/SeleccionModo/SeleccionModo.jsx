@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import BackButton from "../../componentes/BotonVuelta/BotonVuelta.jsx";
-import "./SelectionMode.css";
+import BotonVuelta from "../../componentes/BotonVuelta/BotonVuelta.jsx";
+import "./SeleccionModo.css";
 
 export default function SeleccionModo() {
     const navigate = useNavigate();
@@ -8,7 +8,7 @@ export default function SeleccionModo() {
     return (
         <div className="selection-mode">
             <div className="selection-mode-container">
-                <BackButton label="Volver al menú" onClick={() => navigate("/")} />
+                <BotonVuelta label="Volver al menú" onClick={() => navigate("/")} />
 
                 <h1>Elegí un modo</h1>
 
@@ -37,20 +37,6 @@ export default function SeleccionModo() {
                                 Más obstáculos, menos margen de error
                             </span>
                         </span>
-                    </button>
-
-                    <button
-                        className="selection-mode-boton selection-mode-boton--libre"
-                        disabled
-                    >
-                        <span className="selection-mode-icono" aria-hidden="true"></span>
-                        <span className="selection-mode-texto">
-                            <span className="selection-mode-titulo">Modo Libre</span>
-                            <span className="selection-mode-subtitulo">
-                                Ranking único, sin niveles fijos
-                            </span>
-                        </span>
-                        <span className="selection-mode-badge">Próximamente</span>
                     </button>
                 </div>
             </div>

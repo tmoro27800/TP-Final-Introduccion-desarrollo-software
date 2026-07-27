@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
-import BackgroundMenu from "./FondoMenu/FondoMenu.jsx";
-import { BackgroundLevel } from "./FondoNivel/FondoNivel.jsx"; // TODO: ajustar nombre/ruta si tu Fondo 2 se llama distinto
-import "./AppBackground.css";
+import FondoMenu from "./FondoMenu/FondoMenu.jsx";
+import FondoNivel from "./FondoNivel/FondoNivel.jsx";
+import "./AppFondo.css";
 
 // Único lugar que hay que tocar para decidir qué pantallas usan el Fondo 2 (niveles).
 // Todo lo que no matchee acá usa el Fondo 1 (menú) por defecto.
@@ -16,7 +16,7 @@ export default function AppBackground() {
 
     return (
         <div className="app-fondo-wrapper">
-            {esPantallaDeNivel ? <BackgroundLevel /> : <BackgroundMenu />}
+            {esPantallaDeNivel ? <FondoNivel /> : <FondoMenu />}
         </div>
     );
 }

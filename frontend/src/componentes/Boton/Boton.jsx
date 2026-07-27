@@ -16,7 +16,7 @@ import "./Button.css";
  * <DarkButton onClick={() => navigate('/juego')}>Jugar</DarkButton>
  * <DarkButton onClick={handleGuardar} disabled={!nombreValido}>Guardar</DarkButton>
  */
-export default function DarkButton({ children, onClick, disabled = false, type = "button" }) {
+export default function Boton({ children, onClick, disabled, type="button" }) {
     return (
         <button 
         type={type}

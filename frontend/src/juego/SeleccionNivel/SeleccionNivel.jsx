@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getLevelsByDifficultyMock } from "../../services/nivelServicio.js";
-import BackButton from "../../componentes/BotonVuelta/BackButton.jsx";
-import "./SelectionLevel.css";
 
-const NOMBRES_MODO = {
-    normal: "Normal",
-    dificil: "Dificil",
-};
+import BotonVuelta from "../../componentes/BotonVuelta/BotonVuelta.jsx";
+
+import { getNivelesPorDificultad } from "../../servicios/nivelServicio.js";
+
 
 export default function SeleccionNivel() {
     const navigate = useNavigate();
@@ -18,7 +15,7 @@ export default function SeleccionNivel() {
 
     useEffect(() => {
         setCargando(true);
-        getLevelsByDifficultyMock(modoId).then((niveles) => {
+        getNivelesPorDificultad(modoId).then((niveles) => {
             setNiveles(niveles);
             setCargando(false);
         });
@@ -27,9 +24,9 @@ export default function SeleccionNivel() {
     return (
         <div className="selection-level">
             <div className="selection-level-container">
-                <BackButton label="Volver" onClick={() => navigate("/seleccion-modo")} />
+                <BotonVuelta label="Volver" onClick={() => navigate("/seleccion-modo")} />
 
-                <h1>{NOMBRES_MODO[modoId] ?? modoId}</h1>
+                <h1></h1>
 
                 {cargando && <p className="selection-level-cargando">Cargando niveles...</p>}
 

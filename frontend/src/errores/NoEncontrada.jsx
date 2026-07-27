@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import logo from "../assets/logo/logo.png";
-import "./NotFound.css";
+import "./NoEncontrada.css";
 
-export default function NotFound() {
+export default function NoEncontrada() {
     return (
         <div className="not-found">
 
