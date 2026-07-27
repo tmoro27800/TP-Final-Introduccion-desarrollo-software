@@ -13,7 +13,6 @@ router.use('/dificultades', require('./dificultad.routes'))
 router.use('/levels', require('./levels.routes'))
 router.use('/niveles', require('./levels.routes'))
 
-router.use('/scores', require('./scores.routes'))
 router.use('/puntajes', require('./puntajes.routes'))
 
 router.use('/pistas', require('./pistas.routes'))
