@@ -4,6 +4,4 @@ module.exports = {
   scores: require('./scores.queries'),
   pistas: require('./pistas.queries'),
   powerups: require('./powerups.queries'),
-  pistasUsadas: require('./pistasUsadas.queries'),
-  powerupsUsados: require('./powerupsUsados.queries'),
 }

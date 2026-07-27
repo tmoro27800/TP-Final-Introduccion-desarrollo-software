@@ -53,6 +53,40 @@ async function getGlobalRanking(limit = 20) {
   return rows
 }
 
+// Filtro combinado para GET /scores?nivel=<level_id>&dificultad=<nombre>
+// (los dos son opcionales e independientes entre sí). "dificultad" es el
+// nombre ("normal"/"dificil", case-insensitive), no un id — mismo criterio
+// que getAllLevels() en levels.queries.js, porque así es como lo manda
+// el frontend.
+async function getScoresFiltered({ level_id, dificultad } = {}) {
+  const conditions = []
+  const params = []
+
+  if (level_id) {
+    params.push(level_id)
+    conditions.push(`s.level_id = $${params.length}`)
+  }
+  if (dificultad) {
+    params.push(dificultad)
+    conditions.push(`LOWER(d.nombre) = LOWER($${params.length})`)
+  }
+
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''
+
+  const { rows } = await pool.query(
+    `
+    SELECT s.*
+    FROM scores s
+    JOIN levels l ON l.id = s.level_id
+    LEFT JOIN dificultad d ON d.id = l.dificultad_id
+    ${where}
+    ORDER BY s.moves ASC, s.time_seconds ASC
+    `,
+    params
+  )
+  return rows
+}
+
 async function getScoreById(id) {
   const { rows } = await pool.query('SELECT * FROM scores WHERE id = $1', [id])
   return rows[0] || null
@@ -81,6 +115,7 @@ async function deleteScore(id) {
 
 module.exports = {
   createScore,
+  getScoresFiltered,
   getScoreById,
   getAllScores,
   getTopScoresByLevel,

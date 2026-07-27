@@ -10,18 +10,18 @@ async function getPowerupById(id) {
   return rows[0] || null
 }
 
-async function createPowerup({ nombre, tipo, valor }) {
+async function createPowerup({ nombre, descripcion, tipo, valor }) {
   const { rows } = await pool.query(
-    'INSERT INTO powerups (nombre, tipo, valor) VALUES ($1, $2, $3) RETURNING *',
-    [nombre, tipo, valor]
+    'INSERT INTO powerups (nombre, descripcion, tipo, valor) VALUES ($1, $2, $3, $4) RETURNING *',
+    [nombre, descripcion, tipo, valor]
   )
   return rows[0]
 }
 
-async function updatePowerup(id, { nombre, tipo, valor }) {
+async function updatePowerup(id, { nombre, descripcion, tipo, valor }) {
   const { rows } = await pool.query(
-    'UPDATE powerups SET nombre = $1, tipo = $2, valor = $3 WHERE id = $4 RETURNING *',
-    [nombre, tipo, valor, id]
+    'UPDATE powerups SET nombre = $1, descripcion = $2, tipo = $3, valor = $4 WHERE id = $5 RETURNING *',
+    [nombre, descripcion, tipo, valor, id]
   )
   return rows[0] || null
 }

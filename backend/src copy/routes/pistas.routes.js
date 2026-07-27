@@ -3,6 +3,20 @@ const { pistas } = require('../db/queries')
 
 const router = express.Router()
 
+// GET /pistas            -> todas
+// GET /pistas?nivel=<id> -> filtradas por nivel (así las pide el frontend
+//                           en pistasService.getPistasPorNivel)
+router.get('/', async (req, res) => {
+  try {
+    const data = req.query.nivel
+      ? await pistas.getPistasByLevel(req.query.nivel)
+      : await pistas.getAllPistas()
+    res.json(data)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 router.get('/level/:level_id', async (req, res) => {
   try {
     const data = await pistas.getPistasByLevel(req.params.level_id)

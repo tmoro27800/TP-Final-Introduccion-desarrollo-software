@@ -25,9 +25,17 @@ router.get('/level/:level_id/top', async (req, res) => {
   }
 })
 
+// GET /scores                                    -> todos
+// GET /scores?nivel=<id>&dificultad=<normal|dificil> -> filtrados (así los
+//                                                pide scoresService.getScoresbyLevelAndDificultad;
+//                                                "dificultad" es el nombre, no un id)
 router.get('/', async (req, res) => {
   try {
-    const data = await scores.getAllScores()
+    const { nivel, dificultad } = req.query
+    const data =
+      nivel || dificultad
+        ? await scores.getScoresFiltered({ level_id: nivel, dificultad })
+        : await scores.getAllScores()
     res.json(data)
   } catch (err) {
     res.status(500).json({ error: err.message })
