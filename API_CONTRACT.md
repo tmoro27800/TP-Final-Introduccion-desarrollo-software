@@ -14,12 +14,12 @@
   {
     "id": 1,
     "nombre": "Nivel 1",
-    "dificultad": "facil"
+    "dificultad": "normal"
   },
   {
     "id": 2,
     "nombre": "Nivel 2",
-    "dificultad": "normal"
+    "dificultad": "dificil"
   }
 ]
 ```
