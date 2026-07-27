@@ -6,7 +6,7 @@ CREATE TABLE dificultad (
     -- para mostrar en pantalla ("Normal", "Dificil").
     nombre VARCHAR(30) NOT NULL UNIQUE,
     nombre_visible VARCHAR(50) NOT NULL,
-    orden INTEGER NOT NULL
+    orden INTEGER NOT NULL,
     descripcion VARCHAR(255) NOT NULL,
     multiplicador_puntaje NUMERIC(4,2) NOT NULL DEFAULT 1.0
 );
