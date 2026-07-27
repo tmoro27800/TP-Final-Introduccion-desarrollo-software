@@ -69,7 +69,7 @@ selección de nivel cuando el usuario elige una dificultad.
 ### `GET /api/dificultades`
  
 **Propósito**: poblar el selector/tabs de dificultad. Actualmente el
-frontend tiene hardcodeados tres valores (`facil`, `normal`, `libre`) —
+frontend tiene hardcodeados tres valores (`normal`, `dificil`) —
 este endpoint permitiría manejarlos desde el backend en vez de hardcodeados.
  
 **Parámetros**: ninguno.
@@ -77,9 +77,8 @@ este endpoint permitiría manejarlos desde el backend en vez de hardcodeados.
 **Respuesta esperada**:
 ```json
 [
-  { "id": "facil", "nombre": "Facil" },
   { "id": "normal", "nombre": "Normal" },
-  { "id": "libre", "nombre": "Modo Libre" }
+  { "id": "dificil", "nombre": "Dificil" }
 ]
 ```
  

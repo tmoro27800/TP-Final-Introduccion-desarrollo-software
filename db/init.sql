@@ -1,15 +1,18 @@
 --1. dificultad
 CREATE TABLE dificultad (
     id SERIAL PRIMARY KEY,
+    -- "nombre" es el slug que viaja por toda la API como valor de "dificultad"
+    -- (normal/dificil, siempre en minúsculas). "nombre_visible" es el texto
+    -- para mostrar en pantalla ("Normal", "Dificil").
     nombre VARCHAR(30) NOT NULL UNIQUE,
+    nombre_visible VARCHAR(50) NOT NULL,
     orden INTEGER NOT NULL
 );
 
--- Dos dificultades, con el mismo nombre que usa el frontend
--- (SelectionMode.jsx / Niveles.mock.json: "normal" y "dificil").
-INSERT INTO dificultad (nombre, orden) VALUES
-    ('normal', 1),
-    ('dificil', 2);
+-- Dos dificultades (modo libre se descartó).
+INSERT INTO dificultad (nombre, nombre_visible, orden) VALUES
+    ('normal', 'Normal', 1),
+    ('dificil', 'Dificil', 2);
 
 --2. niveles
 
@@ -35,7 +38,8 @@ INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
 
 CREATE TABLE scores (
     id SERIAL PRIMARY KEY,
-    level_id INTEGER REFERENCES levels(id) ON DELETE CASCADE,
+    -- No hay modo libre, así que todo puntaje tiene un nivel.
+    level_id INTEGER NOT NULL REFERENCES levels(id) ON DELETE CASCADE,
     player_name VARCHAR(50) NOT NULL,
     moves INTEGER,
     time_seconds INTEGER,
@@ -61,8 +65,8 @@ CREATE TABLE powerups (
     valor JSONB
 );
 
-
 INSERT INTO powerups (nombre, tipo, valor) VALUES
     ('Deshacer movimiento', 'deshacer', '{"cantidad": 1}'),
     ('Tiempo extra', 'tiempo_extra', '{"segundos": 30}'),
     ('Pista gratis', 'pista_gratis', '{"cantidad": 1}');
+
