@@ -79,8 +79,7 @@ CREATE TABLE powerups (
 
 );
 
-INSERT INTO powerups (nombre, tipo, valor) VALUES
-    ('Deshacer movimiento', 'deshacer', '{"cantidad": 1}'),
-    ('Tiempo extra', 'tiempo_extra', '{"segundos": 30}'),
-    ('Pista gratis', 'pista_gratis', '{"cantidad": 1}' (SELECT id FROM dificultad WHERE nombre = 'dificil'));
- 
+INSERT INTO powerups (nombre, tipo, valor, dificultad_id) VALUES
+    ('Deshacer movimiento', 'deshacer', '{"cantidad": 1}', NULL),
+    ('Tiempo extra', 'tiempo_extra', '{"segundos": 30}', NULL),
+    ('Pista gratis', 'pista_gratis', '{"cantidad": 1}', (SELECT id FROM dificultad WHERE nombre = 'dificil'));
