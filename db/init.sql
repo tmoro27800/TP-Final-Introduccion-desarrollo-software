@@ -7,12 +7,14 @@ CREATE TABLE dificultad (
     nombre VARCHAR(30) NOT NULL UNIQUE,
     nombre_visible VARCHAR(50) NOT NULL,
     orden INTEGER NOT NULL
+    descripcion VARCHAR(255) NOT NULL,
+    multiplicador_puntaje NUMERIC(4,2) NOT NULL DEFAULT 1.0
 );
 
 -- Dos dificultades (modo libre se descartó).
-INSERT INTO dificultad (nombre, nombre_visible, orden) VALUES
-    ('normal', 'Normal', 1),
-    ('dificil', 'Dificil', 2);
+INSERT INTO dificultad (nombre, nombre_visible, orden, descripcion, multiplicador_puntaje) VALUES
+    ('normal', 'Normal', 1, 'Ritmo pausado, ideal para practicar', 1.0),
+    ('dificil', 'Dificil', 2, 'Más obstáculos, menos margen de error', 1.5);
 
 --2. niveles
 
