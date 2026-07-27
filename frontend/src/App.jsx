@@ -8,11 +8,16 @@ import SeleccionModo from './juego/SeleccionModo/SeleccionModo.jsx'
 import SeleccionNivel from './juego/SeleccionNivel/SeleccionNivel.jsx'
 import AppFondo from './componentes/Fondos/AppFondo.jsx'
 import NoEncontrada from './errores/NoEncontrada.jsx'
+import { ConfiguracionProvider } from './juego/Configuracion/ConfiguracionContext.jsx'
 
 import './App.css'
 
 export default function App() {
     return (
+        // ConfiguracionProvider por fuera de todo: cualquier pantalla
+        // (Menu, Juego, etc.) puede leer/cambiar controles, audio e idioma
+        // con useConfiguracion(). Ver juego/Configuracion/ConfiguracionContext.jsx.
+        <ConfiguracionProvider>
         <BrowserRouter>
         <AppFondo />
         <Routes>
@@ -30,5 +35,6 @@ export default function App() {
 
         </Routes>
         </BrowserRouter>
+        </ConfiguracionProvider>
     );
 };

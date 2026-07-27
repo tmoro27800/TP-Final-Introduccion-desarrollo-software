@@ -165,3 +165,65 @@
   color: var(--game-texto-tenue);
   margin: 0;
 }
+
+.game-victoria-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.game-victoria-form input {
+  appearance: none;
+  border: 1px solid var(--game-borde);
+  background: var(--game-panel-alt);
+  color: var(--game-texto);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+}
+
+.game-victoria-form input:focus {
+  outline: none;
+  border-color: var(--game-oro);
+}
+
+.game-victoria-form button,
+.game-victoria-guardado button {
+  appearance: none;
+  border: 1px solid var(--game-oro);
+  background: var(--game-oro);
+  color: var(--game-panel);
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.game-victoria-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.game-victoria-error {
+  color: var(--game-rojo-brillo);
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.game-victoria-guardado {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.game-victoria-guardado p {
+  color: var(--game-oro);
+  font-weight: 600;
+  margin: 0;
+}

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FilaControl from "../../componentes/FilaControl/FilaControl.jsx";
 import BotonPixelar from "../../componentes/BotonPixelar/BotonPixelar.jsx";
 import Ventana from "../../componentes/Ventana/Ventana.jsx";
+import { useConfiguracion } from "../Configuracion/ConfiguracionContext.jsx";
 
 import titulo from "../../assets/SpriteMenuPrincipal/Titulo.png";
 import botonJugar from "../../assets/SpriteMenuPrincipal/BotonJugar.png";
@@ -23,25 +24,25 @@ export default function Menu() {
 
     const [vistaConfig, setVistaConfig] = useState("principal"); // "principal" | "controles"
     const [teclaEsperando, setTeclaEsperando] = useState(null); // qué acción está esperando una tecla nueva
-    const [controles, setControles] = useState({
-        arriba: "W",
-        izquierda: "A",
-        abajo: "S",
-        derecha: "D",
-    });
+
+    // Controles/audio/idioma viven en ConfiguracionContext (sesión-only,
+    // ver ConfiguracionContext.jsx) — no en estado local — para que el
+    // resto de la app (ej. EnEjecucion.js) vea los mismos valores.
+    const { controles, actualizarControl, restaurarControles, audio, actualizarAudio, idioma, setIdioma } =
+        useConfiguracion();
 
     useEffect(() => {
         if (!teclaEsperando) return;
 
         const handleKeyDown = (e) => {
         const nuevaTecla = e.key.toUpperCase();
-        setControles((prev) => ({ ...prev, [teclaEsperando]: nuevaTecla }));
+        actualizarControl(teclaEsperando, nuevaTecla);
         setTeclaEsperando(null);
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [teclaEsperando]);
+    }, [teclaEsperando, actualizarControl]);
 
     const cerrarConfiguracion = () => {
         setMostrarConfiguracion(false);
@@ -160,9 +161,13 @@ export default function Menu() {
                             <h3>Idioma</h3>
                         </div>
                         </div>
-                        <select className="config-select">
-                        <option>Español</option>
-                        <option>Inglés</option>
+                        <select
+                        className="config-select"
+                        value={idioma}
+                        onChange={(e) => setIdioma(e.target.value)}
+                        >
+                        <option value="es">Español</option>
+                        <option value="en">Inglés</option>
                         </select>
                     </div>
 
@@ -174,7 +179,11 @@ export default function Menu() {
                         </div>
                         </div>
                         <label className="toggle">
-                        <input type="checkbox" defaultChecked />
+                        <input
+                            type="checkbox"
+                            checked={audio.musica}
+                            onChange={(e) => actualizarAudio("musica", e.target.checked)}
+                        />
                         <span className="toggle-slider"></span>
                         </label>
                     </div>
@@ -187,13 +196,19 @@ export default function Menu() {
                         </div>
                         </div>
                         <label className="toggle">
-                        <input type="checkbox" defaultChecked />
+                        <input
+                            type="checkbox"
+                            checked={audio.efectos}
+                            onChange={(e) => actualizarAudio("efectos", e.target.checked)}
+                        />
                         <span className="toggle-slider"></span>
                         </label>
                     </div>
                     </div>
 
-                    <button className="config-btn-guardar">Guardar cambios</button>
+                    <button className="config-btn-guardar" onClick={cerrarConfiguracion}>
+                        Guardar cambios
+                    </button>
                 </>
                 )}
 
@@ -242,12 +257,7 @@ export default function Menu() {
                     </div>
 
                     <div className="reasignar-footer">
-                    <button
-                        className="config-btn-secundario"
-                        onClick={() =>
-                        setControles({ arriba: "W", izquierda: "A", abajo: "S", derecha: "D" })
-                        }
-                    >
+                    <button className="config-btn-secundario" onClick={restaurarControles}>
                         Restaurar valores
                     </button>
                     <button className="config-btn-guardar" onClick={() => setVistaConfig("principal")}>

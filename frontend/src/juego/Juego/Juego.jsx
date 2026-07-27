@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Tablero from "../../componentes/Tablero/Tablero.jsx";
+import useJuego from "./EnEjecucion.js";
+import { prepararNivel } from "./PrepararNivel.js";
+import { getNivelPorId } from "../../servicios/nivelServicio.js";
+import { crearPuntaje } from "../../servicios/puntajeServicio.js";
 
 
 export default function Game() {
@@ -9,15 +13,30 @@ export default function Game() {
 
     const [nivel, setNivel] = useState(null);
     const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         setCargando(true);
-        getLevelByIdMock(levelId).then((data) => {
-            const { mapa, jugadorInicial } = prepararNivel(data.mapa);
-            setNivel({ ...data, mapa, jugadorInicial });
-            setCargando(false);
-        });
+        setError(null);
+        getNivelPorId(levelId)
+            .then((data) => {
+                const { mapa, jugadorInicial } = prepararNivel(data.mapa);
+                setNivel({ ...data, mapa, jugadorInicial });
+                setCargando(false);
+            })
+            .catch((err) => {
+                setError(err.message);
+                setCargando(false);
+            });
     }, [levelId]);
+
+    if (error) {
+        return (
+            <div className="game">
+                <p className="game-cargando">No se pudo cargar el nivel: {error}</p>
+            </div>
+        );
+    }
 
     if (cargando) {
         return (
@@ -36,11 +55,21 @@ export default function Game() {
 }
 
 function GameEngine({ nivel, onVolver }) {
+    const navigate = useNavigate();
     const { jugador, movimientos, estado } = useJuego(nivel);
 
     const [primerMovimiento, setPrimerMovimiento] = useState(false);
     const [tiempo, setTiempo] = useState(0);
     const [muertes, setMuertes] = useState(0); // todavía sin lógica, próximo paso
+
+    // Guardado del puntaje al ganar: se pide el nombre del jugador y se
+    // manda a POST /api/puntajes (ver puntajeServicio.js). nivel/dificultad
+    // viajan tal cual vinieron del backend en GET /api/niveles/:id, así
+    // coinciden con lo que espera la validación cruzada del backend.
+    const [nombreJugador, setNombreJugador] = useState("");
+    const [guardando, setGuardando] = useState(false);
+    const [puntajeGuardado, setPuntajeGuardado] = useState(false);
+    const [errorGuardado, setErrorGuardado] = useState(null);
 
     // efecto 1: detecta el primer movimiento
     useEffect(() => {
@@ -60,6 +89,29 @@ function GameEngine({ nivel, onVolver }) {
         const seg = segundos % 60;
         return `${min}:${seg.toString().padStart(2, "0")}`;
     };
+
+    async function handleGuardarPuntaje(e) {
+        e.preventDefault();
+        const jugadorLimpio = nombreJugador.trim();
+        if (!jugadorLimpio) return;
+
+        setGuardando(true);
+        setErrorGuardado(null);
+        try {
+            await crearPuntaje({
+                nivel: nivel.id,
+                dificultad: nivel.dificultad,
+                jugador: jugadorLimpio,
+                movimientos,
+                tiempo,
+            });
+            setPuntajeGuardado(true);
+        } catch (err) {
+            setErrorGuardado(err.message);
+        } finally {
+            setGuardando(false);
+        }
+    }
 
     return (
         <div className="game">
@@ -90,7 +142,7 @@ function GameEngine({ nivel, onVolver }) {
                 </div>
 
                 <div className="game-tablero-wrapper">
-                    <Board mapa={nivel.mapa} jugador={jugador} />
+                    <Tablero mapa={nivel.mapa} jugador={jugador} />
                 </div>
 
                 {estado === "ganado" && (
@@ -99,6 +151,35 @@ function GameEngine({ nivel, onVolver }) {
                         <p className="game-victoria-detalle">
                             {movimientos} movimientos · {formatearTiempo(tiempo)}
                         </p>
+
+                        {!puntajeGuardado && (
+                            <form className="game-victoria-form" onSubmit={handleGuardarPuntaje}>
+                                <input
+                                    type="text"
+                                    maxLength={50}
+                                    placeholder="Tu nombre"
+                                    value={nombreJugador}
+                                    onChange={(e) => setNombreJugador(e.target.value)}
+                                    disabled={guardando}
+                                    autoFocus
+                                />
+                                <button type="submit" disabled={guardando || !nombreJugador.trim()}>
+                                    {guardando ? "Guardando..." : "Guardar puntaje"}
+                                </button>
+                                {errorGuardado && (
+                                    <p className="game-victoria-error">{errorGuardado}</p>
+                                )}
+                            </form>
+                        )}
+
+                        {puntajeGuardado && (
+                            <div className="game-victoria-guardado">
+                                <p>¡Puntaje guardado!</p>
+                                <button onClick={() => navigate("/puntajes")}>
+                                    Ver tabla de puntajes
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

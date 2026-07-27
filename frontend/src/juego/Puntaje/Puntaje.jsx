@@ -1,34 +1,49 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FilaPuntaje from "../../componentes/FilaPuntaje/FilaPuntaje.jsx";
+import { getNivelesPorDificultad } from "../../servicios/nivelServicio.js";
+import { getPuntajesPorNivel } from "../../servicios/puntajeServicio.js";
 
 export default function Puntaje() {
-
     const navigate = useNavigate();
 
-    const [nivelSeleccionado, setNivelSeleccionado] = useState(1);
+    const [dificultad, setDificultad] = useState("normal");
+    const [niveles, setNiveles] = useState([]);
+    const [nivelSeleccionado, setNivelSeleccionado] = useState(null);
+    const [puntajes, setPuntajes] = useState([]);
+    const [cargando, setCargando] = useState(true);
 
-    const [dificultad, setDificultad] = useState("facil");
+    // Al cambiar de dificultad, trae los niveles de esa dificultad para
+    // poblar el <select> y selecciona el primero por defecto.
+    useEffect(() => {
+        setNiveles([]);
+        setNivelSeleccionado(null);
+        getNivelesPorDificultad(dificultad).then((data) => {
+            setNiveles(data);
+            setNivelSeleccionado(data[0]?.id ?? null);
+        });
+    }, [dificultad]);
 
-    const niveles = Array.from({ length: CANTIDAD_NIVELES }, (_, i) => i + 1);
-
-    // en modo libre no hay niveles, es un ranking único
-    const puntajesFiltrados = PUNTAJES_MOCK.filter((p) => {
-        if (dificultad === "libre") return p.dificultad === "libre";
-        return p.dificultad === dificultad && p.nivel === nivelSeleccionado;
-    });
+    // Al cambiar de nivel (o dificultad), trae los puntajes de ese par.
+    useEffect(() => {
+        if (!nivelSeleccionado) {
+            setPuntajes([]);
+            setCargando(false);
+            return;
+        }
+        setCargando(true);
+        getPuntajesPorNivel(nivelSeleccionado, dificultad).then((data) => {
+            setPuntajes(data);
+            setCargando(false);
+        });
+    }, [nivelSeleccionado, dificultad]);
 
     // orden combinado: primero menos movimientos, y ante empate, menor tiempo
-    const puntajesOrdenados = [...puntajesFiltrados].sort((a, b) => {
+    // (el backend ya lo devuelve ordenado así, pero no cuesta nada repetirlo acá)
+    const puntajesOrdenados = [...puntajes].sort((a, b) => {
         if (a.movimientos !== b.movimientos) return a.movimientos - b.movimientos;
         return a.tiempo - b.tiempo;
     });
-
-    const formatearTiempo = (segundos) => {
-        const min = Math.floor(segundos / 60);
-        const seg = segundos % 60;
-        return `${min}:${seg.toString().padStart(2, "0")}`;
-    };
 
     return (
         <div className="score">
@@ -54,16 +69,16 @@ export default function Puntaje() {
                         </button>
                     </div>
 
-                    {dificultad !== "libre" && (
+                    {niveles.length > 0 && (
                         <select
                             name="nivel"
                             id="niveles-select"
-                            value={nivelSeleccionado}
+                            value={nivelSeleccionado ?? ""}
                             onChange={(e) => setNivelSeleccionado(Number(e.target.value))}
                         >
                             {niveles.map((n) => (
-                                <option key={n} value={n}>
-                                    Nivel {n}
+                                <option key={n.id} value={n.id}>
+                                    {n.nombre}
                                 </option>
                             ))}
                         </select>
@@ -81,17 +96,25 @@ export default function Puntaje() {
                             </tr>
                         </thead>
                         <tbody>
-                            {puntajesOrdenados.length === 0 && (
+                            {!cargando && niveles.length === 0 && (
+                                <tr>
+                                    <td colSpan={4} className="score-vacio">
+                                        Todavía no hay niveles para esta dificultad
+                                    </td>
+                                </tr>
+                            )}
+
+                            {!cargando && niveles.length > 0 && puntajesOrdenados.length === 0 && (
                                 <tr>
                                     <td colSpan={4} className="score-vacio">
                                         Todavia no hay puntajes para este nivel/dificultad
                                     </td>
                                 </tr>
                             )}
- 
+
                             {puntajesOrdenados.map((p, index) => (
-                                <ScoreRow
-                                    key={`${p.jugador}-${p.nivel}-${p.dificultad}-${index}`}
+                                <FilaPuntaje
+                                    key={`${p.jugador}-${index}`}
                                     posicion={index + 1}
                                     nombre={p.jugador}
                                     movimientos={p.movimientos}
