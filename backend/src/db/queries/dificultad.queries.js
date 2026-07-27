@@ -9,7 +9,7 @@ const pool = require('../pool')
 
 async function getAllDificultades() {
   const { rows } = await pool.query(
-    'SELECT id, nombre, nombre_visible, orden FROM dificultad ORDER BY orden ASC'
+    'SELECT id, nombre, nombre_visible, orden, descripcion, multiplicador_puntaje FROM dificultad ORDER BY orden ASC'
   )
   return rows
 }
@@ -24,7 +24,7 @@ async function getAllDificultadesContrato() {
 
 async function getDificultadById(id) {
   const { rows } = await pool.query(
-    'SELECT id, nombre, nombre_visible, orden FROM dificultad WHERE id = $1',
+    'SELECT id, nombre, nombre_visible, orden, descripcion, multiplicador_puntaje FROM dificultad WHERE id = $1',
     [id]
   )
   return rows[0] || null
@@ -34,24 +34,27 @@ async function getDificultadById(id) {
 // usado por levels/puntajes al filtrar o al guardar un puntaje nuevo.
 async function getDificultadByNombre(nombre) {
   const { rows } = await pool.query(
-    'SELECT id, nombre, nombre_visible, orden FROM dificultad WHERE LOWER(nombre) = LOWER($1)',
+    'SELECT id, nombre, nombre_visible, orden, descripcion, multiplicador_puntaje FROM dificultad WHERE LOWER(nombre) = LOWER($1)',
     [nombre]
   )
   return rows[0] || null
 }
 
-async function createDificultad({ nombre, nombre_visible, orden }) {
+async function createDificultad({ nombre, nombre_visible, orden, descripcion, multiplicador_puntaje }) {
   const { rows } = await pool.query(
-    'INSERT INTO dificultad (nombre, nombre_visible, orden) VALUES ($1, $2, $3) RETURNING *',
-    [nombre, nombre_visible, orden]
+    `INSERT INTO dificultad (nombre, nombre_visible, orden, descripcion, multiplicador_puntaje)
+     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+    [nombre, nombre_visible, orden, descripcion, multiplicador_puntaje ?? 1.0]
   )
   return rows[0]
 }
 
-async function updateDificultad(id, { nombre, nombre_visible, orden }) {
+async function updateDificultad(id, { nombre, nombre_visible, orden, descripcion, multiplicador_puntaje }) {
   const { rows } = await pool.query(
-    'UPDATE dificultad SET nombre = $1, nombre_visible = $2, orden = $3 WHERE id = $4 RETURNING *',
-    [nombre, nombre_visible, orden, id]
+    `UPDATE dificultad
+     SET nombre = $1, nombre_visible = $2, orden = $3, descripcion = $4, multiplicador_puntaje = $5
+     WHERE id = $6 RETURNING *`,
+    [nombre, nombre_visible, orden, descripcion, multiplicador_puntaje ?? 1.0, id]
   )
   return rows[0] || null
 }

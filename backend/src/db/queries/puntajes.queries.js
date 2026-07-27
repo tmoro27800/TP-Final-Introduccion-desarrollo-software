@@ -39,7 +39,7 @@ async function getPuntajesFiltered({ level_id, dificultad_id } = {}) {
 
   const { rows } = await pool.query(
     `
-    SELECT s.player_name AS jugador, s.moves AS movimientos, s.time_seconds AS tiempo
+    SELECT s.id, s.player_name AS jugador, s.moves AS movimientos, s.time_seconds AS tiempo
     FROM scores s
     JOIN levels l ON l.id = s.level_id
     ${where}
@@ -50,4 +50,39 @@ async function getPuntajesFiltered({ level_id, dificultad_id } = {}) {
   return rows
 }
 
-module.exports = { createPuntaje, getPuntajesFiltered }
+// Puntaje puntual por id — necesario para poder editarlo/borrarlo desde el
+// frontend (pantalla de administración de puntajes).
+async function getPuntajeById(id) {
+  const { rows } = await pool.query(
+    `SELECT id, level_id AS nivel, player_name AS jugador,
+            moves AS movimientos, time_seconds AS tiempo, completed_at
+     FROM scores WHERE id = $1`,
+    [id]
+  )
+  return rows[0] || null
+}
+
+async function updatePuntaje(id, { player_name, moves, time_seconds }) {
+  const { rows } = await pool.query(
+    `UPDATE scores
+     SET player_name = $1, moves = $2, time_seconds = $3
+     WHERE id = $4
+     RETURNING id, level_id AS nivel, player_name AS jugador,
+               moves AS movimientos, time_seconds AS tiempo, completed_at`,
+    [player_name, moves, time_seconds, id]
+  )
+  return rows[0] || null
+}
+
+async function deletePuntaje(id) {
+  const { rowCount } = await pool.query('DELETE FROM scores WHERE id = $1', [id])
+  return rowCount > 0
+}
+
+module.exports = {
+  createPuntaje,
+  getPuntajesFiltered,
+  getPuntajeById,
+  updatePuntaje,
+  deletePuntaje,
+}
