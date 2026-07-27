@@ -26,17 +26,16 @@ CREATE TABLE levels (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
-<<<<<<< HEAD:db/init.sql
+
 --4. puntuaciones
-=======
+
 -- Niveles de ejemplo (mismo formato que Niveles.mock.json / NivelesDetalle.mock.json
 -- del frontend) para poder probar la conexión de punta a punta. Se pueden borrar.
 INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
     ('Nivel 1', 1, 1, '[[1,1,1,1,1,1,1],[1,2,0,0,0,0,1],[1,0,0,0,0,0,1],[1,0,0,0,0,0,1],[1,0,0,0,0,0,1],[1,0,0,0,1,3,1]]'),
     ('Nivel 2', 2, 1, '[[1,1,1,1,1,1,1,1],[1,2,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,1,3,1,0,0,0,1]]');
 
---3. puntuaciones
->>>>>>> Development-backend:backend/db/init.sql
+
 
 CREATE TABLE scores (
     id SERIAL PRIMARY KEY,
@@ -73,21 +72,5 @@ INSERT INTO powerups (nombre, tipo, valor) VALUES
     ('Pista gratis', 'pista_gratis', '{"cantidad": 1}');
 
 
-<<<<<<< HEAD:db/init.sql
--- 7. pistas_usadas
-CREATE TABLE pistas_usadas (
-    id SERIAL PRIMARY KEY,
-    pista_id INTEGER REFERENCES pistas(id),
-    used_at TIMESTAMP DEFAULT NOW()
-);
 
--- 8. powerups_usados
-CREATE TABLE powerups_usados (
-    id SERIAL PRIMARY KEY,
-    powerup_id INTEGER REFERENCES powerups(id),
-    used_at TIMESTAMP DEFAULT NOW()
-);
-
-=======
->>>>>>> Development-backend:backend/db/init.sql
 
