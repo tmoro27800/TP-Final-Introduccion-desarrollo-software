@@ -1,0 +1,98 @@
+.tablero-jugador {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 4;
+}
+
+/* imagen residual: queda un instante en la celda que el jugador acaba de
+   dejar, y se desvanece — la "estela" del movimiento */
+.jugador-estela {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 1;
+  opacity: 0.5;
+  animation: jugador-estela-desvanecer 0.22s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes jugador-estela-desvanecer {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* partículas ambiente: siempre presentes, detrás del personaje */
+.jugador-particulas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 2;
+  opacity: 0.85;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* viento: sprite más grande que la celda (ráfaga direccional al caminar),
+   se desplaza hacia el lado opuesto a la dirección para simular que queda
+   "atrás" del personaje.
+   OJO con el tamaño: los sprites de arriba/abajo son angostos y altos
+   (37x65 nativo) y los de izquierda/derecha son anchos y bajos (65x37) —
+   NO tienen la misma proporción entre sí. Escalar siempre por "width"
+   (como estaba antes) hacía que los verticales se dispararan de alto muy
+   por fuera de la celda. Por eso cada orientación escala por su propio
+   eje "largo" (height para arriba/abajo, width para izquierda/derecha) y
+   deja que el eje corto se ajuste solo, respetando la proporción real de
+   cada sprite. */
+.jugador-viento {
+  display: block;
+  justify-self: center;
+  align-self: center;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 3;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.jugador-viento--arriba,
+.jugador-viento--abajo {
+  width: auto;
+  height: 150%;
+}
+
+.jugador-viento--izquierda,
+.jugador-viento--derecha {
+  width: 150%;
+  height: auto;
+}
+
+/* se corre hacia el lado opuesto a la dirección de movimiento, para que
+   se vea como una ráfaga quedando "atrás" del personaje */
+.jugador-viento--arriba {
+  transform: translateY(25%);
+}
+
+.jugador-viento--abajo {
+  transform: translateY(-25%);
+}
+
+.jugador-viento--izquierda {
+  transform: translateX(25%);
+}
+
+.jugador-viento--derecha {
+  transform: translateX(-25%);
+}

@@ -46,6 +46,38 @@ INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
 INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
     ('Nivel 3', 3, 2, '[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,0,0,0,0,1,1,1,1,13,1,1,1,1,1,1,1,1,1,1,1],[1,2,0,16,0,4,0,1,5,1,0,10,13,0,18,4,0,7,0,7,0,0,0,3,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,15,4,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,15,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]');
 
+-- Nivel de prueba con las mecánicas más nuevas (pinchos, láser, botón,
+-- puerta, placa de presión, puente temporal — ver motorJuego.js/tiposCelda.js).
+-- Enemigos (8) quedó descartado a pedido explícito, no aparece acá.
+-- Diseño tipo "galería": un corredor de una sola celda de ancho con una
+-- estación por mecánica, en orden. Recorrido: agarrar invulnerabilidad ->
+-- cruzar pinchos -> cronometrar el láser (cicla cada 3 movimientos) ->
+-- desviarse al pozo (filas 2-4, columnas 11-12) para empujar la caja hacia
+-- el norte sobre la placa de presión (abre la puerta de la columna 15) ->
+-- tocar el botón (abre también la puerta de la columna 20, de forma
+-- permanente) -> cruzar el puente antes de que colapsen sus 3 celdas -> meta.
+INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
+    ('Nivel 4', 4, 2, '[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,17,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,2,0,10,0,6,0,0,9,0,0,0,4,0,0,12,0,0,11,0,12,0,0,14,14,14,0,3,1],[1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]');
+
+-- Nivel "real" no lineal, pensado para combinar mecánicas con decisiones
+-- genuinas en vez de una galería lineal (ver Nivel 4). Fila 3 es el
+-- corredor principal; filas 1-2 y 4 son desvíos/alcobas.
+-- Recorrido: empujar la caja hacia la alcoba de arriba (columnas 2-3) para
+-- liberar la llave 1 -> agarrar Fantasma y usarlo hacia ARRIBA (única
+-- dirección que atraviesa la pared; a la derecha hay pared doble a
+-- propósito, para que no se pueda saltear la bóveda) para entrar a la
+-- bóveda con la llave 2, salir por la columna 9 -> pinchos SIN protección
+-- todavía: cruzarlos de frente cuesta +3 movimientos, o desviarse gratis por
+-- la fila 4 (columnas 10-12) -> agarrar Invulnerabilidad recién acá, para
+-- usarla más adelante -> empujar la segunda caja hacia abajo sobre la placa
+-- de presión (columnas 14-15) para abrir la puerta -> cronometrar el láser
+-- -> lava: cruzarla con la invulnerabilidad guardada, o rodearla gratis con
+-- el teletransportador de la fila 2 (columnas 18/20) -> agarrar Fuerza y
+-- destruir la tercera caja, o empujarla al vacío de la fila 4 (columna 22)
+-- -> cruzar el puente antes de que colapse -> meta.
+INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
+    ('Nivel 5', 5, 2, '[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,16,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,0,0,1,1,1,1,1,0,1,1,1,1,0,0,1,1,7,1,7,0,0,1,1,1,1,1],[1,2,0,4,16,0,5,1,1,0,0,6,0,10,0,4,12,9,0,13,0,18,4,14,14,14,3,1],[1,1,1,0,1,1,1,1,1,1,0,0,0,1,1,17,1,1,1,1,1,1,15,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]');
+
 --3. puntuaciones
 
 CREATE TABLE scores (

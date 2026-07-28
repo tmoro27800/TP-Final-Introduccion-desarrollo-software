@@ -52,5 +52,6 @@ export default function Game() {
     // key={levelId}: si el usuario navega de un nivel a otro, fuerza a
     // React a desmontar y volver a montar Nivel desde cero, así useJuego
     // arranca limpio (jugador, movimientos, etc.)
+    console.log("Mapa:", nivel.mapa);
     return <Nivel key={levelId} nivel={nivel} onVolver={() => navigate(-1)} />;
 }

@@ -4,6 +4,8 @@ import FilaControl from "../../componentes/FilaControl/FilaControl.jsx";
 import BotonPixelar from "../../componentes/BotonPixelar/BotonPixelar.jsx";
 import Ventana from "../../componentes/Ventana/Ventana.jsx";
 import { useConfiguracion } from "../Configuracion/ConfiguracionContext.jsx";
+import { MECANICAS, resolverVisual } from "./mecanicasInfo.js";
+import "../../componentes/Tablero/Tablero.css";
 
 import titulo from "../../assets/SpriteMenuPrincipal/Titulo.png";
 
@@ -30,6 +32,11 @@ export default function Menu() {
     const [mostrarInstrucciones, setMostrarInstrucciones] = useState(false);
     const [mostrarConfiguracion, setMostrarConfiguracion] = useState(false);
 
+    // "Como jugar" tiene dos vistas internas: controles (teclas) y
+    // mecánicas (glosario de estructuras del mapa) — mismo patrón que ya
+    // usa el modal de Configuración con vistaConfig.
+    const [vistaAyuda, setVistaAyuda] = useState("controles"); // "controles" | "mecanicas"
+
     const [vistaConfig, setVistaConfig] = useState("principal"); // "principal" | "controles"
     const [teclaEsperando, setTeclaEsperando] = useState(null); // qué acción está esperando una tecla nueva
 
@@ -55,6 +62,11 @@ export default function Menu() {
     const cerrarConfiguracion = () => {
         setMostrarConfiguracion(false);
         setVistaConfig("principal");
+    };
+
+    const cerrarInstrucciones = () => {
+        setMostrarInstrucciones(false);
+        setVistaAyuda("controles");
     };
 
     return (
@@ -100,59 +112,112 @@ export default function Menu() {
             </nav>
 
             {/* Modal: Como jugar */}
-            <Ventana visible={mostrarInstrucciones} onClose={() => setMostrarInstrucciones(false)}>
+            <Ventana visible={mostrarInstrucciones} onClose={cerrarInstrucciones}>
                 <h2>Como jugar</h2>
-                <p className="instrucciones-intro">
-                Mové tu personaje por el mapa para resolver el puzzle
-                </p>
 
-                <div className="controles-lista">
-                <div className="control-item">
-                    <div className="teclas-grupo">
-                    <div className="teclas-fila">
-                        <div className="tecla">W</div>
-                    </div>
-                    <div className="teclas-fila">
-                        <div className="tecla">A</div>
-                        <div className="tecla">S</div>
-                        <div className="tecla">D</div>
-                    </div>
-                    </div>
-                    <div className="control-texto">
-                    <h3>WASD</h3>
-                    <p>Mover el personaje</p>
-                    </div>
+                <div className="ayuda-tabs">
+                <button
+                    type="button"
+                    className={`ayuda-tab ${vistaAyuda === "controles" ? "ayuda-tab--activa" : ""}`}
+                    onClick={() => setVistaAyuda("controles")}
+                >
+                    Controles
+                </button>
+                <button
+                    type="button"
+                    className={`ayuda-tab ${vistaAyuda === "mecanicas" ? "ayuda-tab--activa" : ""}`}
+                    onClick={() => setVistaAyuda("mecanicas")}
+                >
+                    Mecánicas
+                </button>
                 </div>
 
-                <div className="control-item">
-                    <div className="teclas-grupo">
-                    <div className="teclas-fila">
-                        <div className="tecla">↑</div>
-                    </div>
-                    <div className="teclas-fila">
-                        <div className="tecla">←</div>
-                        <div className="tecla">↓</div>
-                        <div className="tecla">→</div>
-                    </div>
-                    </div>
-                    <div className="control-texto">
-                    <h3>Flechas</h3>
-                    <p>Alternativa a WASD</p>
-                    </div>
-                </div>
+                {vistaAyuda === "controles" && (
+                <>
+                    <p className="instrucciones-intro">
+                    Mové tu personaje por el mapa para resolver el puzzle
+                    </p>
 
-                <div className="control-item">
-                    <div className="teclas-grupo">
-                    <div className="teclas-fila">
-                        <div className="tecla">R</div>
+                    <div className="controles-lista">
+                    <div className="control-item">
+                        <div className="teclas-grupo">
+                        <div className="teclas-fila">
+                            <div className="tecla">W</div>
+                        </div>
+                        <div className="teclas-fila">
+                            <div className="tecla">A</div>
+                            <div className="tecla">S</div>
+                            <div className="tecla">D</div>
+                        </div>
+                        </div>
+                        <div className="control-texto">
+                        <h3>WASD</h3>
+                        <p>Mover el personaje</p>
+                        </div>
+                    </div>
+
+                    <div className="control-item">
+                        <div className="teclas-grupo">
+                        <div className="teclas-fila">
+                            <div className="tecla">↑</div>
+                        </div>
+                        <div className="teclas-fila">
+                            <div className="tecla">←</div>
+                            <div className="tecla">↓</div>
+                            <div className="tecla">→</div>
+                        </div>
+                        </div>
+                        <div className="control-texto">
+                        <h3>Flechas</h3>
+                        <p>Alternativa a WASD</p>
+                        </div>
+                    </div>
+
+                    <div className="control-item">
+                        <div className="teclas-grupo">
+                        <div className="teclas-fila">
+                            <div className="tecla">R</div>
+                        </div>
+                        </div>
+                        <div className="control-texto">
+                        <h3>R</h3>
+                        <p>Reiniciar el nivel</p>
+                        </div>
                     </div>
                     </div>
-                    <div className="control-texto">
-                    <h3>R</h3>
-                    <p>Reiniciar el nivel</p>
-                    </div>
+                </>
+                )}
+
+                {vistaAyuda === "mecanicas" && (
+                <div className="mecanicas-lista">
+                    {MECANICAS.map((mecanica) => {
+                    const visual = resolverVisual(mecanica.valor);
+                    return (
+                        <div className="mecanica-item" key={mecanica.valor}>
+                        <div className="mecanica-icono">
+                            {visual?.tipo === "img" && (
+                            <img src={visual.src} alt="" draggable={false} className="tablero-celda" />
+                            )}
+                            {visual?.tipo === "llave" && (
+                            <div className="tablero-llave" style={{ width: "100%", height: "100%" }} />
+                            )}
+                            {visual?.tipo === "css" && (
+                            <div
+                                className={`tablero-celda tablero-celda--${visual.clase}${
+                                visual.modificador ? ` tablero-celda--${visual.clase}--${visual.modificador}` : ""
+                                }`}
+                            />
+                            )}
+                        </div>
+                        <div className="mecanica-texto">
+                            <h3>{mecanica.nombre}</h3>
+                            <p>{mecanica.descripcion}</p>
+                        </div>
+                        </div>
+                    );
+                    })}
                 </div>
-                </div>
+                )}
             </Ventana>
 
             {/* Modal: Configuración (con dos vistas internas) */}

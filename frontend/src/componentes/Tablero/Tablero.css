@@ -17,61 +17,36 @@
   text-align: center;
 }
 
+/* terreno: sprites de 32x32 (assets/SpriteCuboMapa/Escenario/), llenan la
+   celda entera. image-rendering:pixelated mantiene el look pixel art nítido
+   al escalar (las celdas pueden ser más grandes que el sprite original). */
 .tablero-celda {
-  border-radius: 4px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
 }
 
-.tablero-celda--piso {
-  background: #100e12;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-}
-
-/* pared: tiene que ser inconfundible con el piso a simple vista — mucho
-   más clara, con relieve, para que se note de lejos qué es transitable */
-.tablero-celda--pared {
-  background: linear-gradient(155deg, #5a5164, #3a3441);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), inset 0 -4px 6px rgba(0, 0, 0, 0.45),
-    inset 0 3px 4px rgba(255, 255, 255, 0.06);
-}
-
+/* meta: el sprite ya viene dorado — el glow pulsante es el único aporte
+   de CSS que queda, para que se note de lejos cuál es el objetivo */
 .tablero-celda--meta {
-  background: radial-gradient(circle, #e8b923 0%, #b3860f 65%, #18151b 100%);
-  box-shadow: 0 0 14px 2px rgba(232, 185, 35, 0.75), inset 0 0 0 2px #fff3c4;
+  box-shadow: 0 0 14px 2px rgba(232, 185, 35, 0.75);
   animation: meta-pulso 1.6s ease-in-out infinite;
 }
 
 @keyframes meta-pulso {
   0%, 100% {
-    box-shadow: 0 0 14px 2px rgba(232, 185, 35, 0.75), inset 0 0 0 2px #fff3c4;
+    box-shadow: 0 0 14px 2px rgba(232, 185, 35, 0.75);
   }
   50% {
-    box-shadow: 0 0 22px 6px rgba(232, 185, 35, 0.95), inset 0 0 0 2px #fff3c4;
+    box-shadow: 0 0 22px 6px rgba(232, 185, 35, 0.95);
   }
 }
 
-.tablero-celda--lava {
-  background: repeating-linear-gradient(
-    45deg,
-    #b31e1e,
-    #b31e1e 5px,
-    #e2453f 5px,
-    #e2453f 10px
-  );
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.tablero-celda--abismo {
-  background: #050308;
-  box-shadow: inset 0 0 12px 2px rgba(0, 0, 0, 0.9);
-}
-
-.tablero-celda--portal {
-  background: #18151b;
-  box-shadow: inset 0 0 0 2px #3fd0e2, inset 0 0 10px rgba(63, 208, 226, 0.6);
-}
-
-/* piezas todavía no implementadas: se ven distintas a propósito,
-   para detectar rápido si al mapa se le coló un número sin manejar */
+/* valor de mapa sin sprite todavía (mecánicas pendientes): se ve distinto
+   a propósito, para detectar rápido si al mapa se le coló un número sin
+   manejar */
 .tablero-celda--desconocido {
   background: repeating-linear-gradient(
     45deg,
@@ -82,17 +57,122 @@
   );
 }
 
-.tablero-jugador {
-  background: linear-gradient(135deg, #e2453f, #b31e1e);
-  border-radius: 4px;
-  box-shadow: 0 0 8px rgba(226, 69, 63, 0.6);
-  z-index: 3;
+/* ------------------- mecánicas sin sprite todavía (placeholders CSS) ------------------- */
+
+/* pinchos: puntas metálicas sobre fondo oscuro */
+.tablero-celda--pinchos {
+  background:
+    radial-gradient(circle at 22% 25%, #dcdce2 0 14%, transparent 15%),
+    radial-gradient(circle at 65% 20%, #dcdce2 0 14%, transparent 15%),
+    radial-gradient(circle at 40% 65%, #dcdce2 0 14%, transparent 15%),
+    radial-gradient(circle at 80% 70%, #dcdce2 0 14%, transparent 15%),
+    radial-gradient(circle at 15% 80%, #dcdce2 0 14%, transparent 15%),
+    #2a2530;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.65);
 }
 
+/* láser: apagado = franja tenue, activo = franja roja brillante parpadeando */
+.tablero-celda--laser {
+  background: #18151b;
+  box-shadow: inset 0 0 0 1px rgba(226, 69, 63, 0.3);
+}
+
+.tablero-celda--laser--laser-apagado {
+  background: repeating-linear-gradient(90deg, #3a1414, #3a1414 3px, #18151b 3px, #18151b 8px);
+}
+
+.tablero-celda--laser--laser-activo {
+  background: repeating-linear-gradient(90deg, #ff4b4b, #ff4b4b 3px, #b31e1e 3px, #b31e1e 8px);
+  box-shadow: 0 0 16px 4px rgba(255, 59, 59, 0.85), inset 0 0 10px rgba(255, 255, 255, 0.35);
+  animation: laser-pulso 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes laser-pulso {
+  from {
+    opacity: 0.82;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* botón: círculo gris (sin tocar) / verde con glow (presionado, permanente) */
+.tablero-celda--boton {
+  background: #18151b;
+  position: relative;
+}
+
+.tablero-celda--boton::after {
+  content: "";
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #8b8690, #4a4551);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+.tablero-celda--boton--presionado::after {
+  background: radial-gradient(circle, #7be085, #2f9e3d);
+  box-shadow: 0 0 10px rgba(123, 224, 133, 0.8), inset 0 0 0 2px rgba(255, 255, 255, 0.25);
+}
+
+/* puerta: cerrada = tablones sólidos, abierta = hueca (deja ver que se puede pasar) */
+.tablero-celda--puerta--cerrada {
+  background: repeating-linear-gradient(0deg, #6b4a2a, #6b4a2a 4px, #4a3218 4px, #4a3218 8px);
+  box-shadow: inset 0 0 0 2px #2a1c0d, 0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.tablero-celda--puerta--abierta {
+  background: #100e12;
+  box-shadow: inset 0 0 0 2px rgba(139, 134, 144, 0.35);
+  opacity: 0.55;
+}
+
+/* placa de presión: marco gris (sin peso) / marco dorado con glow (con caja encima) */
+.tablero-celda--placa {
+  background: #18151b;
+  box-shadow: inset 0 0 0 3px #4a4551, inset 0 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+.tablero-celda--placa--activada {
+  box-shadow: inset 0 0 0 3px #e8b923, 0 0 10px rgba(232, 185, 35, 0.6);
+}
+
+/* puente: tablones de madera; activo = normal, alerta = parpadeo (últimos
+   movimientos), colapsado = agujero (igual que el vacío) */
+.tablero-celda--puente {
+  background: repeating-linear-gradient(90deg, #8a5a24, #8a5a24 6px, #6b4118 6px, #6b4118 10px);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+}
+
+.tablero-celda--puente--alerta {
+  animation: puente-alerta 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes puente-alerta {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(0.55) saturate(2.2) hue-rotate(-20deg);
+  }
+}
+
+.tablero-celda--puente--colapsado {
+  background: #050308;
+  box-shadow: inset 0 0 12px 2px rgba(0, 0, 0, 0.9);
+}
+
+/* .tablero-jugador (y las demás capas del personaje: estela, partículas,
+   viento) viven en Jugador.css — Jugador.jsx las renderiza todas. */
+
+/* caja: sprite de 32x32, llena la celda igual que el terreno */
 .tablero-caja {
-  background: linear-gradient(135deg, #c98a3f, #8a5a24);
-  border-radius: 4px;
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
   z-index: 1;
 }
 
@@ -113,22 +193,15 @@
   box-shadow: 0 0 6px rgba(232, 185, 35, 0.8);
 }
 
+/* pickups: sprites más chicos que la celda (24x31) — se muestran como
+   ícono centrado, no estirados a la celda entera */
 .tablero-pickup {
-  border-radius: 4px;
+  justify-self: center;
+  align-self: center;
+  width: 70%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
   z-index: 2;
-}
-
-.tablero-pickup--fantasma {
-  background: rgba(155, 89, 226, 0.35);
-  box-shadow: inset 0 0 0 2px rgba(155, 89, 226, 0.8), 0 0 10px rgba(155, 89, 226, 0.6);
-}
-
-.tablero-pickup--invulnerabilidad {
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: inset 0 0 0 2px #e8b923, 0 0 10px rgba(232, 185, 35, 0.7);
-}
-
-.tablero-pickup--fuerza {
-  background: rgba(226, 69, 63, 0.25);
-  box-shadow: inset 0 0 0 2px #e2453f, 0 0 10px rgba(226, 69, 63, 0.6);
 }

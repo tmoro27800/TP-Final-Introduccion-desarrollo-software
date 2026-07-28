@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { useConfiguracion } from "../Configuracion/ConfiguracionContext.jsx";
-import { crearEstadoInicial, calcularSiguienteEstado, reiniciarNivel, reiniciarNivelCompleto } from "./motorJuego.js";
+import {
+    crearEstadoInicial,
+    calcularSiguienteEstado,
+    reiniciarNivel,
+    reiniciarNivelCompleto,
+    puertaAbierta,
+} from "./motorJuego.js";
 
 // Las flechas son una alternativa FIJA a los controles configurables —
 // así lo anuncia el modal "Cómo jugar" en Menu.jsx ("Flechas: alternativa
@@ -25,6 +31,14 @@ export default function useJuego(nivelPreparado) {
     const { controles } = useConfiguracion();
 
     const [estado, setEstado] = useState(() => crearEstadoInicial(nivelPreparado));
+
+    // Señal para la animación del personaje (ver useAnimacionJugador.js):
+    // cada intento de movimiento (haya tenido efecto o no) arma un objeto
+    // nuevo con "id" único, así el hook de animación puede detectar
+    // "esto ya lo procesé" sin depender de que la posición haya cambiado
+    // (ej. el modo fuerza destruye una caja sin mover al jugador, pero
+    // igual hay que saber que "intentó" moverse hacia esa dirección).
+    const [ultimoIntento, setUltimoIntento] = useState(null);
 
     // Resuelve qué dirección corresponde a una tecla: primero mira las
     // flechas (fijas), después las teclas configurables (comparando en
@@ -62,7 +76,21 @@ export default function useJuego(nivelPreparado) {
 
             const direccion = resolverDireccion(e.key);
             if (!direccion) return; // tecla que no nos interesa
-            setEstado((prev) => calcularSiguienteEstado(prev, direccion));
+
+            const siguiente = calcularSiguienteEstado(estado, direccion);
+            const exitoso = siguiente !== estado; // el motor tuvo algún efecto
+            const movioPosicion =
+                exitoso &&
+                (siguiente.jugador.fila !== estado.jugador.fila || siguiente.jugador.columna !== estado.jugador.columna);
+
+            setUltimoIntento({
+                id: `${Date.now()}-${Math.random()}`,
+                direccion,
+                exitoso,
+                movioPosicion,
+                posicionAnterior: estado.jugador,
+            });
+            setEstado(siguiente);
         }
 
         window.addEventListener("keydown", manejarTecla);
@@ -83,6 +111,10 @@ export default function useJuego(nivelPreparado) {
         muertes: estado.muertes,
         estado: estado.estado,
         ultimoEvento: estado.ultimoEvento,
+        ultimoIntento,
+        botonesPresionados: estado.botonesPresionados,
+        puentes: estado.puentes,
+        puertaAbierta: puertaAbierta(estado),
         reiniciar: () => setEstado((prev) => reiniciarNivel(prev)),
         // "Repetir nivel" en la pantalla de victoria (Nivel.jsx): a diferencia
         // de la tecla R, acá movimientos/muertes también vuelven a cero.

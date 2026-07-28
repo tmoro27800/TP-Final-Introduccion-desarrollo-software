@@ -13,11 +13,17 @@ import "./Nivel.css";
 const MENSAJES_EVENTO = {
     "muerte-lava": "💀 Te derritió la lava — nivel reiniciado",
     "muerte-vacio": "💀 Caíste al vacío — nivel reiniciado",
+    "muerte-laser": "💀 Te atravesó el láser — nivel reiniciado",
+    "muerte-puente": "💀 El puente colapsó bajo tus pies — nivel reiniciado",
     "caja-destruida": "📦 Caja destruida",
     llave: "🔑 Llave recolectada",
     "pickup-fantasma": "👻 Modo fantasma activado",
     "pickup-invulnerabilidad": "✨ Invulnerabilidad activada",
     "pickup-fuerza": "💥 Modo fuerza activado",
+    pinchos: "🩹 Pinchos: +3 movimientos",
+    boton: "🔘 Botón presionado — puerta abierta",
+    "puente-activado": "🌉 Puente activado — cruzalo rápido",
+    "puente-alerta": "⚠️ ¡El puente está por colapsar!",
 };
 
 // Una partida en curso: motor de juego (useJuego), HUD, y guardado de
@@ -35,6 +41,10 @@ export default function Nivel({ nivel, onVolver }) {
         muertes,
         estado,
         ultimoEvento,
+        ultimoIntento,
+        botonesPresionados,
+        puentes,
+        puertaAbierta,
         reiniciarCompleto,
     } = useJuego(nivel);
 
@@ -179,7 +189,19 @@ export default function Nivel({ nivel, onVolver }) {
                 </div>
 
                 <div className="game-tablero-wrapper">
-                    <Tablero mapa={nivel.terreno} jugador={jugador} cajas={cajas} llaves={llaves} pickups={pickups} />
+                    <Tablero
+                        mapa={nivel.terreno}
+                        jugador={jugador}
+                        cajas={cajas}
+                        llaves={llaves}
+                        pickups={pickups}
+                        habilidadActiva={habilidadActiva}
+                        ultimoIntento={ultimoIntento}
+                        movimientos={movimientos}
+                        botonesPresionados={botonesPresionados}
+                        puentes={puentes}
+                        puertaAbierta={puertaAbierta}
+                    />
                 </div>
 
                 {mensajeToast && <div className="game-toast">{mensajeToast}</div>}
