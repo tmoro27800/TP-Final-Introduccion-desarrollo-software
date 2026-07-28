@@ -33,91 +33,14 @@
   margin: 0 0 2.5rem;
 }
 
-/* Uno al lado del otro, no apilados */
+/* Uno al lado del otro, no apilados. Los botones en sí (tamaño, hover,
+   estado presionado) los resuelve BotonPixelar con los sprites reales de
+   assets/SpriteMenuPrincipal/BotonDificultad*.png. */
 .selection-mode-opciones {
   display: flex;
   flex-direction: row;
-  gap: 16px;
-}
-
-.selection-mode-boton {
-  appearance: none;
-  position: relative;
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
-  border: 1px solid var(--sm-borde);
-  background: var(--sm-panel);
-  color: var(--sm-texto);
-  padding: 1.75rem 1rem;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.selection-mode-boton:not(:disabled):hover {
-  transform: translateY(-2px);
-}
-
-.selection-mode-boton:focus-visible {
-  outline: 2px solid var(--sm-rojo-brillo);
-  outline-offset: 2px;
-}
-
-/* círculo detrás del emoji, para que no quede "flotando" solo */
-.selection-mode-icono {
-  flex-shrink: 0;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  line-height: 1;
-}
-
-.selection-mode-titulo {
-  font-family: "Playfair Display", serif;
-  font-weight: 700;
-  font-size: 1.25rem;
-}
-
-/* --- variante Normal: calavera más apagada/gris --- */
-.selection-mode-boton--normal .selection-mode-icono {
-  background: radial-gradient(circle, #3a2f36 0%, #2a2530 100%);
-  border: 1px solid var(--sm-borde);
-  filter: grayscale(0.6) brightness(0.9);
-}
-
-.selection-mode-boton--normal:hover {
-  border-color: var(--sm-texto-tenue);
-  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.5);
-}
-
-/* --- variante Dificil: calavera a pleno color, glow rojo --- */
-.selection-mode-boton--dificil .selection-mode-icono {
-  background: radial-gradient(circle, rgba(226, 69, 63, 0.35) 0%, rgba(179, 30, 30, 0.15) 100%);
-  box-shadow: inset 0 0 0 2px rgba(226, 69, 63, 0.5), 0 0 18px rgba(226, 69, 63, 0.35);
-}
-
-.selection-mode-boton--dificil:hover {
-  border-color: var(--sm-rojo-brillo);
-  box-shadow: 0 10px 26px -12px rgba(179, 30, 30, 0.65);
-}
-
-/* --- variante Modo Libre: dorado, deshabilitado por ahora --- */
-.selection-mode-boton--libre {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.selection-mode-boton--libre .selection-mode-icono {
-  background: linear-gradient(135deg, #43331a, #2a2530);
-  border: 1px solid var(--sm-oro);
+  gap: 20px;
 }
 
 .selection-mode-badge {

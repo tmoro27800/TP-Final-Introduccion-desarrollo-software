@@ -1,6 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import BotonVuelta from "../../componentes/BotonVuelta/BotonVuelta.jsx";
+import BotonPixelar from "../../componentes/BotonPixelar/BotonPixelar.jsx";
 import "./SeleccionModo.css";
+
+import botonNormal from "../../assets/SpriteMenuPrincipal/BotonDificultadNormal.png";
+import botonNormalHover from "../../assets/SpriteMenuPrincipal/Mouse/BotonDificultadNormal.png";
+import botonNormalClick from "../../assets/SpriteMenuPrincipal/Click/BotonDificultadNormal.png";
+
+import botonDificil from "../../assets/SpriteMenuPrincipal/BotonDificultadDificil.png";
+import botonDificilHover from "../../assets/SpriteMenuPrincipal/Mouse/BotonDificultadDificil.png";
+import botonDificilClick from "../../assets/SpriteMenuPrincipal/Click/BotonDificultadDificil.png";
 
 export default function SeleccionModo() {
     const navigate = useNavigate();
@@ -13,21 +22,20 @@ export default function SeleccionModo() {
                 <h1>Elegí un modo</h1>
 
                 <div className="selection-mode-opciones">
-                    <button
-                        className="selection-mode-boton selection-mode-boton--normal"
+                    <BotonPixelar
+                        src={botonNormal}
+                        srcHover={botonNormalHover}
+                        srcActive={botonNormalClick}
+                        alt="Normal"
                         onClick={() => navigate("/seleccion-nivel/normal")}
-                    >
-                        <span className="selection-mode-icono" aria-hidden="true">💀</span>
-                        <span className="selection-mode-titulo">Normal</span>
-                    </button>
-
-                    <button
-                        className="selection-mode-boton selection-mode-boton--dificil"
+                    />
+                    <BotonPixelar
+                        src={botonDificil}
+                        srcHover={botonDificilHover}
+                        srcActive={botonDificilClick}
+                        alt="Dificil"
                         onClick={() => navigate("/seleccion-nivel/dificil")}
-                    >
-                        <span className="selection-mode-icono" aria-hidden="true">💀</span>
-                        <span className="selection-mode-titulo">Dificil</span>
-                    </button>
+                    />
                 </div>
             </div>
         </div>

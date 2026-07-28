@@ -16,6 +16,13 @@
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
+.back-button-icono {
+  height: 1.1em;
+  width: auto;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
 .back-button:hover {
   color: #f2ede4;
   border-color: #e2453f;
