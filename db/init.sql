@@ -30,71 +30,56 @@ CREATE TABLE levels (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Niveles de ejemplo (mismo formato que Niveles.mock.json / NivelesDetalle.mock.json
--- del frontend) para poder probar la conexión de punta a punta. Se pueden borrar.
+-- 35 niveles (20 normal + 15 dificil), diseñados por un compañero del
+-- equipo. Reemplazan por completo al set anterior (más chico, de prueba).
+-- Se remapearon dos valores respecto del archivo original: en esa
+-- convención 8=lava y 9=vacío, pero acá esos números ya significan otra
+-- cosa (9=láser, 8 descartado) — quedaron como 13 (LAVA) y 15 (VACIO),
+-- que es lo que usa el resto del proyecto (ver tiposCelda.js). También se
+-- corrigieron 2 niveles que llegaron rotos: el Nivel 4 no tenía meta (el
+-- segundo jugador "2" se corrigió a meta "3", un diseño tipo caja-vault)
+-- y el Nivel 30 tampoco (comparado con el Nivel 29, casi idéntico, la
+-- esquina inferior izquierda debía ser la meta). Quedó pendiente avisarle
+-- al compañero: en 10 niveles (20, 25, 26, 27, 29-35) el valor 7
+-- (teletransportador) aparece una sola vez en vez de en pares — no rompe
+-- nada (un portal sin par simplemente no hace nada al pisarlo), pero
+-- probablemente falta el segundo.
 INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
     ('Nivel 1', 1, 1, '[[1,1,1,1,1,1,1],[1,2,0,0,0,0,1],[1,0,0,0,0,0,1],[1,0,0,0,0,0,1],[1,0,0,0,0,0,1],[1,0,0,0,1,3,1]]'),
-    ('Nivel 2', 2, 1, '[[1,1,1,1,1,1,1,1],[1,2,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,1,3,1,0,0,0,1]]');
-
--- Nivel de prueba con las mecánicas nuevas (cajas, fantasma, teletransportador,
--- invulnerabilidad, lava, vacío, llaves, fuerza — ver
--- frontend/src/juego/Juego/motorJuego.js y tiposCelda.js). Mismo layout que
--- frontend/src/juego/Juego/nivelDePrueba.js (usado ahí para poder probar el
--- motor sin depender de esta base). Recorrido: llave -> empujar caja
--- (bordear por arriba) -> atravesar pared con fantasma -> cruzar lava con
--- invulnerabilidad -> destruir caja con fuerza -> teletransportador -> meta.
-INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
-    ('Nivel 3', 3, 2, '[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,0,0,0,0,1,1,1,1,13,1,1,1,1,1,1,1,1,1,1,1],[1,2,0,16,0,4,0,1,5,1,0,10,13,0,18,4,0,7,0,7,0,0,0,3,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,15,4,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,15,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]');
-
--- Nivel de prueba con las mecánicas más nuevas (pinchos, láser, botón,
--- puerta, placa de presión, puente temporal — ver motorJuego.js/tiposCelda.js).
--- Enemigos (8) quedó descartado a pedido explícito, no aparece acá.
--- Diseño tipo "galería": un corredor de una sola celda de ancho con una
--- estación por mecánica, en orden. Recorrido: agarrar invulnerabilidad ->
--- cruzar pinchos -> cronometrar el láser (cicla cada 3 movimientos) ->
--- desviarse al pozo (filas 2-4, columnas 11-12) para empujar la caja hacia
--- el norte sobre la placa de presión (abre la puerta de la columna 15) ->
--- tocar el botón (abre también la puerta de la columna 20, de forma
--- permanente) -> cruzar el puente antes de que colapsen sus 3 celdas -> meta.
-INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
-    ('Nivel 4', 4, 2, '[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,17,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,2,0,10,0,6,0,0,9,0,0,0,4,0,0,12,0,0,11,0,12,0,0,14,14,14,0,3,1],[1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]');
-
--- Nivel "real" no lineal, pensado para combinar mecánicas con decisiones
--- genuinas en vez de una galería lineal (ver Nivel 4). Fila 3 es el
--- corredor principal; filas 1-2 y 4 son desvíos/alcobas.
--- Recorrido: empujar la caja hacia la alcoba de arriba (columnas 2-3) para
--- liberar la llave 1 -> agarrar Fantasma y usarlo hacia ARRIBA (única
--- dirección que atraviesa la pared; a la derecha hay pared doble a
--- propósito, para que no se pueda saltear la bóveda) para entrar a la
--- bóveda con la llave 2, salir por la columna 9 -> pinchos SIN protección
--- todavía: cruzarlos de frente cuesta +3 movimientos, o desviarse gratis por
--- la fila 4 (columnas 10-12) -> agarrar Invulnerabilidad recién acá, para
--- usarla más adelante -> empujar la segunda caja hacia abajo sobre la placa
--- de presión (columnas 14-15) para abrir la puerta -> cronometrar el láser
--- -> lava: cruzarla con la invulnerabilidad guardada, o rodearla gratis con
--- el teletransportador de la fila 2 (columnas 18/20) -> agarrar Fuerza y
--- destruir la tercera caja, o empujarla al vacío de la fila 4 (columna 22)
--- -> cruzar el puente antes de que colapse -> meta.
-INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
-    ('Nivel 5', 5, 2, '[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,16,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,0,0,1,1,1,1,1,0,1,1,1,1,0,0,1,1,7,1,7,0,0,1,1,1,1,1],[1,2,0,4,16,0,5,1,1,0,0,6,0,10,0,4,12,9,0,13,0,18,4,14,14,14,3,1],[1,1,1,0,1,1,1,1,1,1,0,0,0,1,1,17,1,1,1,1,1,1,15,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]');
-
--- Nivel con TODAS las mecánicas implementadas, incluida la puerta con
--- llave (PUERTA_CON_LLAVE) que ningún nivel anterior probaba todavía.
--- Fila 3 = corredor principal; filas 1-2 y 4 = desvíos/alcobas (mismo
--- criterio que Nivel 5).
--- Recorrido: llave 1 -> empujar la caja hacia la alcoba de arriba sobre la
--- placa de presión (abre la puerta de la columna 6) -> tocar el botón
--- (columna 7, no hace falta para esta puerta, es solo para probarlo) ->
--- agarrar Fantasma y saltar hacia ARRIBA (pared doble a la derecha, para
--- que no se pueda saltear la bóveda) a buscar la llave 2 -> al salir con
--- las dos llaves ya juntadas, la puerta con llave (columna 12) se abre
--- sola, con animación, justo al llegar -> pinchos sin protección (+3
--- movimientos, o desvío gratis por la fila 4) -> Invulnerabilidad ->
--- cronometrar el láser -> lava (con la invulnerabilidad guardada) ->
--- Fuerza para destruir la segunda caja (o empujarla al vacío de la fila 4,
--- columna 24) -> cruzar el puente -> meta.
-INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
-    ('Nivel 6', 6, 2, '[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,16,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,7,1,7,1,0,0,1,1,1,1,1],[1,2,0,16,0,4,12,11,5,1,1,0,19,0,6,0,10,9,0,0,13,0,0,18,4,14,14,14,3,1],[1,1,1,1,1,17,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,15,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]');
+    ('Nivel 2', 2, 1, '[[1,1,1,1,1,1,1,1],[1,2,0,0,0,0,0,1],[1,0,0,1,0,0,0,1],[1,1,0,0,0,0,0,1],[1,0,0,0,1,0,0,1],[1,1,1,0,1,0,0,1],[1,0,0,0,0,1,0,1],[1,1,3,1,0,1,0,1]]'),
+    ('Nivel 3', 3, 1, '[[1,1,1,1,1,1,1,1,1],[1,2,0,0,0,0,1,0,1],[1,0,0,0,1,0,0,0,1],[1,0,0,1,0,0,1,3,1],[1,1,1,1,1,1,1,1,1]]'),
+    ('Nivel 4', 4, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,4,0,0,0,0,0,1],[1,0,3,4,0,0,0,0,0,1],[1,0,0,4,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1]]'),
+    ('Nivel 5', 5, 1, '[[1,1,1,1,1,1],[1,2,0,1,0,1],[1,0,0,0,0,1],[1,0,1,0,3,1],[1,1,1,1,1,1]]'),
+    ('Nivel 6', 6, 1, '[[1,1,1,1,1,1],[1,2,0,1,0,1],[1,0,0,0,0,1],[1,0,1,0,4,1],[1,0,4,0,1,0],[1,0,3,0,1,0]]'),
+    ('Nivel 7', 7, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,0,0,0,0,1],[1,0,0,0,1,0,0,0,0,1],[1,0,0,0,1,0,4,0,4,1],[1,0,2,0,1,0,0,0,0,1],[1,0,0,4,1,0,0,0,3,1],[1,1,1,0,0,0,1,1,1,1]]'),
+    ('Nivel 8', 8, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,0,0,0,0,1],[1,0,0,0,4,0,0,0,0,1],[1,4,1,0,0,4,0,4,0,1],[1,0,4,1,0,0,0,0,0,1],[1,0,1,0,4,0,0,0,0,1],[1,1,1,1,1,1,0,1,1,1],[1,0,0,0,0,0,0,0,3,1]]'),
+    ('Nivel 9', 9, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,0,0,0,0,1],[1,0,0,5,0,1,0,0,0,1],[1,1,1,0,1,1,5,1,0,1],[1,0,0,1,0,1,1,1,1,1],[1,0,1,0,0,1,0,3,0,1],[1,1,1,1,1,1,1,1,1,1]]'),
+    ('Nivel 10', 10, 1, '[[1,1,1,1,1,1,1],[1,2,1,1,4,1,1],[1,5,0,1,0,1,1],[1,0,4,0,3,1,1],[1,1,0,0,4,1,1]]'),
+    ('Nivel 11', 11, 1, '[[1,1,1,1,1,1,1,1,1],[1,2,0,0,0,0,0,1,1],[1,0,0,0,1,0,1,1,1],[1,1,0,0,1,0,6,1,1],[1,0,1,1,0,0,1,1,1],[1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,1,1],[1,1,3,1,0,0,6,1,1]]'),
+    ('Nivel 12', 12, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,0,0,0,0,1],[1,0,0,0,4,1,1,0,6,1],[1,4,1,0,0,4,0,4,0,1],[1,0,4,1,0,0,5,1,0,1],[1,0,1,0,4,0,1,1,0,1],[1,1,1,1,1,1,1,1,1,1],[1,6,0,5,0,0,1,0,3,1]]'),
+    ('Nivel 13', 13, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,0,0,0,0,1],[1,0,0,0,4,0,0,0,0,1],[1,4,1,0,13,4,0,4,0,1],[1,0,4,0,0,0,0,0,0,1],[1,0,1,13,4,13,0,0,0,1],[1,1,1,1,1,1,0,1,1,1],[1,0,0,0,0,0,0,0,3,1]]'),
+    ('Nivel 14', 14, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,0,0,0,0,1],[1,0,0,0,13,13,4,0,13,1],[1,13,1,0,0,0,0,4,0,1],[1,0,4,1,13,1,0,13,0,1],[1,0,1,0,4,0,0,0,0,1],[1,1,1,1,1,1,3,1,1,1]]'),
+    ('Nivel 15', 15, 1, '[[1,1,1,1,1,1,1],[1,2,1,1,4,1,1],[1,0,0,0,15,1,1],[1,1,15,0,3,1,1],[1,1,0,0,4,1,1]]'),
+    ('Nivel 16', 16, 1, '[[1,1,1,1,1,1,1],[1,2,1,1,4,1,1],[1,5,0,1,0,1,1],[1,0,4,0,0,1,1],[1,1,0,15,4,1,1],[1,15,0,0,0,3,1]]'),
+    ('Nivel 17', 17, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,0,0,0,0,1],[1,0,0,0,4,0,0,10,0,1],[1,4,1,0,13,4,0,4,0,1],[1,0,4,0,0,0,0,10,0,1],[1,0,1,13,4,13,0,0,0,1],[1,1,1,1,1,1,0,1,1,1],[1,0,0,10,0,0,0,0,3,1]]'),
+    ('Nivel 18', 18, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,0,0,0,0,1],[1,0,0,0,4,0,0,10,0,1],[1,4,1,0,13,4,0,4,0,1],[1,0,4,0,0,0,0,15,0,1],[1,0,1,13,4,13,0,0,0,1],[1,1,1,1,1,1,0,1,1,1],[1,0,0,10,0,0,0,0,3,1]]'),
+    ('Nivel 19', 19, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,0,0,0,0,1],[1,0,0,0,1,0,0,0,0,1],[1,4,1,0,0,4,0,4,0,1],[1,0,4,0,0,0,11,0,0,1],[1,0,1,13,4,13,0,0,0,1],[1,1,1,1,1,1,4,1,1,1],[1,0,0,0,0,0,0,0,3,1]]'),
+    ('Nivel 20', 20, 1, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,10,0,15,0,1],[1,0,0,0,1,0,0,5,1,1],[1,4,1,0,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,0,1,13,4,13,0,0,0,1],[1,1,1,1,1,1,4,1,1,1],[10,0,0,7,0,0,0,0,3,1]]'),
+    ('Nivel 21', 21, 2, '[[1,1,1,1,1,1,1],[1,2,1,5,4,13,6],[1,0,0,0,15,1,1],[1,6,10,0,11,3,1],[1,1,13,0,4,10,1]]'),
+    ('Nivel 22', 22, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,10,0,15,0,1],[1,0,0,0,1,0,0,5,1,1],[1,4,1,0,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,0,1,13,4,13,0,0,0,1],[1,1,1,1,1,1,4,1,1,1],[10,0,0,0,0,0,0,0,3,1]]'),
+    ('Nivel 23', 23, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,6,10,0,15,0,1],[1,0,0,0,1,0,0,5,1,1],[1,4,1,0,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,0,1,13,4,13,0,0,0,1],[1,1,1,1,1,1,4,1,1,1],[10,0,6,0,4,0,0,11,3,1]]'),
+    ('Nivel 24', 24, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,10,6,15,0,1],[1,0,0,0,1,0,0,5,1,1],[1,4,1,0,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,0,1,13,4,13,0,7,0,1],[1,1,1,1,1,1,4,1,1,1],[10,7,0,0,0,0,6,15,3,1]]'),
+    ('Nivel 25', 25, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,6,0,10,0,15,0,1],[1,0,0,0,1,0,0,5,10,1],[1,15,1,0,0,4,0,4,10,1],[1,13,4,0,0,0,11,0,15,1],[1,6,1,13,4,13,0,7,0,1],[1,1,1,1,1,1,4,1,1,1],[10,0,0,0,0,0,0,13,3,1]]'),
+    ('Nivel 26', 26, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,10,0,15,6,1],[1,0,0,0,1,0,0,5,1,1],[1,4,1,0,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,0,1,13,4,13,0,0,0,1],[1,1,1,6,13,1,4,1,1,1],[10,13,0,0,0,1,5,0,15,1],[0,11,0,7,0,0,1,0,4,3]]'),
+    ('Nivel 27', 27, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,6,0,10,0,15,6,1],[1,0,0,0,1,0,0,5,1,1],[1,4,1,0,0,4,0,4,10,1],[1,0,4,0,5,0,11,0,0,1],[1,0,1,13,4,6,15,0,0,1],[1,1,1,6,13,1,4,1,1,1],[10,13,0,7,0,1,5,0,15,1],[0,11,0,0,0,0,1,0,4,3]]'),
+    ('Nivel 28', 28, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,4,0,15,6,1],[1,0,0,0,1,0,0,5,1,1],[1,4,1,0,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,10,1,13,4,13,0,0,3,1],[1,1,7,6,13,1,4,1,1,1],[10,13,0,4,0,1,5,0,15,1],[0,11,0,7,0,0,1,0,4,10]]'),
+    ('Nivel 29', 29, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,10,0,15,10,1],[1,0,0,6,1,0,0,5,1,1],[1,5,1,0,0,4,0,4,0,1],[1,0,4,0,0,0,11,0,0,1],[1,10,1,13,4,13,0,0,0,1],[1,1,1,6,13,1,4,1,1,1],[6,13,0,0,0,1,5,0,15,1],[3,11,0,7,0,0,1,0,4,10]]'),
+    ('Nivel 30', 30, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,10,0,15,0,1],[1,0,1,0,1,0,0,5,1,1],[1,5,1,13,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,6,1,13,4,13,0,0,0,1],[1,1,1,6,13,1,4,1,10,1],[10,13,0,15,0,1,5,0,15,1],[3,11,0,7,13,0,1,6,4,11]]'),
+    ('Nivel 31', 31, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,10,0,15,6,1],[1,0,0,0,1,0,0,5,1,1],[1,4,1,0,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,3,1,13,4,13,0,0,0,1],[1,1,1,10,13,1,4,1,1,1],[6,13,0,0,0,1,5,0,15,1],[0,11,0,7,0,0,1,0,4,10]]'),
+    ('Nivel 32', 32, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,10,0,15,6,1],[1,0,0,0,1,0,0,5,1,1],[1,4,1,0,0,4,0,4,3,1],[1,0,4,0,0,0,11,0,0,1],[1,0,1,13,4,13,0,0,10,1],[1,1,1,6,13,1,4,1,1,1],[10,13,0,0,0,1,5,0,15,1],[0,11,0,7,0,10,1,0,4,0]]'),
+    ('Nivel 33', 33, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,10,0,15,0,1],[1,0,0,0,1,0,0,5,1,1],[1,5,1,15,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,6,1,13,4,13,0,0,0,1],[1,1,1,10,13,1,4,1,1,1],[10,13,0,0,0,1,5,0,15,1],[3,11,0,7,0,0,1,0,4,6]]'),
+    ('Nivel 34', 34, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,3,0,10,0,15,6,1],[1,0,0,0,1,0,0,5,1,1],[1,4,1,0,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,0,1,13,4,13,0,0,0,1],[1,1,1,6,13,1,4,1,1,1],[10,13,0,0,0,1,5,0,15,1],[0,11,0,7,0,0,1,0,4,10]]'),
+    ('Nivel 35', 35, 2, '[[1,1,1,1,1,1,1,1,1,1],[1,2,1,0,0,10,0,15,6,1],[1,0,0,5,1,0,15,5,1,1],[1,4,1,15,0,4,0,4,10,1],[1,0,4,0,0,0,11,0,0,1],[1,0,1,13,4,13,0,0,0,1],[1,1,1,6,13,1,4,1,1,1],[10,13,0,0,0,1,5,0,15,1],[0,11,0,7,15,0,1,0,4,3]]');
 
 --3. puntuaciones
 

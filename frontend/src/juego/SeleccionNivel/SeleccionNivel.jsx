@@ -52,8 +52,14 @@ export default function SeleccionNivel() {
 
                 {!cargando && niveles.length > 0 && (
                     <div className="selection-level-grid">
-                        {niveles.map((nivel) => (
-                            <BotonNivel key={nivel.id} numero={nivel.id} onClick={() => navigate(`/juego/${nivel.id}`)} />
+                        {/* numero = posición dentro de ESTA dificultad (1, 2, 3...), no
+                            nivel.id — el id es el correlativo global de la base (por eso
+                            los niveles difíciles arrancaban mostrando "21" en vez de "1":
+                            ocupan los ids después de los 20 normales). La lista ya viene
+                            ordenada por dificultad desde el backend, así que el índice
+                            del map alcanza. */}
+                        {niveles.map((nivel, indice) => (
+                            <BotonNivel key={nivel.id} numero={indice + 1} onClick={() => navigate(`/juego/${nivel.id}`)} />
                         ))}
                     </div>
                 )}

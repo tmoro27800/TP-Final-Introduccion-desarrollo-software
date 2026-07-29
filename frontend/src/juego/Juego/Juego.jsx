@@ -52,5 +52,16 @@ export default function Game() {
     // key={levelId}: si el usuario navega de un nivel a otro, fuerza a
     // React a desmontar y volver a montar Nivel desde cero, así useJuego
     // arranca limpio (jugador, movimientos, etc.)
-    return <Nivel key={levelId} nivel={nivel} onVolver={() => navigate(-1)} />;
+    //
+    // onVolver va a una ruta explícita (no navigate(-1)): si venís de
+    // completar un nivel y tocaste "Siguiente nivel →", el historial queda
+    // encadenado /juego/1 -> /juego/2, así que "volver una posición" te
+    // mandaba al nivel ANTERIOR en vez de a la selección de niveles.
+    return (
+        <Nivel
+            key={levelId}
+            nivel={nivel}
+            onVolver={() => navigate(`/seleccion-nivel/${nivel.dificultad}`)}
+        />
+    );
 }
