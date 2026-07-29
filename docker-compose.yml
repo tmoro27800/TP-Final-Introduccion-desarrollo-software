@@ -10,6 +10,20 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    # Sin esto, "depends_on: [db]" de más abajo solo espera a que el
+    # CONTENEDOR arranque, no a que Postgres esté listo de verdad para
+    # aceptar conexiones (puede tardar varios segundos en correr init.sql
+    # la primera vez, sobre todo después de un "down -v" que recrea el
+    # volumen desde cero). Sin este healthcheck, el backend arranca antes,
+    # falla la conexión, y con "restart: on-failure" entra en un bucle de
+    # crash-reinicio hasta que la base termina de levantar — si alguien
+    # prueba justo en esa ventana, ve pedidos que se cortan sin respuesta
+    # (net::ERR_EMPTY_RESPONSE del lado del navegador).
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d puzzle_game"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
   backend:
     build: ./backend
     ports:
@@ -22,7 +36,8 @@ services:
       DB_PASSWORD: postgres
       DB_NAME: puzzle_game
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: on-failure
   frontend:
     build: ./frontend
