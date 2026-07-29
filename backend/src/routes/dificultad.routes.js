@@ -47,7 +47,16 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
+    const existente = await dificultad.getDificultadById(req.params.id)
+    if (!existente) return res.status(404).json({ error: 'No encontrado' })
+
     const { nombre, nombre_visible, orden, descripcion, multiplicador_puntaje } = req.body
+    if (!nombre || !nombre_visible || orden === undefined || !descripcion) {
+      return res.status(400).json({
+        error: 'Faltan campos: "nombre", "nombre_visible", "orden" y "descripcion" son obligatorios',
+      })
+    }
+
     const data = await dificultad.updateDificultad(req.params.id, {
       nombre,
       nombre_visible,
@@ -55,7 +64,6 @@ router.put('/:id', async (req, res) => {
       descripcion,
       multiplicador_puntaje,
     })
-    if (!data) return res.status(404).json({ error: 'No encontrado' })
     res.json(data)
   } catch (err) {
     res.status(500).json({ error: err.message })
