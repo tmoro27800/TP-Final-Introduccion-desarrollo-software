@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&display=swap');
+
+.selection-level {
+  --sl-panel: #18151b;
+  --sl-borde: #2a2530;
+  --sl-texto: #f2ede4;
+  --sl-texto-tenue: #8b8690;
+  --sl-rojo: #b31e1e;
+  --sl-rojo-brillo: #e2453f;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  color: var(--sl-texto);
+  font-family: var(--font-pixel-secundario);
+}
+
+.selection-level-container {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.selection-level h1 {
+  font-family: var(--font-pixel);
+  font-weight: 800;
+  font-size: 2.25rem;
+  margin: 0 0 2rem;
+}
+
+.selection-level-cargando {
+  color: var(--sl-texto-tenue);
+  font-style: italic;
+  padding: 2rem 0;
+}
+
+/* flexbox en vez de grid: así las filas incompletas se centran en vez de
+   quedar pegadas a la izquierda. Cada celda es un BotonNivel, chica a
+   propósito (ver BotonNivel.css) porque cada modo puede tener 10-15
+   niveles — acá solo hace falta envolver y centrar, sin calcular anchos
+   fijos por fila. */
+.selection-level-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.selection-level-grid .boton-nivel {
+  flex: 0 1 96px;
+}

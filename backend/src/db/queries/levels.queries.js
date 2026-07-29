@@ -1,19 +1,47 @@
 const pool = require('../pool')
 
-async function getAllLevels() {
-  const { rows } = await pool.query(`
-    SELECT l.id, l.name, l.order_index, l.layout, l.created_at,
-           d.nombre AS dificultad_nombre
+// Shape del API Contract para el listado: {id, nombre, dificultad}
+// (dificultad = el slug, ej. "facil" — sin mapa, para no mandar de más
+// en la pantalla de selección de nivel).
+async function getAllLevels(dificultad) {
+  const params = []
+  let where = ''
+  if (dificultad) {
+    params.push(dificultad)
+    where = 'WHERE LOWER(d.nombre) = LOWER($1)'
+  }
+
+  const { rows } = await pool.query(
+    `
+    SELECT l.id, l.name AS nombre, d.nombre AS dificultad
     FROM levels l
     LEFT JOIN dificultad d ON d.id = l.dificultad_id
+    ${where}
     ORDER BY l.order_index ASC
-  `)
+    `,
+    params
+  )
   return rows
 }
 
+// Shape del API Contract para el detalle: {id, nombre, dificultad, mapa}
 async function getLevelById(id) {
-  const { rows } = await pool.query('SELECT * FROM levels WHERE id = $1', [id])
+  const { rows } = await pool.query(
+    `
+    SELECT l.id, l.name AS nombre, d.nombre AS dificultad, l.layout AS mapa
+    FROM levels l
+    LEFT JOIN dificultad d ON d.id = l.dificultad_id
+    WHERE l.id = $1
+    `,
+    [id]
+  )
   return rows[0] || null
+}
+
+// Para validar en POST /puntajes que el nivel exista de verdad.
+async function existsLevel(id) {
+  const { rows } = await pool.query('SELECT 1 FROM levels WHERE id = $1', [id])
+  return rows.length > 0
 }
 
 async function createLevel({ name, order_index, dificultad_id, layout }) {
@@ -42,4 +70,11 @@ async function deleteLevel(id) {
   return rowCount > 0
 }
 
-module.exports = { getAllLevels, getLevelById, createLevel, updateLevel, deleteLevel }
+module.exports = {
+  getAllLevels,
+  getLevelById,
+  existsLevel,
+  createLevel,
+  updateLevel,
+  deleteLevel,
+}

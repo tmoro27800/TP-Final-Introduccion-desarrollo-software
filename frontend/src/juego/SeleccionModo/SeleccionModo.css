@@ -1,0 +1,85 @@
+.selection-mode {
+  --sm-panel: #18151b;
+  --sm-borde: #2a2530;
+  --sm-texto: #f2ede4;
+  --sm-texto-tenue: #8b8690;
+  --sm-rojo: #b31e1e;
+  --sm-rojo-brillo: #e2453f;
+  --sm-oro: #e8b923;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  color: var(--sm-texto);
+  font-family: var(--font-pixel-secundario);
+}
+
+.selection-mode-container {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.selection-mode h1 {
+  font-family: var(--font-pixel);
+  font-weight: 800;
+  font-size: 2.25rem;
+  margin: 0 0 0.6rem;
+}
+
+.selection-mode-subtitulo {
+  color: var(--sm-texto-tenue);
+  font-size: 0.95rem;
+  margin: 0 0 3rem;
+}
+
+/* Sin panel/caja alrededor a propósito — la combinación de fuente de
+   título (--font-pixel) y de texto (--font-pixel-secundario) ya alcanza
+   para que se sienta cohesivo, no hace falta un borde encerrando todo. */
+
+/* Uno al lado del otro, no apilados. Los botones en sí (tamaño, hover,
+   estado presionado) los resuelve BotonPixelar con los sprites reales de
+   assets/SpriteSeleccionModo/BotonDificultad* — acá solo se agranda
+   el contenedor para que se noten más que antes. */
+.selection-mode-opciones {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2.5rem;
+}
+
+.selection-mode-opciones .pixel-button {
+  width: 13.5rem;
+}
+
+.selection-mode-opcion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.selection-mode-descripcion {
+  color: var(--sm-texto-tenue);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  max-width: 11rem;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .selection-mode-opciones {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.75rem;
+  }
+
+  .selection-mode-panel {
+    padding: 2rem 1.5rem;
+  }
+}

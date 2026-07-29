@@ -1,47 +1,48 @@
-.app-shell {
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Silkscreen:wght@400;700&display=swap');
+
+/* Dos fuentes pixel art que combinan entre sí, para todo el proyecto:
+   --font-pixel (Pixelify Sans) para títulos grandes — h1/h2, HUD, botón
+   volver (ver Ventana.css, Nivel.css, SeleccionModo.css,
+   SeleccionNivel.css, Puntaje.css, BotonVuelta.css).
+   --font-pixel-secundario (Silkscreen) para el texto de apoyo — bien
+   legible en bloques chicos de bitmap, a diferencia de Pixelify Sans que
+   a tamaño de párrafo se vuelve difícil de leer. Reemplaza a Inter en
+   todo lo que sea texto de UI (descripciones, botones, HUD, toasts).
+   JetBrains Mono se queda como está para los números (ya es lo bastante
+   "pixel" para stats/tiempos). */
+:root {
+  --font-pixel: "Pixelify Sans", "Press Start 2P", ui-monospace, monospace;
+  --font-pixel-secundario: "Silkscreen", "Pixelify Sans", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: #121212;
+  font-family: var(--font-pixel-secundario);
+  color: #f0f0f0;
+}
+
+/* Antes centraba con flex acá, pero cada pantalla (.game, .score,
+   .selection-mode, .selection-level, etc.) ya hace su propio
+   min-height:100vh + centrado interno — ese flex de más achicaba la
+   pantalla al ancho de su contenido en vez de ocupar el viewport
+   (ej: los botones de nivel colapsaban al ancho del número "1"/"2"). */
+#root {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  padding: 24px;
+  text-align: center;
 }
 
-.app-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.app-logo {
-  font-size: 22px;
-  letter-spacing: 2px;
-  color: var(--accent);
-  font-weight: 700;
-}
-
-.app-tag {
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.app-stage {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.4),
-    0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-.app-footer {
-  display: flex;
-  gap: 24px;
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 0.5px;
+button {
+  font-family: inherit;
+  cursor: pointer;
 }

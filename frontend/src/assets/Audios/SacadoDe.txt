@@ -1,0 +1,41 @@
+###########
+# SONIDOS #
+###########
+# Ultrakill #
+Mover el cubo (Dodge3)
+V1_hurt (Nivel reiniciado al instante)
+
+# FNATI #
+Abrir una puerta cerrada con llave (CAMOFF)
+
+# Pixabay.com #
+Falso glitch (data_pion-sfx19-crash-338379)
+
+# Sonic Mania #
+Laseres (HotaruLaser)
+Preparando Laseres (Targeting1)
+Agarrar una llave (BeanNode)
+Romper una caja (Impact6)
+Agarrar todas las llaves (LittlePlanet)
+Chocarse con una pared (Valve) + (Zap)
+Modo fantasma activado (LightsOut)
+Traspasar una pared con fantasma (BlueSphere2)
+Llegar a la meta (SSExit)
+Modo Fuerza (Fireball)
+
+###########
+# MUSICAS #
+###########
+
+# Ultrakill #
+Tutorial: Heaven Pierce Her - After Hours (ULTRAKILL 7-S Theme) - Hakita
+Intro del modo dificil: Heaven Pierce Her - Intro (Weihnachten Am Klavier) (ULTRAKILL P-2 Intro)
+
+# Helltaker #
+Niveles normales: Mittsies - Epitomize
+
+# Awaria #
+Niveles dificiles: Omnispeak Awaria OST
+
+# Oneshot #
+Menu del juego: OneShot OST - Geothermal

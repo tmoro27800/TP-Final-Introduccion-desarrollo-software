@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&display=swap');
+ 
+.score {
+  --score-bg: #0b0a0d;
+  --score-panel: #18151b;
+  --score-panel-alt: #1f1b23;
+  --score-borde: #2a2530;
+  --score-texto: #f2ede4;
+  --score-texto-tenue: #8b8690;
+  --score-rojo: #b31e1e;
+  --score-rojo-brillo: #e2453f;
+  --score-oro: #e8b923;
+  --score-plata: #c9ccd1;
+  --score-bronce: #cd7f32;
+ 
+  min-height: 100vh;
+  padding: 4rem 1.5rem 3rem;
+  color: var(--score-texto);
+  font-family: var(--font-pixel-secundario);
+}
+ 
+.score-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+ 
+.score-volver {
+  appearance: none;
+  border: 1px solid var(--score-borde);
+  background: transparent;
+  color: var(--score-texto-tenue);
+  font-family: var(--font-pixel-secundario);
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  margin-bottom: 1.75rem;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+ 
+.score-volver:hover {
+  color: var(--score-texto);
+  border-color: var(--score-rojo-brillo);
+  background: var(--score-panel);
+}
+ 
+.score-volver:focus-visible {
+  outline: 2px solid var(--score-rojo-brillo);
+  outline-offset: 2px;
+}
+ 
+.score h1 {
+  font-family: var(--font-pixel);
+  font-weight: 800;
+  font-size: 2.75rem;
+  text-align: center;
+  letter-spacing: 0.01em;
+  margin: 0 0 2rem;
+  position: relative;
+}
+ 
+.score h1::after {
+  content: "";
+  display: block;
+  width: 46px;
+  height: 3px;
+  margin: 0.9rem auto 0;
+  background: linear-gradient(90deg, transparent, var(--score-rojo-brillo), transparent);
+  border-radius: 2px;
+}
+ 
+/* ------------------------- filtros ------------------------- */
+ 
+/* dificultad y nivel en la misma fila, no una abajo de la otra, para no
+   alargar tanto la pantalla en vertical */
+.score-filtros {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 2.25rem;
+}
+ 
+.score-dificultades {
+  display: inline-flex;
+  padding: 4px;
+  background: var(--score-panel);
+  border: 1px solid var(--score-borde);
+  border-radius: 999px;
+  gap: 2px;
+}
+ 
+.score-dificultades button {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--score-texto-tenue);
+  font-family: var(--font-pixel-secundario);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+ 
+.score-dificultades button:hover {
+  color: var(--score-texto);
+}
+ 
+.score-dificultades button.activo {
+  background: linear-gradient(180deg, var(--score-rojo-brillo), var(--score-rojo));
+  color: #fff;
+  box-shadow: 0 2px 14px rgba(179, 30, 30, 0.45);
+}
+ 
+.score-dificultades button:focus-visible,
+#niveles-select:focus-visible {
+  outline: 2px solid var(--score-rojo-brillo);
+  outline-offset: 2px;
+}
+ 
+#niveles-select {
+  appearance: none;
+  background: var(--score-panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238b8690' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center;
+  color: var(--score-texto);
+  border: 1px solid var(--score-borde);
+  border-radius: 10px;
+  padding: 0.6rem 2.4rem 0.6rem 1rem;
+  font-family: var(--font-pixel-secundario);
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  min-width: 140px;
+  text-align: center;
+}
+ 
+/* el navegador dibuja el listado desplegado con fondo propio (blanco en la
+   mayoría de los casos), así que a las option hay que darles color explícito
+   o el texto queda claro-sobre-blanco e invisible */
+#niveles-select option {
+  background: var(--score-panel);
+  color: var(--score-texto);
+}
+ 
+/* ------------------------- tabla ------------------------- */
+ 
+.score-tabla-wrapper {
+  background: var(--score-panel);
+  border: 1px solid var(--score-borde);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6);
+}
+ 
+.score-tabla-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--score-rojo) var(--score-panel-alt);
+}
+ 
+.score-tabla-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+ 
+.score-tabla-scroll::-webkit-scrollbar-track {
+  background: var(--score-panel-alt);
+}
+ 
+.score-tabla-scroll::-webkit-scrollbar-thumb {
+  background: var(--score-rojo);
+  border-radius: 999px;
+}
+ 
+.score-tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+ 
+.score-tabla thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-family: var(--font-pixel-secundario);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--score-texto-tenue);
+  background: var(--score-panel-alt);
+  padding: 0.9rem 1rem;
+  text-align: left;
+  box-shadow: inset 0 -1px 0 var(--score-borde);
+}
+ 
+.score-tabla thead th:first-child {
+  text-align: center;
+  width: 64px;
+}
+ 
+.score-tabla thead th:nth-child(3),
+.score-tabla thead th:nth-child(4) {
+  text-align: right;
+}
+ 
+.score-vacio {
+  padding: 2.5rem 1rem !important;
+  text-align: center !important;
+  color: var(--score-texto-tenue);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+ 
+@media (max-width: 480px) {
+  .score h1 {
+    font-size: 2.1rem;
+  }
+ 
+  .score-tabla thead th {
+    padding: 0.7rem 0.6rem;
+    font-size: 0.62rem;
+  }
+}

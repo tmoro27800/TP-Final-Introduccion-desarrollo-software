@@ -1,0 +1,32 @@
+.pixel-button {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  width: 10rem;
+  image-rendering: pixelated; /* mantiene el look pixel art sin difuminar al escalar */
+}
+
+.pixel-button img {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+  pointer-events: none; /* el click lo maneja el <button>, no la imagen */
+  transition: transform 0.08s ease;
+}
+
+.pixel-button:hover img {
+  transform: translateY(-2px);
+}
+
+.pixel-button:active img {
+  transform: scale(0.96);
+}
+
+.pixel-button:focus-visible {
+  outline: 2px solid #e2453f;
+  outline-offset: 3px;
+}

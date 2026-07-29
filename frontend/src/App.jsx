@@ -1,24 +1,45 @@
-import Board from './game/Board.jsx'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Menu from './juego/Menu/Menu.jsx'
+import Puntaje from './juego/Puntaje/Puntaje.jsx'
+import Juego from './juego/Juego/Juego.jsx'
+
+import SeleccionModo from './juego/SeleccionModo/SeleccionModo.jsx'
+import SeleccionNivel from './juego/SeleccionNivel/SeleccionNivel.jsx'
+import AppFondo from './componentes/Fondos/AppFondo.jsx'
+import NoEncontrada from './errores/NoEncontrada.jsx'
+import { ConfiguracionProvider } from './juego/Configuracion/ConfiguracionContext.jsx'
+import { MusicaProvider } from './juego/Musica/MusicaContext.jsx'
+
 import './App.css'
 
-function App() {
-  return (
-    <div className="app-shell">
-      <header className="app-header">
-        <span className="app-logo">PUZZLE//2D</span>
-        <span className="app-tag">sistema de niveles &amp; ranking</span> 
-      </header>
+export default function App() {
+    return (
+        // ConfiguracionProvider por fuera de todo: cualquier pantalla
+        // (Menu, Juego, etc.) puede leer/cambiar controles, audio e idioma
+        // con useConfiguracion(). Ver juego/Configuracion/ConfiguracionContext.jsx.
+        // MusicaProvider necesita leer esa configuración (el toggle de
+        // musica), por eso va adentro.
+        <ConfiguracionProvider>
+        <MusicaProvider>
+        <BrowserRouter>
+        <AppFondo />
+        <Routes>
+            <Route path="/" element={<Menu />} />
 
-      <main className="app-stage">
-        <Board />
-      </main>
+            <Route path='/puntajes' element={<Puntaje/>} />
 
-      <footer className="app-footer">
-        <span>WASD / Flechas — mover</span>
-        <span>R — reiniciar nivel</span>
-      </footer>
-    </div>
-  )
-}
+            <Route path="/seleccion-modo" element={<SeleccionModo />} />
+            <Route path="/seleccion-nivel/:modoId" element={<SeleccionNivel />} />
+            <Route path="/juego" element={<Juego />} />
+            <Route path="/juego/:levelId" element={<Juego />} />
 
-export default App
+            {/* Paginas que no existen (404) */}
+            <Route path="*" element={<NoEncontrada />} />
+
+        </Routes>
+        </BrowserRouter>
+        </MusicaProvider>
+        </ConfiguracionProvider>
+    );
+};

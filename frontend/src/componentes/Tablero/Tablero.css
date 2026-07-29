@@ -1,0 +1,149 @@
+.tablero {
+  /* el tamaño de cada celda lo calcula Tablero.jsx (responsivo al tamaño
+     del nivel y de la ventana) e inyecta por gridTemplateColumns/Rows */
+  display: grid;
+  gap: 3px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  position: relative;
+}
+
+.tablero-cargando {
+  color: #8b8690;
+  font-style: italic;
+  font-size: 0.9rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* terreno: sprites de 32x32 (assets/SpriteCuboMapa/Escenario/), llenan la
+   celda entera. image-rendering:pixelated mantiene el look pixel art nítido
+   al escalar (las celdas pueden ser más grandes que el sprite original). */
+.tablero-celda {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+/* meta: el glow pulsante es el único aporte de CSS que queda, para que se
+   note de lejos cuál es el objetivo. Rojo intenso (no dorado) porque el
+   sprite del compañero ya no es amarillo — el dorado desentonaba. */
+.tablero-celda--meta {
+  box-shadow: 0 0 14px 2px rgba(226, 69, 63, 0.8);
+  animation: meta-pulso 1.6s ease-in-out infinite;
+}
+
+@keyframes meta-pulso {
+  0%, 100% {
+    box-shadow: 0 0 14px 2px rgba(226, 69, 63, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 24px 7px rgba(255, 59, 59, 0.95);
+  }
+}
+
+/* valor de mapa sin sprite todavía (mecánicas pendientes): se ve distinto
+   a propósito, para detectar rápido si al mapa se le coló un número sin
+   manejar */
+.tablero-celda--desconocido {
+  background: repeating-linear-gradient(
+    45deg,
+    #2a2530,
+    #2a2530 4px,
+    #18151b 4px,
+    #18151b 8px
+  );
+}
+
+/* puente en alerta (últimos 2 movimientos antes de colapsar): el sprite ya
+   muestra la grieta brillante, el parpadeo de brillo es lo que le suma
+   urgencia. Colapsado no necesita regla propia — reusa el sprite y la
+   animación del vacío (ver CeldaTerreno.jsx). */
+.tablero-celda--puente-alerta {
+  animation: puente-alerta 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes puente-alerta {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(0.55) saturate(2.2) hue-rotate(-20deg);
+  }
+}
+
+/* .tablero-jugador (y las demás capas del personaje: estela, partículas,
+   viento) viven en Jugador.css — Jugador.jsx las renderiza todas. */
+
+/* caja: sprite de 32x32, llena la celda igual que el terreno */
+.tablero-caja {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  z-index: 1;
+}
+
+/* llave: sprite chico (12x10), se muestra como ícono centrado igual que los
+   pickups, no estirado a la celda entera */
+.tablero-llave {
+  justify-self: center;
+  align-self: center;
+  width: 55%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 4px rgba(232, 185, 35, 0.7));
+  z-index: 2;
+}
+
+/* pickups: sprites más chicos que la celda (24x31) — se muestran como
+   ícono centrado, no estirados a la celda entera */
+.tablero-pickup {
+  justify-self: center;
+  align-self: center;
+  width: 70%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
+  z-index: 2;
+}
+
+/* efecto de power-up agarrado: sprite de 32x32 (tamaño normal de un tile),
+   se dibuja en la celda donde estaba el pickup. Transitorio, lo agrega y lo
+   saca solo useEfectoPowerUp.js. El sprite es gris y bastante translúcido
+   (se va desvaneciendo de frame a frame) — con mix-blend-mode: screen
+   quedaba lavado contra el fondo oscuro del tablero y prácticamente no se
+   notaba; ahora se dibuja normal, del tamaño de la celda (no más grande,
+   a diferencia de la caja destruida que sí desborda a propósito) y con un
+   glow blanco para que se note que "pasó algo" ahí. */
+.tablero-efecto-powerup {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.85));
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* efecto de caja destruida: sprite de 64x64 (el doble de un tile), se
+   dibuja centrado y desbordando la celda a propósito — mismo criterio que
+   el viento del personaje en Jugador.css. Transitorio, lo agrega y lo saca
+   solo useEfectosDestruccion.js. */
+.tablero-efecto-destruccion {
+  justify-self: center;
+  align-self: center;
+  width: 200%;
+  height: 200%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 3;
+  pointer-events: none;
+}
