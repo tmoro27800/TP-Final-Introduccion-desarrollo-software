@@ -1,15 +1,8 @@
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/Logo/Logo/Titulo0.png";
-import { useMusica } from "../juego/Musica/MusicaContext.jsx";
+import logo from "../assets/logo/logo.png";
 import "./NoEncontrada.css";
 
 export default function NoEncontrada() {
-    const { reproducir } = useMusica();
-    useEffect(() => {
-        reproducir("menu");
-    }, [reproducir]);
-
     return (
         <div className="not-found">
 
