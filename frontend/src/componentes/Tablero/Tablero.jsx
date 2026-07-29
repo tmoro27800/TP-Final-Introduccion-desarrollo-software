@@ -1,7 +1,13 @@
 import './Tablero.css'
-import { SPRITES_TERRENO, SPRITES_PICKUP, SPRITE_CAJA } from './sprites.js'
+import { SPRITE_CAJA, SPRITE_LLAVE } from './sprites.js'
 import Jugador from './Jugador.jsx'
-import { PINCHOS, LASER, BOTON, PUERTA, PUENTE, PLACA_PRESION } from '../../juego/Juego/tiposCelda.js'
+import CeldaTerreno from './CeldaTerreno.jsx'
+import Pickup from './Pickup.jsx'
+import EfectoCajaDestruida from './EfectoCajaDestruida.jsx'
+import EfectoPowerUp from './EfectoPowerUp.jsx'
+import { useEfectosDestruccion } from './useEfectosDestruccion.js'
+import { useEfectoPowerUp } from './useEfectoPowerUp.js'
+import { LASER, BOTON, PUERTA, PUENTE, PUERTA_CON_LLAVE } from '../../juego/Juego/tiposCelda.js'
 import { laserActivo } from '../../juego/Juego/motorJuego.js'
 
 // ----------------------------------------------------------------
@@ -13,38 +19,62 @@ import { laserActivo } from '../../juego/Juego/motorJuego.js'
 //  2  = Jugador (posición inicial)    (implementado — se extrae del
 //                                       mapa antes de llegar a Tablero,
 //                                       ver PrepararNivel.js)
-//  3  = Meta                          (implementado, sprite)
+//  3  = Meta                          (implementado, sprite animado)
 //  4  = Caja deslizante               (implementado, sprite)
 //  5  = Modo Fantasma                 (implementado, sprite)
-//  6  = Pinchos                       (implementado, CSS — sin sprite todavía)
+//  6  = Pinchos                       (implementado, sprite)
 //  7  = Teletransportador             (implementado, sprite)
 //  8  = Enemigos                      (descartado, no se va a implementar)
-//  9  = Rayo láser                    (implementado, CSS — sin sprite todavía)
+//  9  = Rayo láser                    (implementado, sprite animado)
 // 10  = Invulnerabilidad              (implementado, sprite)
-// 11  = Botón                         (implementado, CSS — sin sprite todavía)
-// 12  = Puerta                        (implementado, CSS — sin sprite todavía)
-// 13  = Lava                          (implementado, sprite)
-// 14  = Puente temporal               (implementado, CSS — sin sprite todavía)
+// 11  = Botón                         (implementado, sprite)
+// 12  = Puerta                        (implementado, sprite animado)
+// 13  = Lava                          (implementado, sprite animado)
+// 14  = Puente temporal               (implementado, sprite — 2 variantes +
+//                                       alerta; colapsado reusa el sprite
+//                                       de vacío)
 // 15  = Vacío (muerte instantánea)    (implementado, sprite)
-// 16  = Llave                         (implementado, CSS — sin sprite todavía)
-// 17  = Placa de presión (para cajas) (implementado, CSS — sin sprite todavía)
+// 16  = Llave                         (implementado, sprite)
+// 17  = Placa de presión (para cajas) (implementado, sprite)
 // 18  = Potenciador: destruir caja    (implementado, sprite)
+// 19  = Puerta con llave              (implementado, sprite animado —
+//                                       se desbloquea juntando TODAS las
+//                                       llaves del nivel, igual que la meta)
 // ----------------------------------------------------------------
-
-// Mecánicas sin sprite del compañero todavía: se dibujan con una clase CSS
-// propia (ver Tablero.css) en vez de <img>, para que cada una se distinga a
-// simple vista de "desconocido" real (un valor de mapa que no maneja nada).
-export const CLASES_SIN_SPRITE = {
-  [PINCHOS]: 'pinchos',
-  [LASER]: 'laser',
-  [BOTON]: 'boton',
-  [PUERTA]: 'puerta',
-  [PUENTE]: 'puente',
-  [PLACA_PRESION]: 'placa',
-}
 
 function buscarGrupoPuente(puentes, fila, columna) {
   return puentes.find((grupo) => grupo.celdas.some((c) => c.fila === fila && c.columna === columna))
+}
+
+// Para las mecánicas cuyo aspecto depende del estado de la partida (láser
+// on/off, botón presionado, puerta abierta/cerrada, puente activo/alerta/
+// colapsado): calcula qué corresponde mostrar en esta celda puntual.
+// CeldaTerreno.jsx recibe el resultado ya resuelto — no necesita saber nada
+// de botonesPresionados/puentes/puertaAbierta, solo pintar.
+function calcularEstadoCelda(valor, fila, columna, { movimientos, botonesPresionados, puertaAbierta, puertaConLlaveAbierta, puentes }) {
+  if (valor === LASER) {
+    return { laserEncendido: laserActivo(movimientos) }
+  }
+  if (valor === BOTON) {
+    return { botonPresionado: botonesPresionados.some((b) => b.fila === fila && b.columna === columna) }
+  }
+  if (valor === PUERTA) {
+    return { puertaAbierta }
+  }
+  if (valor === PUERTA_CON_LLAVE) {
+    return { puertaConLlaveAbierta }
+  }
+  if (valor === PUENTE) {
+    // alterna entre las 2 variantes del sprite según la posición, para que
+    // una fila de varias celdas de puente no se vea repetida a lo bobo
+    const estado = { puenteVariante: (fila + columna) % 2 }
+    const grupo = buscarGrupoPuente(puentes, fila, columna)
+    if (grupo?.colapsado) return { ...estado, modificador: 'colapsado' }
+    if (grupo?.activado && grupo.movimientosRestantes <= 2) return { ...estado, modificador: 'alerta' }
+    if (grupo?.activado) return { ...estado, modificador: 'activo' }
+    return estado
+  }
+  return {}
 }
 
 export default function Tablero({
@@ -55,11 +85,16 @@ export default function Tablero({
   pickups = [],
   habilidadActiva,
   ultimoIntento,
+  ultimoEvento,
   movimientos = 0,
   botonesPresionados = [],
   puentes = [],
   puertaAbierta = false,
+  puertaConLlaveAbierta = false,
 }) {
+  const efectosDestruccion = useEfectosDestruccion(ultimoEvento)
+  const efectoPowerUp = useEfectoPowerUp(ultimoEvento)
+
   // sin mapa todavía (ej: mientras el backend responde), mostramos
   // un estado de carga en vez de intentar dibujar algo vacío
   if (!mapa) {
@@ -92,73 +127,31 @@ export default function Tablero({
     >
       {mapa.map((fila, y) =>
         fila.map((valor, x) => {
-          const sprite = SPRITES_TERRENO[valor]
           const posicion = { gridRow: y + 1, gridColumn: x + 1 }
-
-          if (sprite) {
-            return (
-              <img
-                key={`${y}-${x}`}
-                src={sprite}
-                alt=""
-                draggable={false}
-                className={`tablero-celda${valor === 3 ? ' tablero-celda--meta' : ''}`}
-                style={posicion}
-              />
-            )
-          }
-
-          const claseSinSprite = CLASES_SIN_SPRITE[valor]
-          if (!claseSinSprite) {
-            // valor sin sprite Y sin CSS propio (mecánica realmente no
-            // implementada): patrón rayado, para detectar rápido si al
-            // mapa se le coló un número sin manejar.
-            return <div key={`${y}-${x}`} className="tablero-celda tablero-celda--desconocido" style={posicion} />
-          }
-
-          let modificador = ''
-          if (valor === LASER) {
-            modificador = laserActivo(movimientos) ? 'laser-activo' : 'laser-apagado'
-          } else if (valor === BOTON) {
-            modificador = botonesPresionados.some((b) => b.fila === y && b.columna === x) ? 'presionado' : ''
-          } else if (valor === PUERTA) {
-            modificador = puertaAbierta ? 'abierta' : 'cerrada'
-          } else if (valor === PLACA_PRESION) {
-            modificador = cajas.some((c) => c.fila === y && c.columna === x) ? 'activada' : ''
-          } else if (valor === PUENTE) {
-            const grupo = buscarGrupoPuente(puentes, y, x)
-            if (grupo?.colapsado) modificador = 'colapsado'
-            else if (grupo?.activado && grupo.movimientosRestantes <= 2) modificador = 'alerta'
-            else if (grupo?.activado) modificador = 'activo'
-          }
-
-          return (
-            <div
-              key={`${y}-${x}`}
-              className={`tablero-celda tablero-celda--${claseSinSprite}${modificador ? ` tablero-celda--${claseSinSprite}--${modificador}` : ''}`}
-              style={posicion}
-            />
-          )
+          const estado = calcularEstadoCelda(valor, y, x, {
+            movimientos,
+            botonesPresionados,
+            puertaAbierta,
+            puertaConLlaveAbierta,
+            puentes,
+          })
+          return <CeldaTerreno key={`${y}-${x}`} valor={valor} posicion={posicion} {...estado} />
         })
       )}
 
       {llaves.map((llave) => (
-        <div
+        <img
           key={`llave-${llave.fila}-${llave.columna}`}
+          src={SPRITE_LLAVE}
+          alt=""
+          draggable={false}
           className="tablero-llave"
           style={{ gridRow: llave.fila + 1, gridColumn: llave.columna + 1 }}
         />
       ))}
 
       {pickups.map((pickup) => (
-        <img
-          key={`pickup-${pickup.fila}-${pickup.columna}`}
-          src={SPRITES_PICKUP[pickup.tipo]}
-          alt=""
-          draggable={false}
-          className="tablero-pickup"
-          style={{ gridRow: pickup.fila + 1, gridColumn: pickup.columna + 1 }}
-        />
+        <Pickup key={`pickup-${pickup.fila}-${pickup.columna}`} tipo={pickup.tipo} fila={pickup.fila} columna={pickup.columna} />
       ))}
 
       {cajas.map((caja) => (
@@ -171,6 +164,12 @@ export default function Tablero({
           style={{ gridRow: caja.fila + 1, gridColumn: caja.columna + 1 }}
         />
       ))}
+
+      {efectosDestruccion.map((efecto) => (
+        <EfectoCajaDestruida key={efecto.id} fila={efecto.fila} columna={efecto.columna} />
+      ))}
+
+      {efectoPowerUp && <EfectoPowerUp key={efectoPowerUp.id} fila={efectoPowerUp.fila} columna={efectoPowerUp.columna} />}
 
       {jugador && <Jugador jugador={jugador} habilidadActiva={habilidadActiva} ultimoIntento={ultimoIntento} />}
     </div>

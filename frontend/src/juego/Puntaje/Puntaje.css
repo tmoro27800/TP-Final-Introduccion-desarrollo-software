@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&display=swap');
  
 .score {
   --score-bg: #0b0a0d;
@@ -16,7 +16,7 @@
   min-height: 100vh;
   padding: 4rem 1.5rem 3rem;
   color: var(--score-texto);
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-pixel-secundario);
 }
  
 .score-container {
@@ -29,7 +29,7 @@
   border: 1px solid var(--score-borde);
   background: transparent;
   color: var(--score-texto-tenue);
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-pixel-secundario);
   font-weight: 500;
   font-size: 0.85rem;
   padding: 0.5rem 1rem;
@@ -54,7 +54,7 @@
 }
  
 .score h1 {
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-pixel);
   font-weight: 800;
   font-size: 2.75rem;
   text-align: center;
@@ -101,7 +101,7 @@
   border: none;
   background: transparent;
   color: var(--score-texto-tenue);
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-pixel-secundario);
   font-weight: 600;
   font-size: 0.85rem;
   letter-spacing: 0.02em;
@@ -134,7 +134,7 @@
   border: 1px solid var(--score-borde);
   border-radius: 10px;
   padding: 0.6rem 2.4rem 0.6rem 1rem;
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-pixel-secundario);
   font-weight: 500;
   font-size: 0.9rem;
   cursor: pointer;
@@ -190,7 +190,7 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-pixel-secundario);
   font-weight: 600;
   font-size: 0.7rem;
   letter-spacing: 0.09em;

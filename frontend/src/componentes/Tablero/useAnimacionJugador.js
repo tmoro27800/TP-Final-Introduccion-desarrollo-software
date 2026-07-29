@@ -35,7 +35,12 @@ export function useAnimacionJugador({ habilidadActiva, ultimoIntento }) {
         setDireccionMirando(direccionTexto);
         setFrame(0);
 
-        if (!ultimoIntento.exitoso) {
+        // "error" cubre dos casos: un movimiento sin efecto (chocar contra
+        // una pared, empujar una caja trabada) y morir (lava/láser/vacío/
+        // puente colapsado) — ambos son "algo salió mal", y morir además
+        // mueve al jugador de vuelta al inicio, así que sin este chequeo se
+        // confundía con un paso caminando normal.
+        if (!ultimoIntento.exitoso || ultimoIntento.murio) {
             setAccion("error");
             return;
         }

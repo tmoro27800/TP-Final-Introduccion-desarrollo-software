@@ -10,6 +10,7 @@ import {
   PUERTA,
   PUENTE,
   PLACA_PRESION,
+  PUERTA_CON_LLAVE,
 } from "./tiposCelda.js";
 
 // Motor puro del juego: no importa nada de React, no toca el DOM. Recibe un
@@ -122,9 +123,10 @@ export function calcularSiguienteEstado(estado, direccion) {
 // pickups/pinchos/láser/botón se comportan exactamente igual atravesando
 // una pared que en un paso normal.
 //
-// Excepción: una PUERTA cerrada bloquea incluso a fantasma — si no, la
-// mecánica de botón/puerta no tendría sentido (cualquiera con fantasma se
-// la saltearía siempre). Por eso se chequea acá, antes de intentar el salto.
+// Excepción: una PUERTA (o PUERTA_CON_LLAVE) cerrada bloquea incluso a
+// fantasma — si no, la mecánica de botón/puerta (o llave/puerta) no tendría
+// sentido (cualquiera con fantasma se la saltearía siempre). Por eso se
+// chequea acá, antes de intentar el salto.
 function atravesarPared(estado, posPared, direccion) {
   if (estado.habilidadActiva !== "fantasma") return estado;
 
@@ -134,6 +136,7 @@ function atravesarPared(estado, posPared, direccion) {
   const valorDestino2 = estado.terreno[destino2.fila][destino2.columna];
   if (valorDestino2 === PARED) return estado; // pared reforzada: bloqueado
   if (valorDestino2 === PUERTA && !puertaAbierta(estado)) return estado; // puerta cerrada: bloqueado
+  if (valorDestino2 === PUERTA_CON_LLAVE && estado.llaves.length > 0) return estado; // faltan llaves: bloqueado
 
   const estadoSinFantasma = { ...estado, habilidadActiva: null };
   return resolverAterrizaje(estadoSinFantasma, destino2, direccion);
@@ -165,13 +168,18 @@ function resolverAterrizaje(estado, pos, direccion) {
   if (valor === LASER) return manejarLaser(estado, pos);
   if (valor === BOTON) return presionarBoton(estado, pos);
   if (valor === PUERTA) return manejarPuerta(estado, pos);
+  if (valor === PUERTA_CON_LLAVE) return manejarPuertaConLlave(estado, pos);
   if (valor === PUENTE) return manejarPuente(estado, pos);
 
   return moverJugadorA(estado, pos); // piso / placa de presión (transitable siempre)
 }
 
 function moverJugadorA(estado, pos, cambios = {}, pasosExtra = 0) {
-  return { ...estado, ...cambios, jugador: pos, movimientos: estado.movimientos + 1 + pasosExtra };
+  // ultimoEvento es puntual (un toast/efecto de "esto pasó ESTE turno") — si
+  // el movimiento no trae su propio evento en "cambios", hay que limpiarlo
+  // en vez de dejar que el spread de "estado" arrastre el de un turno
+  // anterior (ej. una muerte) para siempre hasta que otro evento lo pise.
+  return { ...estado, ultimoEvento: null, ...cambios, jugador: pos, movimientos: estado.movimientos + 1 + pasosExtra };
 }
 
 function recogerLlave(estado, pos) {
@@ -184,7 +192,7 @@ function recogerPickup(estado, pos, pickup) {
   return moverJugadorA(estado, pos, {
     pickups,
     habilidadActiva: pickup.tipo,
-    ultimoEvento: { tipo: `pickup-${pickup.tipo}`, id: Date.now() },
+    ultimoEvento: { tipo: `pickup-${pickup.tipo}`, id: Date.now(), posicion: pos },
   });
 }
 
@@ -243,7 +251,7 @@ function presionarBoton(estado, pos) {
   const botonesPresionados = yaPresionado ? estado.botonesPresionados : [...estado.botonesPresionados, pos];
   return moverJugadorA(estado, pos, {
     botonesPresionados,
-    ultimoEvento: yaPresionado ? estado.ultimoEvento : { tipo: "boton", id: Date.now() },
+    ...(yaPresionado ? {} : { ultimoEvento: { tipo: "boton", id: Date.now() } }),
   });
 }
 
@@ -257,6 +265,19 @@ function manejarPuerta(estado, pos) {
 export function puertaAbierta(estado) {
   if (estado.botonesPresionados.length > 0) return true;
   return estado.cajas.some((c) => estado.terreno[c.fila][c.columna] === PLACA_PRESION);
+}
+
+// Puerta con llave: transitable solo cuando se recogieron TODAS las llaves
+// del nivel (mismo gate que la meta, ver manejarMeta) — no hay
+// emparejamiento llave-puerta específico, es un desbloqueo global igual
+// que botón/puerta.
+function manejarPuertaConLlave(estado, pos) {
+  if (estado.llaves.length > 0) return estado; // bloqueada, faltan llaves
+  return moverJugadorA(estado, pos);
+}
+
+export function puertaConLlaveAbierta(estado) {
+  return estado.llaves.length === 0;
 }
 
 // Puente: al pisar por primera vez cualquier celda del grupo, arranca la
@@ -335,7 +356,7 @@ function empujarCaja(estado, posCaja, direccion) {
     const cajas = estado.cajas.filter((c) => !posIguales(c, posCaja));
     return moverJugadorA(estado, posCaja, {
       cajas,
-      ultimoEvento: { tipo: "caja-destruida", id: Date.now() },
+      ultimoEvento: { tipo: "caja-destruida", id: Date.now(), posicion: posCaja },
     });
   }
 
@@ -348,6 +369,7 @@ function empujarCaja(estado, posCaja, direccion) {
     valorSiguiente === LASER ||
     valorSiguiente === BOTON ||
     valorSiguiente === PUERTA ||
+    valorSiguiente === PUERTA_CON_LLAVE ||
     valorSiguiente === PUENTE ||
     valorSiguiente === META ||
     valorSiguiente === TELETRANSPORTADOR ||
@@ -369,7 +391,7 @@ function destruirCaja(estado, posCaja) {
     cajas,
     habilidadActiva: null,
     movimientos: estado.movimientos + 1,
-    ultimoEvento: { tipo: "caja-destruida", id: Date.now() },
+    ultimoEvento: { tipo: "caja-destruida", id: Date.now(), posicion: posCaja },
   };
 }
 

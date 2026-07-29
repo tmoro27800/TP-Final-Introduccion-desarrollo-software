@@ -1,35 +1,47 @@
+/* Antes esto era una píldora de CSS (borde, fondo, radio) con el sprite
+   metido adentro — dos lenguajes visuales distintos peleando (pixel art
+   chico + contenedor liso). Ahora no hay contenedor: el ícono (grande, se
+   nota el pixel art) y el texto (fuente pixel, ver App.css --font-pixel)
+   SON el botón, mismo criterio que BotonPixelar. */
 .back-button {
   appearance: none;
-  border: 1px solid #2a2530;
+  border: none;
   background: transparent;
-  color: #8b8690;
-  font-family: "Inter", sans-serif;
-  font-weight: 500;
-  font-size: 0.85rem;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
+  color: #b8b3ba;
+  font-family: var(--font-pixel);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  padding: 0.3rem 0.2rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.7rem;
   cursor: pointer;
   margin-bottom: 2rem;
-  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  transition: color 0.15s ease, transform 0.15s ease;
 }
 
+/* sprite nativo 57x32 — antes se achicaba a la altura del texto (1.1em,
+   ~15px) y quedaba un pixel art irreconocible. Ahora se muestra a un
+   tamaño donde el pixel art se nota, no una miniatura borrosa. */
 .back-button-icono {
-  height: 1.1em;
-  width: auto;
+  width: 2.4rem;
+  height: auto;
   image-rendering: pixelated;
   pointer-events: none;
+  display: block;
 }
 
 .back-button:hover {
   color: #f2ede4;
-  border-color: #e2453f;
-  background: #18151b;
+  transform: translateX(-4px);
+}
+
+.back-button:active {
+  transform: translateX(-4px) scale(0.96);
 }
 
 .back-button:focus-visible {
   outline: 2px solid #e2453f;
-  outline-offset: 2px;
+  outline-offset: 4px;
+  border-radius: 4px;
 }

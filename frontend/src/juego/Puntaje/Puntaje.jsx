@@ -3,10 +3,16 @@ import { useNavigate } from "react-router-dom";
 import FilaPuntaje from "../../componentes/FilaPuntaje/FilaPuntaje.jsx";
 import { getNivelesPorDificultad } from "../../servicios/nivelServicio.js";
 import { getPuntajesPorNivel } from "../../servicios/puntajeServicio.js";
+import { useMusica } from "../Musica/MusicaContext.jsx";
 import "./Puntaje.css";
 
 export default function Puntaje() {
     const navigate = useNavigate();
+
+    const { reproducir } = useMusica();
+    useEffect(() => {
+        reproducir("menu");
+    }, [reproducir]);
 
     const [dificultad, setDificultad] = useState("normal");
     const [niveles, setNiveles] = useState([]);

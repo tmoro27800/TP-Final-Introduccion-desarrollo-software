@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=JetBrains+Mono:wght@600&family=Inter:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&display=swap');
 
 /* Las variables de color (--game-panel, --game-borde, etc.) las define
    ".game" en ../Juego/Juego.css — Nivel.jsx siempre se monta adentro de
@@ -22,55 +22,27 @@
 
 /* ------------------- header ------------------- */
 
+/* grid de 3 columnas (no flex space-between) para que el título quede
+   centrado de verdad — antes dependía de que hubiera un botón de pausa
+   simétrico del otro lado, pero ese botón no hacía nada (sin onClick, un
+   resto sin terminar) y lo saqué. La 3ra columna queda vacía a propósito,
+   solo para que la 2da (el título) se siga centrando. */
 .game-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   width: 100%;
   margin-bottom: 1.25rem;
 }
 
-.game-volver,
-.game-pausa {
-  appearance: none;
-  border: 1px solid var(--game-borde);
-  background: var(--game-panel);
-  color: var(--game-texto-tenue);
-  font-family: "Inter", sans-serif;
-  font-weight: 500;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.game-volver {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.45rem 0.9rem;
-  border-radius: 999px;
-}
-
-.game-volver:hover {
-  color: var(--game-texto);
-  border-color: var(--game-rojo-brillo);
-}
-
-.game-pausa {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  font-size: 0.9rem;
-  line-height: 1;
-}
-
-.game-pausa:hover {
-  color: var(--game-texto);
-  border-color: var(--game-rojo-brillo);
+.game-header-volver {
+  justify-self: start;
+  margin-bottom: 0;
 }
 
 .game-titulo {
-  font-family: "Playfair Display", serif;
+  grid-column: 2;
+  font-family: var(--font-pixel);
   font-weight: 700;
   font-size: 1.15rem;
 }
@@ -85,10 +57,14 @@
   margin-bottom: 1rem;
 }
 
+/* marco de sprite (mismo "botón vacío" que ya se usa en selección de nivel/
+   menú) en vez de una caja de CSS lisa — pixel art de verdad, no solo un
+   borde de color. */
 .game-stat {
-  background: var(--game-panel);
-  border: 1px solid var(--game-borde);
-  border-radius: 10px;
+  background-image: url("../../assets/SpriteMenuPrincipal/CuadradoVacio/CuadradoVacio.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
   padding: 0.6rem 0.75rem;
   display: flex;
   flex-direction: column;
@@ -104,14 +80,10 @@
 }
 
 .game-stat-valor {
-  font-family: "JetBrains Mono", monospace;
-  font-weight: 600;
+  font-family: var(--font-pixel);
+  font-weight: 700;
   font-size: 1.15rem;
   color: var(--game-texto);
-}
-
-.game-stat--peligro {
-  border-color: rgba(226, 69, 63, 0.45);
 }
 
 .game-stat--peligro .game-stat-label {
@@ -186,7 +158,7 @@
 /* selector más específico que ".modal-contenido h2" (Ventana.css) a
    propósito, para pisar su estilo con borde izquierdo — acá va centrado */
 .game-victoria-contenido h2.game-victoria-titulo {
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-pixel);
   font-weight: 700;
   font-size: 1.3rem;
   color: var(--game-oro);
@@ -216,7 +188,7 @@
   color: var(--game-texto);
   border-radius: 8px;
   padding: 0.55rem 0.75rem;
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-pixel-secundario);
   font-size: 0.9rem;
 }
 
@@ -231,7 +203,7 @@
   border: 1px solid var(--game-oro);
   background: var(--game-oro);
   color: var(--game-panel);
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-pixel-secundario);
   font-weight: 600;
   font-size: 0.85rem;
   border-radius: 8px;
@@ -280,7 +252,7 @@
   border: 1px solid var(--game-borde);
   background: var(--game-panel-alt);
   color: var(--game-texto);
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-pixel-secundario);
   font-weight: 600;
   font-size: 0.85rem;
   border-radius: 8px;

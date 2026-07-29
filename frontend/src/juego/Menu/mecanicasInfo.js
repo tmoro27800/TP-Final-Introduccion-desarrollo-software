@@ -16,32 +16,49 @@ import {
   LLAVE,
   PLACA_PRESION,
   FUERZA,
+  PUERTA_CON_LLAVE,
   HABILIDAD_POR_PICKUP,
 } from "../Juego/tiposCelda.js";
-import { SPRITES_TERRENO, SPRITES_PICKUP, SPRITE_CAJA } from "../../componentes/Tablero/sprites.js";
-import { CLASES_SIN_SPRITE } from "../../componentes/Tablero/Tablero.jsx";
-
-// Estado "de vitrina" para las mecánicas que en el juego real cambian de
-// apariencia según cómo va la partida (láser activo/apagado, puerta
-// abierta/cerrada, etc.) — acá mostramos la versión más representativa de
-// cada una, no un estado dinámico real.
-const MODIFICADOR_VITRINA = {
-  [LASER]: "laser-activo",
-  [PUERTA]: "cerrada",
-};
+import {
+  SPRITES_TERRENO,
+  SPRITES_PICKUP,
+  SPRITE_CAJA,
+  SPRITE_LLAVE,
+  SPRITES_LAVA,
+  SPRITES_VACIO,
+  SPRITES_META,
+  SPRITES_PORTAL,
+  SPRITES_BOTON,
+  SPRITES_LASER,
+  SPRITES_PUERTA_PLACA,
+  SPRITES_PUERTA_CON_LLAVE,
+  SPRITES_PUENTE,
+} from "../../componentes/Tablero/sprites.js";
+import { CLASES_SIN_SPRITE } from "../../componentes/Tablero/celdaVisual.js";
 
 // Resuelve cómo dibujar cada mecánica en la lista: sprite real si ya lo
-// tenemos (mismo mapa que usa Tablero.jsx), si no el placeholder CSS. Así
-// el día que llegue un sprite nuevo aparece acá solo, sin tocar este
-// archivo.
+// tenemos (mismo criterio que usa CeldaTerreno.jsx en el tablero), si no el
+// placeholder CSS. Así el día que llegue un sprite nuevo aparece acá solo,
+// sin tocar este archivo. Láser/botón/lava/puertas tienen más de un estado
+// visual en el juego real — acá se muestra el más representativo de cada
+// uno (frame 0 = cerrada, para las puertas).
 export function resolverVisual(valor) {
   if (valor === CAJA) return { tipo: "img", src: SPRITE_CAJA };
-  if (valor in HABILIDAD_POR_PICKUP) return { tipo: "img", src: SPRITES_PICKUP[HABILIDAD_POR_PICKUP[valor]] };
-  if (valor === LLAVE) return { tipo: "llave" };
+  if (valor === LLAVE) return { tipo: "img", src: SPRITE_LLAVE };
+  if (valor in HABILIDAD_POR_PICKUP) return { tipo: "img", src: SPRITES_PICKUP[HABILIDAD_POR_PICKUP[valor]][0] };
+  if (valor === LAVA) return { tipo: "img", src: SPRITES_LAVA[0] };
+  if (valor === VACIO) return { tipo: "img", src: SPRITES_VACIO[0] };
+  if (valor === META) return { tipo: "img", src: SPRITES_META[0] };
+  if (valor === TELETRANSPORTADOR) return { tipo: "img", src: SPRITES_PORTAL[0] };
+  if (valor === BOTON) return { tipo: "img", src: SPRITES_BOTON[0] };
+  if (valor === LASER) return { tipo: "img", src: SPRITES_LASER.encendido[0] };
+  if (valor === PUERTA) return { tipo: "img", src: SPRITES_PUERTA_PLACA[0] };
+  if (valor === PUERTA_CON_LLAVE) return { tipo: "img", src: SPRITES_PUERTA_CON_LLAVE[0] };
+  if (valor === PUENTE) return { tipo: "img", src: SPRITES_PUENTE[0] };
   if (SPRITES_TERRENO[valor]) return { tipo: "img", src: SPRITES_TERRENO[valor] };
 
   const clase = CLASES_SIN_SPRITE[valor];
-  if (clase) return { tipo: "css", clase, modificador: MODIFICADOR_VITRINA[valor] };
+  if (clase) return { tipo: "css", clase };
 
   return null;
 }
@@ -118,5 +135,10 @@ export const MECANICAS = [
     valor: PUENTE,
     nombre: "Puente temporal",
     descripcion: "Al pisarlo por primera vez arranca una cuenta regresiva de 5 movimientos antes de colapsar.",
+  },
+  {
+    valor: PUERTA_CON_LLAVE,
+    nombre: "Puerta con llave",
+    descripcion: "Se desbloquea al juntar todas las llaves del nivel, con una animación de apertura.",
   },
 ];

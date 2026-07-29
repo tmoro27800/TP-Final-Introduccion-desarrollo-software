@@ -28,19 +28,20 @@
   image-rendering: pixelated;
 }
 
-/* meta: el sprite ya viene dorado — el glow pulsante es el único aporte
-   de CSS que queda, para que se note de lejos cuál es el objetivo */
+/* meta: el glow pulsante es el único aporte de CSS que queda, para que se
+   note de lejos cuál es el objetivo. Rojo intenso (no dorado) porque el
+   sprite del compañero ya no es amarillo — el dorado desentonaba. */
 .tablero-celda--meta {
-  box-shadow: 0 0 14px 2px rgba(232, 185, 35, 0.75);
+  box-shadow: 0 0 14px 2px rgba(226, 69, 63, 0.8);
   animation: meta-pulso 1.6s ease-in-out infinite;
 }
 
 @keyframes meta-pulso {
   0%, 100% {
-    box-shadow: 0 0 14px 2px rgba(232, 185, 35, 0.75);
+    box-shadow: 0 0 14px 2px rgba(226, 69, 63, 0.8);
   }
   50% {
-    box-shadow: 0 0 22px 6px rgba(232, 185, 35, 0.95);
+    box-shadow: 0 0 24px 7px rgba(255, 59, 59, 0.95);
   }
 }
 
@@ -57,95 +58,11 @@
   );
 }
 
-/* ------------------- mecánicas sin sprite todavía (placeholders CSS) ------------------- */
-
-/* pinchos: puntas metálicas sobre fondo oscuro */
-.tablero-celda--pinchos {
-  background:
-    radial-gradient(circle at 22% 25%, #dcdce2 0 14%, transparent 15%),
-    radial-gradient(circle at 65% 20%, #dcdce2 0 14%, transparent 15%),
-    radial-gradient(circle at 40% 65%, #dcdce2 0 14%, transparent 15%),
-    radial-gradient(circle at 80% 70%, #dcdce2 0 14%, transparent 15%),
-    radial-gradient(circle at 15% 80%, #dcdce2 0 14%, transparent 15%),
-    #2a2530;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.65);
-}
-
-/* láser: apagado = franja tenue, activo = franja roja brillante parpadeando */
-.tablero-celda--laser {
-  background: #18151b;
-  box-shadow: inset 0 0 0 1px rgba(226, 69, 63, 0.3);
-}
-
-.tablero-celda--laser--laser-apagado {
-  background: repeating-linear-gradient(90deg, #3a1414, #3a1414 3px, #18151b 3px, #18151b 8px);
-}
-
-.tablero-celda--laser--laser-activo {
-  background: repeating-linear-gradient(90deg, #ff4b4b, #ff4b4b 3px, #b31e1e 3px, #b31e1e 8px);
-  box-shadow: 0 0 16px 4px rgba(255, 59, 59, 0.85), inset 0 0 10px rgba(255, 255, 255, 0.35);
-  animation: laser-pulso 0.4s ease-in-out infinite alternate;
-}
-
-@keyframes laser-pulso {
-  from {
-    opacity: 0.82;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* botón: círculo gris (sin tocar) / verde con glow (presionado, permanente) */
-.tablero-celda--boton {
-  background: #18151b;
-  position: relative;
-}
-
-.tablero-celda--boton::after {
-  content: "";
-  position: absolute;
-  inset: 22%;
-  border-radius: 50%;
-  background: radial-gradient(circle, #8b8690, #4a4551);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 255, 255, 0.15);
-}
-
-.tablero-celda--boton--presionado::after {
-  background: radial-gradient(circle, #7be085, #2f9e3d);
-  box-shadow: 0 0 10px rgba(123, 224, 133, 0.8), inset 0 0 0 2px rgba(255, 255, 255, 0.25);
-}
-
-/* puerta: cerrada = tablones sólidos, abierta = hueca (deja ver que se puede pasar) */
-.tablero-celda--puerta--cerrada {
-  background: repeating-linear-gradient(0deg, #6b4a2a, #6b4a2a 4px, #4a3218 4px, #4a3218 8px);
-  box-shadow: inset 0 0 0 2px #2a1c0d, 0 0 6px rgba(0, 0, 0, 0.6);
-}
-
-.tablero-celda--puerta--abierta {
-  background: #100e12;
-  box-shadow: inset 0 0 0 2px rgba(139, 134, 144, 0.35);
-  opacity: 0.55;
-}
-
-/* placa de presión: marco gris (sin peso) / marco dorado con glow (con caja encima) */
-.tablero-celda--placa {
-  background: #18151b;
-  box-shadow: inset 0 0 0 3px #4a4551, inset 0 0 0 6px rgba(0, 0, 0, 0.4);
-}
-
-.tablero-celda--placa--activada {
-  box-shadow: inset 0 0 0 3px #e8b923, 0 0 10px rgba(232, 185, 35, 0.6);
-}
-
-/* puente: tablones de madera; activo = normal, alerta = parpadeo (últimos
-   movimientos), colapsado = agujero (igual que el vacío) */
-.tablero-celda--puente {
-  background: repeating-linear-gradient(90deg, #8a5a24, #8a5a24 6px, #6b4118 6px, #6b4118 10px);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
-}
-
-.tablero-celda--puente--alerta {
+/* puente en alerta (últimos 2 movimientos antes de colapsar): el sprite ya
+   muestra la grieta brillante, el parpadeo de brillo es lo que le suma
+   urgencia. Colapsado no necesita regla propia — reusa el sprite y la
+   animación del vacío (ver CeldaTerreno.jsx). */
+.tablero-celda--puente-alerta {
   animation: puente-alerta 0.5s ease-in-out infinite alternate;
 }
 
@@ -156,11 +73,6 @@
   to {
     filter: brightness(0.55) saturate(2.2) hue-rotate(-20deg);
   }
-}
-
-.tablero-celda--puente--colapsado {
-  background: #050308;
-  box-shadow: inset 0 0 12px 2px rgba(0, 0, 0, 0.9);
 }
 
 /* .tablero-jugador (y las demás capas del personaje: estela, partículas,
@@ -176,21 +88,17 @@
   z-index: 1;
 }
 
+/* llave: sprite chico (12x10), se muestra como ícono centrado igual que los
+   pickups, no estirado a la celda entera */
 .tablero-llave {
-  background: transparent;
+  justify-self: center;
+  align-self: center;
+  width: 55%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 4px rgba(232, 185, 35, 0.7));
   z-index: 2;
-}
-
-.tablero-llave::after {
-  content: "";
-  display: block;
-  width: 45%;
-  height: 45%;
-  margin: 27.5%;
-  background: #e8b923;
-  border-radius: 2px;
-  transform: rotate(45deg);
-  box-shadow: 0 0 6px rgba(232, 185, 35, 0.8);
 }
 
 /* pickups: sprites más chicos que la celda (24x31) — se muestran como
@@ -204,4 +112,38 @@
   image-rendering: pixelated;
   filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
   z-index: 2;
+}
+
+/* efecto de power-up agarrado: sprite de 32x32 (tamaño normal de un tile),
+   se dibuja en la celda donde estaba el pickup. Transitorio, lo agrega y lo
+   saca solo useEfectoPowerUp.js. El sprite es gris y bastante translúcido
+   (se va desvaneciendo de frame a frame) — con mix-blend-mode: screen
+   quedaba lavado contra el fondo oscuro del tablero y prácticamente no se
+   notaba; ahora se dibuja normal, del tamaño de la celda (no más grande,
+   a diferencia de la caja destruida que sí desborda a propósito) y con un
+   glow blanco para que se note que "pasó algo" ahí. */
+.tablero-efecto-powerup {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.85));
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* efecto de caja destruida: sprite de 64x64 (el doble de un tile), se
+   dibuja centrado y desbordando la celda a propósito — mismo criterio que
+   el viento del personaje en Jugador.css. Transitorio, lo agrega y lo saca
+   solo useEfectosDestruccion.js. */
+.tablero-efecto-destruccion {
+  justify-self: center;
+  align-self: center;
+  width: 200%;
+  height: 200%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 3;
+  pointer-events: none;
 }

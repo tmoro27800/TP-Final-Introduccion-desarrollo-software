@@ -4,28 +4,39 @@ import FilaControl from "../../componentes/FilaControl/FilaControl.jsx";
 import BotonPixelar from "../../componentes/BotonPixelar/BotonPixelar.jsx";
 import Ventana from "../../componentes/Ventana/Ventana.jsx";
 import { useConfiguracion } from "../Configuracion/ConfiguracionContext.jsx";
+import { useMusica } from "../Musica/MusicaContext.jsx";
+import { useCicloDeFrames } from "../../componentes/useCicloDeFrames.js";
 import { MECANICAS, resolverVisual } from "./mecanicasInfo.js";
 import "../../componentes/Tablero/Tablero.css";
 
-import titulo from "../../assets/SpriteMenuPrincipal/Titulo.png";
+import titulo0 from "../../assets/Logo/Logo/Titulo0.png";
+import titulo1 from "../../assets/Logo/Logo/Titulo1.png";
+import titulo2 from "../../assets/Logo/Logo/Titulo2.png";
+import titulo3 from "../../assets/Logo/Logo/Titulo3.png";
+import titulo4 from "../../assets/Logo/Logo/Titulo4.png";
 
-import botonJugar from "../../assets/SpriteMenuPrincipal/BotonJugar.png";
-import botonJugarHover from "../../assets/SpriteMenuPrincipal/Mouse/BotonJugar.png";
-import botonJugarClick from "../../assets/SpriteMenuPrincipal/Click/BotonJugar.png";
+import botonJugar from "../../assets/SpriteMenuPrincipal/BotonJugar/BotonJugar.png";
+import botonJugarHover from "../../assets/SpriteMenuPrincipal/BotonJugar/BotonJugarHover.png";
+import botonJugarClick from "../../assets/SpriteMenuPrincipal/BotonJugar/BotonJugarClick.png";
 
-import botonLeaderboard from "../../assets/SpriteMenuPrincipal/BotonLeaderboard.png";
-import botonLeaderboardHover from "../../assets/SpriteMenuPrincipal/Mouse/BotonLeaderboard.png";
-import botonLeaderboardClick from "../../assets/SpriteMenuPrincipal/Click/BotonLeaderboard.png";
+import botonLeaderboard from "../../assets/SpriteMenuPrincipal/BotonLeaderBoard/BotonLeaderboard.png";
+import botonLeaderboardHover from "../../assets/SpriteMenuPrincipal/BotonLeaderBoard/BotonLeaderboardHover.png";
+import botonLeaderboardClick from "../../assets/SpriteMenuPrincipal/BotonLeaderBoard/BotonLeaderboardClick.png";
 
-import botonAyuda from "../../assets/SpriteMenuPrincipal/BotonAyuda.png";
-import botonAyudaHover from "../../assets/SpriteMenuPrincipal/Mouse/BotonAyuda.png";
-import botonAyudaClick from "../../assets/SpriteMenuPrincipal/Click/BotonAyuda.png";
+import botonAyuda from "../../assets/SpriteMenuPrincipal/BotonAyuda/BotonAyuda.png";
+import botonAyudaHover from "../../assets/SpriteMenuPrincipal/BotonAyuda/BotonAyudaHover.png";
+import botonAyudaClick from "../../assets/SpriteMenuPrincipal/BotonAyuda/BotonAyudaClick.png";
 
-import botonConfiguracion from "../../assets/SpriteMenuPrincipal/BotonConfiguracion.png";
-import botonConfiguracionHover from "../../assets/SpriteMenuPrincipal/Mouse/BotonConfiguracion.png";
-import botonConfiguracionClick from "../../assets/SpriteMenuPrincipal/Click/BotonConfiguracion.png";
+import botonConfiguracion from "../../assets/SpriteMenuPrincipal/BotonConfiguracion/BotonConfiguracion.png";
+import botonConfiguracionHover from "../../assets/SpriteMenuPrincipal/BotonConfiguracion/BotonConfiguracionHover.png";
+import botonConfiguracionClick from "../../assets/SpriteMenuPrincipal/BotonConfiguracion/BotonConfiguracionClick.png";
 
 import "./Menu.css";
+
+// Módulo, no adentro del componente: useCicloDeFrames necesita una
+// referencia estable para no reiniciar la animación en cada render.
+const FRAMES_TITULO = [titulo0, titulo1, titulo2, titulo3, titulo4];
+const MS_POR_FRAME_TITULO = 180;
 
 export default function Menu() {
     const navigate = useNavigate();
@@ -45,6 +56,13 @@ export default function Menu() {
     // resto de la app (ej. EnEjecucion.js) vea los mismos valores.
     const { controles, actualizarControl, restaurarControles, audio, actualizarAudio, idioma, setIdioma } =
         useConfiguracion();
+
+    const { reproducir } = useMusica();
+    useEffect(() => {
+        reproducir("menu");
+    }, [reproducir]);
+
+    const tituloActual = useCicloDeFrames(FRAMES_TITULO, MS_POR_FRAME_TITULO);
 
     useEffect(() => {
         if (!teclaEsperando) return;
@@ -72,7 +90,7 @@ export default function Menu() {
     return (
         <div className="menu">
             <div className="menu-titulo-wrapper">
-                <img src={titulo} alt="Cube of Stars" className="menu-titulo" />
+                <img src={tituloActual} alt="Cube of Stars" className="menu-titulo" />
             </div>
 
             <nav className="menu-botones">
@@ -197,9 +215,6 @@ export default function Menu() {
                         <div className="mecanica-icono">
                             {visual?.tipo === "img" && (
                             <img src={visual.src} alt="" draggable={false} className="tablero-celda" />
-                            )}
-                            {visual?.tipo === "llave" && (
-                            <div className="tablero-llave" style={{ width: "100%", height: "100%" }} />
                             )}
                             {visual?.tipo === "css" && (
                             <div

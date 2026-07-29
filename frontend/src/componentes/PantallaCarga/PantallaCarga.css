@@ -64,7 +64,7 @@
 }
 
 .carga-mensaje {
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-pixel);
   font-weight: 700;
   font-size: 1.05rem;
   color: var(--carga-texto-tenue);

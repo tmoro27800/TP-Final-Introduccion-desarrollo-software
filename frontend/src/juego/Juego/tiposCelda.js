@@ -24,6 +24,9 @@ export const VACIO = 15;
 export const LLAVE = 16;
 export const PLACA_PRESION = 17;
 export const FUERZA = 18;
+// 8 quedó reservado para enemigos (descartado, ver Tablero.jsx) — por eso
+// esta mecánica nueva arranca en 19 en vez de reusar ese hueco.
+export const PUERTA_CON_LLAVE = 19;
 
 // Valores que en el mapa crudo representan una entidad parada sobre piso
 // (no son terreno en sí — la celda de terreno debajo es PISO).
@@ -46,6 +49,7 @@ export const VALORES_TERRENO = [
   PUERTA,
   PUENTE,
   PLACA_PRESION,
+  PUERTA_CON_LLAVE,
 ];
 
 // Pickups de habilidad: valor de celda -> nombre de habilidad que otorgan.

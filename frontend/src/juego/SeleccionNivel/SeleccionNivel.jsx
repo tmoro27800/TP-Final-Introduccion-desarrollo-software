@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import BotonVuelta from "../../componentes/BotonVuelta/BotonVuelta.jsx";
+import BotonNivel from "../../componentes/BotonNivel/BotonNivel.jsx";
 import PantallaCarga from "../../componentes/PantallaCarga/PantallaCarga.jsx";
 
 import { getNivelesPorDificultad } from "../../servicios/nivelServicio.js";
+import { useMusica } from "../Musica/MusicaContext.jsx";
 import "./SeleccionNivel.css";
 
 
@@ -21,6 +23,11 @@ export default function SeleccionNivel() {
 
     const [niveles, setNiveles] = useState([]);
     const [cargando, setCargando] = useState(true);
+
+    const { reproducir } = useMusica();
+    useEffect(() => {
+        reproducir("menu");
+    }, [reproducir]);
 
     useEffect(() => {
         setCargando(true);
@@ -46,13 +53,7 @@ export default function SeleccionNivel() {
                 {!cargando && niveles.length > 0 && (
                     <div className="selection-level-grid">
                         {niveles.map((nivel) => (
-                            <button
-                                key={nivel.id}
-                                className="selection-level-celda"
-                                onClick={() => navigate(`/juego/${nivel.id}`)}
-                            >
-                                {nivel.id}
-                            </button>
+                            <BotonNivel key={nivel.id} numero={nivel.id} onClick={() => navigate(`/juego/${nivel.id}`)} />
                         ))}
                     </div>
                 )}

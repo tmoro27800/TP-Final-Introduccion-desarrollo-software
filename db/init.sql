@@ -78,6 +78,24 @@ INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
 INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
     ('Nivel 5', 5, 2, '[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,16,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,0,0,1,1,1,1,1,0,1,1,1,1,0,0,1,1,7,1,7,0,0,1,1,1,1,1],[1,2,0,4,16,0,5,1,1,0,0,6,0,10,0,4,12,9,0,13,0,18,4,14,14,14,3,1],[1,1,1,0,1,1,1,1,1,1,0,0,0,1,1,17,1,1,1,1,1,1,15,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]');
 
+-- Nivel con TODAS las mecánicas implementadas, incluida la puerta con
+-- llave (PUERTA_CON_LLAVE) que ningún nivel anterior probaba todavía.
+-- Fila 3 = corredor principal; filas 1-2 y 4 = desvíos/alcobas (mismo
+-- criterio que Nivel 5).
+-- Recorrido: llave 1 -> empujar la caja hacia la alcoba de arriba sobre la
+-- placa de presión (abre la puerta de la columna 6) -> tocar el botón
+-- (columna 7, no hace falta para esta puerta, es solo para probarlo) ->
+-- agarrar Fantasma y saltar hacia ARRIBA (pared doble a la derecha, para
+-- que no se pueda saltear la bóveda) a buscar la llave 2 -> al salir con
+-- las dos llaves ya juntadas, la puerta con llave (columna 12) se abre
+-- sola, con animación, justo al llegar -> pinchos sin protección (+3
+-- movimientos, o desvío gratis por la fila 4) -> Invulnerabilidad ->
+-- cronometrar el láser -> lava (con la invulnerabilidad guardada) ->
+-- Fuerza para destruir la segunda caja (o empujarla al vacío de la fila 4,
+-- columna 24) -> cruzar el puente -> meta.
+INSERT INTO levels (name, order_index, dificultad_id, layout) VALUES
+    ('Nivel 6', 6, 2, '[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,16,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,7,1,7,1,0,0,1,1,1,1,1],[1,2,0,16,0,4,12,11,5,1,1,0,19,0,6,0,10,9,0,0,13,0,0,18,4,14,14,14,3,1],[1,1,1,1,1,17,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,15,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]');
+
 --3. puntuaciones
 
 CREATE TABLE scores (

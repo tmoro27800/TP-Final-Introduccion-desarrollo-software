@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Tablero from "../../componentes/Tablero/Tablero.jsx";
 import Ventana from "../../componentes/Ventana/Ventana.jsx";
+import BotonVuelta from "../../componentes/BotonVuelta/BotonVuelta.jsx";
 import useJuego from "../Juego/EnEjecucion.js";
 import { crearPuntaje } from "../../servicios/puntajeServicio.js";
 import { getNivelesPorDificultad } from "../../servicios/nivelServicio.js";
+import { useMusica } from "../Musica/MusicaContext.jsx";
 import "./Nivel.css";
 
 // Texto del toast que se muestra un momento tras cada evento del motor
@@ -45,8 +47,16 @@ export default function Nivel({ nivel, onVolver }) {
         botonesPresionados,
         puentes,
         puertaAbierta,
+        puertaConLlaveAbierta,
         reiniciarCompleto,
     } = useJuego(nivel);
+
+    // nivel.dificultad ya viene como "normal"/"dificil" — coincide 1 a 1 con
+    // las pistas que conoce MusicaContext, sin necesidad de mapear nada.
+    const { reproducir } = useMusica();
+    useEffect(() => {
+        reproducir(nivel.dificultad);
+    }, [reproducir, nivel.dificultad]);
 
     const [primerMovimiento, setPrimerMovimiento] = useState(false);
     const [tiempo, setTiempo] = useState(0);
@@ -146,13 +156,8 @@ export default function Nivel({ nivel, onVolver }) {
         <div className="game">
             <div className="game-container">
                 <div className="game-header">
-                    <button className="game-volver" onClick={onVolver}>
-                        <span aria-hidden="true">←</span> Volver
-                    </button>
+                    <BotonVuelta label="Volver" onClick={onVolver} className="game-header-volver" />
                     <span className="game-titulo">{nivel.nombre}</span>
-                    <button className="game-pausa" aria-label="Pausar">
-                        <span aria-hidden="true">‖</span>
-                    </button>
                 </div>
 
                 <div className="game-stats">
@@ -197,10 +202,12 @@ export default function Nivel({ nivel, onVolver }) {
                         pickups={pickups}
                         habilidadActiva={habilidadActiva}
                         ultimoIntento={ultimoIntento}
+                        ultimoEvento={ultimoEvento}
                         movimientos={movimientos}
                         botonesPresionados={botonesPresionados}
                         puentes={puentes}
                         puertaAbierta={puertaAbierta}
+                        puertaConLlaveAbierta={puertaConLlaveAbierta}
                     />
                 </div>
 

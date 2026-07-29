@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=swap');
-
 /* Shell de página del nivel: lo usan tanto los estados de carga/error de
    Juego.jsx como el contenido real que renderiza Nivel.jsx dentro — por
    eso vive acá (el wrapper de datos) y no en Nivel.css (el contenido). */
@@ -19,7 +17,7 @@
   align-items: center;
   padding: 2rem 1.5rem;
   color: var(--game-texto);
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-pixel-secundario);
 }
 
 .game-cargando {
