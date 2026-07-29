@@ -1,11 +1,9 @@
 import { api } from './api';
 
-// GET: Obtener todas las dificultades — [{ id, nombre, descripcion }].
-// Usado en: SeleccionModo.jsx (para no tener la descripción de cada modo
-// hardcodeada dos veces, ver dificultad.descripcion en la base).
+// GET: Obtener todas las dificultades
 export const getDificultades = async () => {
-    const response = await api.get('/api/dificultades');
-    return response.data;
+    return api.get('/api/dificultades');
+
 };
 
 // GET: Obtener todos los niveles de una dificultad

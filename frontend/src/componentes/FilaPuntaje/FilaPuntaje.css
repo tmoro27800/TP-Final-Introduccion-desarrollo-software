@@ -71,8 +71,7 @@
 /* ------------------- nombre ------------------- */
  
 .score-nombre {
-  text-align: left;
-  font-family: var(--font-pixel-secundario);
+  font-family: "Inter", sans-serif;
   font-weight: 500;
   font-size: 0.95rem;
   color: #f2ede4;
@@ -83,7 +82,7 @@
 .score-movimientos,
 .score-tiempo {
   text-align: right;
-  font-family: var(--font-pixel);
+  font-family: "JetBrains Mono", monospace;
   font-variant-numeric: tabular-nums;
   font-size: 0.9rem;
   color: #f2ede4;

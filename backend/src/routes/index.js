@@ -15,7 +15,7 @@ router.use('/niveles', require('./levels.routes'))
 
 router.use('/puntajes', require('./puntajes.routes'))
 
-router.use('/consejos', require('./consejos.routes'))
-router.use('/obstaculos', require('./obstaculos.routes'))
+router.use('/pistas', require('./pistas.routes'))
+router.use('/powerups', require('./powerups.routes'))
 
 module.exports = router

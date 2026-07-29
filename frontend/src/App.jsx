@@ -9,7 +9,6 @@ import SeleccionNivel from './juego/SeleccionNivel/SeleccionNivel.jsx'
 import AppFondo from './componentes/Fondos/AppFondo.jsx'
 import NoEncontrada from './errores/NoEncontrada.jsx'
 import { ConfiguracionProvider } from './juego/Configuracion/ConfiguracionContext.jsx'
-import { MusicaProvider } from './juego/Musica/MusicaContext.jsx'
 
 import './App.css'
 
@@ -18,10 +17,7 @@ export default function App() {
         // ConfiguracionProvider por fuera de todo: cualquier pantalla
         // (Menu, Juego, etc.) puede leer/cambiar controles, audio e idioma
         // con useConfiguracion(). Ver juego/Configuracion/ConfiguracionContext.jsx.
-        // MusicaProvider necesita leer esa configuración (el toggle de
-        // musica), por eso va adentro.
         <ConfiguracionProvider>
-        <MusicaProvider>
         <BrowserRouter>
         <AppFondo />
         <Routes>
@@ -39,7 +35,6 @@ export default function App() {
 
         </Routes>
         </BrowserRouter>
-        </MusicaProvider>
         </ConfiguracionProvider>
     );
 };

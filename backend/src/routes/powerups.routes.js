@@ -1,13 +1,11 @@
 const express = require('express')
-const { dificultad } = require('../db/queries')
+const { powerups } = require('../db/queries')
 
 const router = express.Router()
 
-// GET /api/dificultades — shape exacto del API Contract:
-// [{ id: "normal", nombre: "Normal" }, ...]  ("id" es el slug, no el PK numérico)
 router.get('/', async (req, res) => {
   try {
-    const data = await dificultad.getAllDificultadesContrato()
+    const data = await powerups.getAllPowerups()
     res.json(data)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -16,7 +14,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const data = await dificultad.getDificultadById(req.params.id)
+    const data = await powerups.getPowerupById(req.params.id)
     if (!data) return res.status(404).json({ error: 'No encontrado' })
     res.json(data)
   } catch (err) {
@@ -26,19 +24,11 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { nombre, nombre_visible, orden, descripcion, multiplicador_puntaje } = req.body
-    if (!nombre || !nombre_visible || orden === undefined || !descripcion) {
-      return res.status(400).json({
-        error: 'Faltan campos: "nombre", "nombre_visible", "orden" y "descripcion" son obligatorios',
-      })
+    const { nombre, descripcion, tipo, valor, dificultad_id } = req.body
+    if (!nombre || !tipo) {
+      return res.status(400).json({ error: 'Faltan campos: "nombre" y "tipo" son obligatorios' })
     }
-    const data = await dificultad.createDificultad({
-      nombre,
-      nombre_visible,
-      orden,
-      descripcion,
-      multiplicador_puntaje,
-    })
+    const data = await powerups.createPowerup({ nombre, descripcion, tipo, valor, dificultad_id })
     res.status(201).json(data)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -47,13 +37,13 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const { nombre, nombre_visible, orden, descripcion, multiplicador_puntaje } = req.body
-    const data = await dificultad.updateDificultad(req.params.id, {
+    const { nombre, descripcion, tipo, valor, dificultad_id } = req.body
+    const data = await powerups.updatePowerup(req.params.id, {
       nombre,
-      nombre_visible,
-      orden,
       descripcion,
-      multiplicador_puntaje,
+      tipo,
+      valor,
+      dificultad_id,
     })
     if (!data) return res.status(404).json({ error: 'No encontrado' })
     res.json(data)
@@ -64,7 +54,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await dificultad.deleteDificultad(req.params.id)
+    const deleted = await powerups.deletePowerup(req.params.id)
     if (!deleted) return res.status(404).json({ error: 'No encontrado' })
     res.status(204).send()
   } catch (err) {
