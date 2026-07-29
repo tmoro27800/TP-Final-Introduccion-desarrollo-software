@@ -6,7 +6,8 @@ import Ventana from "../../componentes/Ventana/Ventana.jsx";
 import { useConfiguracion } from "../Configuracion/ConfiguracionContext.jsx";
 import { useMusica } from "../Musica/MusicaContext.jsx";
 import { useCicloDeFrames } from "../../componentes/useCicloDeFrames.js";
-import { MECANICAS, resolverVisual } from "./mecanicasInfo.js";
+import { obstaculoAMecanica, resolverVisual } from "./mecanicasInfo.js";
+import { getObstaculos } from "../../servicios/obstaculoServicio.js";
 import "../../componentes/Tablero/Tablero.css";
 
 import titulo0 from "../../assets/Logo/Logo/Titulo0.png";
@@ -50,6 +51,17 @@ export default function Menu() {
 
     const [vistaConfig, setVistaConfig] = useState("principal"); // "principal" | "controles"
     const [teclaEsperando, setTeclaEsperando] = useState(null); // qué acción está esperando una tecla nueva
+
+    // Glosario de mecánicas (modal "Cómo jugar > Mecánicas"): antes un
+    // array hardcodeado acá mismo, ahora sale de la tabla `obstaculos` del
+    // backend — se pide una sola vez al montar el menú, no hace falta
+    // esperar a que se abra el modal.
+    const [mecanicas, setMecanicas] = useState([]);
+    useEffect(() => {
+        getObstaculos()
+            .then((data) => setMecanicas(data.map(obstaculoAMecanica)))
+            .catch(() => setMecanicas([]));
+    }, []);
 
     // Controles/audio/idioma viven en ConfiguracionContext (sesión-only,
     // ver ConfiguracionContext.jsx) — no en estado local — para que el
@@ -208,7 +220,7 @@ export default function Menu() {
 
                 {vistaAyuda === "mecanicas" && (
                 <div className="mecanicas-lista">
-                    {MECANICAS.map((mecanica) => {
+                    {mecanicas.map((mecanica) => {
                     const visual = resolverVisual(mecanica.valor);
                     return (
                         <div className="mecanica-item" key={mecanica.valor}>

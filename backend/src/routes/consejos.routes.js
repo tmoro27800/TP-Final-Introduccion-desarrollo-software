@@ -1,22 +1,15 @@
 const express = require('express')
-const { pistas, levels } = require('../db/queries')
+const { consejos, levels } = require('../db/queries')
 
 const router = express.Router()
 
+// GET /api/consejos?nivel=<id> — todos los consejos de un nivel, ordenados
+// (para revelar de a uno del lado del frontend). Sin "?nivel=", todos.
 router.get('/', async (req, res) => {
   try {
     const data = req.query.nivel
-      ? await pistas.getPistasByLevel(req.query.nivel)
-      : await pistas.getAllPistas()
-    res.json(data)
-  } catch (err) {
-    res.status(500).json({ error: err.message })
-  }
-})
-
-router.get('/level/:level_id', async (req, res) => {
-  try {
-    const data = await pistas.getPistasByLevel(req.params.level_id)
+      ? await consejos.getConsejosByLevel(req.query.nivel)
+      : await consejos.getAllConsejos()
     res.json(data)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -25,7 +18,7 @@ router.get('/level/:level_id', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const data = await pistas.incrementarUso(req.params.id)
+    const data = await consejos.getConsejoById(req.params.id)
     if (!data) return res.status(404).json({ error: 'No encontrado' })
     res.json(data)
   } catch (err) {
@@ -45,7 +38,7 @@ router.post('/', async (req, res) => {
     if (!existeNivel) {
       return res.status(400).json({ error: `level_id inválido: "${level_id}"` })
     }
-    const data = await pistas.createPista({ level_id, texto, orden, tipo })
+    const data = await consejos.createConsejo({ level_id, texto, orden, tipo })
     res.status(201).json(data)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -54,7 +47,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const existente = await pistas.getPistaById(req.params.id)
+    const existente = await consejos.getConsejoById(req.params.id)
     if (!existente) return res.status(404).json({ error: 'No encontrado' })
 
     const { texto, orden, tipo } = req.body
@@ -62,7 +55,7 @@ router.put('/:id', async (req, res) => {
       return res.status(400).json({ error: 'Faltan campos: "texto" y "orden" son obligatorios' })
     }
 
-    const data = await pistas.updatePista(req.params.id, { texto, orden, tipo })
+    const data = await consejos.updateConsejo(req.params.id, { texto, orden, tipo })
     res.json(data)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -71,7 +64,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await pistas.deletePista(req.params.id)
+    const deleted = await consejos.deleteConsejo(req.params.id)
     if (!deleted) return res.status(404).json({ error: 'No encontrado' })
     res.status(204).send()
   } catch (err) {

@@ -36,6 +36,34 @@ import {
 } from "../../componentes/Tablero/sprites.js";
 import { CLASES_SIN_SPRITE } from "../../componentes/Tablero/celdaVisual.js";
 
+// El texto (nombre/descripción) de cada mecánica ahora sale de la tabla
+// `obstaculos` del backend (ver servicios/obstaculoServicio.js) — antes
+// estaba hardcodeado en un array acá mismo. El SPRITE sigue siendo cosa
+// del frontend (son assets empaquetados, no tiene sentido moverlos a la
+// base), así que hace falta este mapa para pasar del slug que manda el
+// backend (obstaculo.nombre, ej. "lava") al valor numérico de celda que
+// entiende resolverVisual() (ver tiposCelda.js).
+export const NOMBRE_A_VALOR = {
+  piso: PISO,
+  pared: PARED,
+  meta: META,
+  caja: CAJA,
+  llave: LLAVE,
+  fantasma: FANTASMA,
+  invulnerabilidad: INVULNERABILIDAD,
+  fuerza: FUERZA,
+  pinchos: PINCHOS,
+  lava: LAVA,
+  vacio: VACIO,
+  teletransportador: TELETRANSPORTADOR,
+  laser: LASER,
+  boton: BOTON,
+  puerta: PUERTA,
+  placa_presion: PLACA_PRESION,
+  puente: PUENTE,
+  puerta_con_llave: PUERTA_CON_LLAVE,
+};
+
 // Resuelve cómo dibujar cada mecánica en la lista: sprite real si ya lo
 // tenemos (mismo criterio que usa CeldaTerreno.jsx en el tablero), si no el
 // placeholder CSS. Así el día que llegue un sprite nuevo aparece acá solo,
@@ -63,82 +91,13 @@ export function resolverVisual(valor) {
   return null;
 }
 
-// Orden pensado para leerse como un recorrido: lo básico primero, después
-// los pickups, los peligros estáticos, el portal, y por último las
-// mecánicas interactivas más nuevas.
-export const MECANICAS = [
-  { valor: PISO, nombre: "Piso", descripcion: "Espacio libre. Se camina sin restricciones." },
-  { valor: PARED, nombre: "Pared", descripcion: "Bloquea el paso. Con Fantasma activo se puede atravesar una." },
-  {
-    valor: META,
-    nombre: "Meta",
-    descripcion: "Objetivo del nivel. No se puede pisar si todavía quedan llaves sin recoger.",
-  },
-  {
-    valor: CAJA,
-    nombre: "Caja",
-    descripcion: "Se empuja moviéndose contra ella. No se puede empujar sobre otra caja ni sobre un obstáculo sólido.",
-  },
-  { valor: LLAVE, nombre: "Llave", descripcion: "Se recoge al pisarla. Hacen falta todas para poder pisar la meta." },
-  {
-    valor: FANTASMA,
-    nombre: "Modo fantasma",
-    descripcion: "Pickup. El siguiente paso puede atravesar una pared, si la celda de después es transitable.",
-  },
-  {
-    valor: INVULNERABILIDAD,
-    nombre: "Invulnerabilidad",
-    descripcion: "Pickup. Protege de morir en el próximo peligro (lava o pinchos); se consume al usarse.",
-  },
-  {
-    valor: FUERZA,
-    nombre: "Modo fuerza",
-    descripcion: "Pickup. El siguiente choque contra una caja la destruye en vez de empujarla.",
-  },
-  {
-    valor: PINCHOS,
-    nombre: "Pinchos",
-    descripcion: "No matan. Pisarlos suma 3 movimientos al contador, salvo con Invulnerabilidad activa.",
-  },
-  { valor: LAVA, nombre: "Lava", descripcion: "Mata al pisarla, salvo con Invulnerabilidad activa." },
-  {
-    valor: VACIO,
-    nombre: "Vacío",
-    descripcion: "Muerte instantánea al pisarlo. Si se empuja una caja adentro, la caja se destruye pero se avanza.",
-  },
-  {
-    valor: TELETRANSPORTADOR,
-    nombre: "Teletransportador",
-    descripcion: "Siempre hay dos en el mapa. Pisar uno manda directo al otro.",
-  },
-  {
-    valor: LASER,
-    nombre: "Rayo láser",
-    descripcion: "Cicla prendido/apagado cada 3 movimientos. Si está prendido al entrar, mata sin excepción.",
-  },
-  {
-    valor: BOTON,
-    nombre: "Botón",
-    descripcion: "Al tocarlo queda presionado para siempre y abre todas las puertas del nivel.",
-  },
-  {
-    valor: PUERTA,
-    nombre: "Puerta",
-    descripcion: "Bloquea el paso hasta que se presione algún botón o una caja quede sobre una placa de presión.",
-  },
-  {
-    valor: PLACA_PRESION,
-    nombre: "Placa de presión",
-    descripcion: "Se activa con el peso de una caja (no con el jugador). Abre puertas mientras la caja siga encima.",
-  },
-  {
-    valor: PUENTE,
-    nombre: "Puente temporal",
-    descripcion: "Al pisarlo por primera vez arranca una cuenta regresiva de 5 movimientos antes de colapsar.",
-  },
-  {
-    valor: PUERTA_CON_LLAVE,
-    nombre: "Puerta con llave",
-    descripcion: "Se desbloquea al juntar todas las llaves del nivel, con una animación de apertura.",
-  },
-];
+// Convierte una fila de la tabla obstaculos (ver servicios/obstaculoServicio.js)
+// en el shape que espera el render de Menu.jsx: { valor, nombre, descripcion }.
+// Ya viene ordenada por "orden" desde el backend.
+export function obstaculoAMecanica(obstaculo) {
+  return {
+    valor: NOMBRE_A_VALOR[obstaculo.nombre],
+    nombre: obstaculo.nombre_visible,
+    descripcion: obstaculo.descripcion,
+  };
+}

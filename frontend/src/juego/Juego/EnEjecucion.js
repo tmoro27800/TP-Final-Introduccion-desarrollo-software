@@ -7,6 +7,8 @@ import {
     reiniciarNivelCompleto,
     puertaAbierta,
     puertaConLlaveAbierta,
+    chocoConPared,
+    pisoLaserApagado,
 } from "./motorJuego.js";
 
 // Las flechas son una alternativa FIJA a los controles configurables —
@@ -101,7 +103,17 @@ export default function useJuego(nivelPreparado) {
             // "muerte-<motivo>" — así useAnimacionJugador.js distingue "murió
             // y lo tele transportó al inicio" de un paso normal (que también
             // mueve al jugador, pero no debería jugar la animación de golpe).
-            const murio = exitoso && siguiente.ultimoEvento?.tipo?.startsWith("muerte-") === true;
+            const tipoEvento = siguiente.ultimoEvento?.tipo;
+            const murio = exitoso && tipoEvento?.startsWith("muerte-") === true;
+            const motivoMuerte = murio ? tipoEvento.slice("muerte-".length) : null;
+
+            // El resto son solo para useSonidosDeJuego.js (ver motorJuego.js:
+            // chocoConPared/pisoLaserApagado para el porqué de calcularlos acá
+            // en vez de en el motor).
+            const chocoPared = !exitoso && chocoConPared(estadoActual, direccion);
+            const pisoLaserSeguro = exitoso && !murio && pisoLaserApagado(estadoActual, direccion);
+            const atravesoPared =
+                exitoso && !murio && estadoActual.habilidadActiva === "fantasma" && siguiente.habilidadActiva !== "fantasma";
 
             setUltimoIntento({
                 id: `${Date.now()}-${Math.random()}`,
@@ -109,6 +121,10 @@ export default function useJuego(nivelPreparado) {
                 exitoso,
                 movioPosicion,
                 murio,
+                motivoMuerte,
+                chocoPared,
+                pisoLaserSeguro,
+                atravesoPared,
                 posicionFinal: siguiente.jugador,
                 posicionAnterior: estadoActual.jugador,
             });

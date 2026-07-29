@@ -3,8 +3,10 @@
 Este documento detalla, archivo por archivo, cada endpoint expuesto por el
 backend: método HTTP, ruta, objetivo, función de `db/queries/` que invoca,
 parámetros, validaciones y respuestas posibles. Es el detalle "función por
-función" que complementa a `routes/README.md` (que da la vista rápida en
-tabla) y a `API_CONTRACT.md` (que es el contrato acordado con el frontend).
+función" que complementa a `backend/README.md` (que da la vista rápida en
+tabla) y a `API_CONTRACT.md` (que es el contrato original acordado con el
+frontend, hoy ya superado por lo que hay implementado — ver la nota al
+principio de ese archivo).
 
 **Convención de estado** usada en cada sección:
 - 🟢 **Canónico** — implementa el API Contract, es la ruta que debe usar el frontend.
@@ -101,58 +103,16 @@ enteros antes de guardar.
 
 ---
 
-## `scores.routes.js` — montado en `/scores` 🟡 (alias viejo, no forma parte del contrato)
-
-Archivo: `backend/src/routes/scores.routes.js`
-Queries usadas: `backend/src/db/queries/scores.queries.js`
-
-Duplica en inglés lo que `puntajes.routes.js` hace en español sobre la
-misma tabla `scores`. Candidato a eliminar una vez que el frontend
-termine de migrar (ver `routes/README.md`).
-
-### `GET /ranking/global`
-- **Objetivo:** ranking global de jugadores: gana quien llegó más lejos (mayor `order_index` de nivel alcanzado), y a igual nivel máximo, quien lo hizo con menos movimientos. Regla de negocio del documento del proyecto.
-- **Función invocada:** `scores.getGlobalRanking(limit)`
-- **Parámetros (query):** `limit` (opcional, default `20`).
-- **Nota de orden de rutas:** está declarada *antes* de `GET /:id` a propósito, para que Express no interprete `"ranking"` como un `:id`.
-- **Respuesta:** `200` → `[{ player_name, max_nivel, mejores_pasos }]`, `500` error.
-
-### `GET /level/:level_id/top`
-- **Objetivo:** mejores puntajes (por movimientos y tiempo) de un nivel puntual.
-- **Función invocada:** `scores.getTopScoresByLevel(level_id, limit)`
-- **Parámetros:** `level_id` (path), `limit` (query, opcional, default `10`).
-- **Respuesta:** `200` → `[{ player_name, moves, time_seconds, completed_at }]`, `500` error.
-
-### `GET /`
-- **Objetivo:** todos los puntajes, o filtrados por nivel/dificultad.
-- **Función invocada:** `scores.getScoresFiltered({ level_id, dificultad })` si hay query params, si no `scores.getAllScores()`.
-- **Parámetros (query):** `nivel` (level_id), `dificultad` (nombre, no id) — ambos opcionales e independientes.
-- **Respuesta:** `200` → array de scores completos (`id, level_id, player_name, moves, time_seconds, completed_at`), `500` error.
-
-### `GET /:id`
-- **Objetivo:** un puntaje puntual por id.
-- **Función invocada:** `scores.getScoreById(id)`
-- **Respuesta:** `200`, `404` no encontrado, `500` error.
-
-### `POST /`
-- **Objetivo:** guardar un puntaje nuevo (versión vieja, sin validaciones — comparar con `POST /api/puntajes` que sí valida todo).
-- **Función invocada:** `scores.createScore({ level_id, player_name, moves, time_seconds })`
-- **Validaciones:** **ninguna.** No chequea que `level_id` exista, no valida longitud de `player_name` ni que `moves`/`time_seconds` sean números no negativos. Cualquier error de tipo/constraint cae como `500` genérico.
-- **Respuesta:** `201` con el score creado, `500` error.
-
-### `PUT /:id` / `DELETE /:id`
-- Análogos a los de niveles/dificultad: actualizar o borrar un score por id, sin validaciones extra. `200`/`404`/`500` y `204`/`404`/`500` respectivamente.
-
----
-
 ## `puntajes.routes.js` — montado en `/puntajes` 🟢 (canónico, API Contract)
 
 Archivo: `backend/src/routes/puntajes.routes.js`
 Queries usadas: `puntajes.queries.js` + `dificultad.queries.js` + `levels.queries.js` (para las validaciones cruzadas)
 
-Es la versión "seria" de `scores.routes.js`: mismos datos, pero con los
-nombres de campo del contrato y validación completa. Define
-`JUGADOR_MAX_LEN = 50` (igual al `VARCHAR(50)` de `player_name` en la DB).
+Trabaja sobre la misma tabla `scores`, pero con los nombres de campo del
+contrato y validación completa (el alias viejo en inglés que existía sobre
+esta misma tabla, sin validar nada, ya se borró — ver el hallazgo #5 más
+abajo). Define `JUGADOR_MAX_LEN = 50` (igual al `VARCHAR(50)` de
+`player_name` en la DB).
 
 ### `GET /`
 - **Objetivo:** tabla de puntajes de un nivel + dificultad específicos, para `Score.jsx`.
@@ -176,50 +136,64 @@ nombres de campo del contrato y validación completa. Define
   4. `movimientos`: entero, `>= 0`.
   5. `tiempo`: entero, `>= 0` (segundos).
 - **Respuesta:** `201` con el registro creado (`{ id, nivel, jugador, movimientos, tiempo, completed_at }` — columnas renombradas en el SQL vía `AS`), `400` en cualquier validación fallida, `500` error.
-- **Nota:** este es el único endpoint de escritura del proyecto con validación completa; el resto (dificultad, levels, scores viejo, pistas, powerups) no valida nada más allá de tipos implícitos de Postgres.
+- **Nota:** este es el único endpoint de escritura del proyecto con validación completa de negocio; `obstaculos` y `consejos` validan campos obligatorios y sus FKs (`dificultad_id`/`level_id`), pero dificultad/levels no validan nada más allá de tipos implícitos de Postgres.
 
 ---
 
-## `pistas.routes.js` — montado en `/pistas` ⚪ (fuera del API Contract actual)
+## `consejos.routes.js` — montado en `/consejos` ⚪ (fuera del API Contract original — pero, a diferencia de la vieja "pistas", sí está en uso real)
 
-Archivo: `backend/src/routes/pistas.routes.js`
-Queries usadas: `pistas.queries.js`
+Archivo: `backend/src/routes/consejos.routes.js`
+Queries usadas: `consejos.queries.js` + `levels.queries.js` (para validar `level_id`)
 
-El propio `API_CONTRACT.md` no menciona pistas. Existe y funciona, pero es
-funcionalidad "de más" para el alcance actual — el equipo tiene que decidir
-si se queda para la entrega o se corta.
+Antes se llamaba `pistas.routes.js`. `consejos` son tips progresivos por
+nivel — el frontend pide `GET /?nivel=<id>` (todos los del nivel, ya
+ordenados por `orden`) y los va revelando de a uno **del lado del
+cliente** (ver `frontend/src/juego/Consejos/useConsejos.js`), así que no
+hace falta un endpoint de "marcar como visto" — de paso se eliminó el
+endpoint duplicado que tenía `pistas.routes.js` (`GET /level/:level_id`
+hacía exactamente lo mismo que `GET /?nivel=`).
 
 ### `GET /`
-- **Objetivo:** todas las pistas, o filtradas por nivel.
-- **Función invocada:** `pistas.getPistasByLevel(nivel)` si viene `?nivel=`, si no `pistas.getAllPistas()`.
-- **Respuesta:** `200` → array de pistas, `500` error.
-
-### `GET /level/:level_id`
-- **Objetivo:** mismo filtro que arriba pero como ruta dedicada (`GET /pistas?nivel=` y esta ruta hacen exactamente lo mismo — endpoint duplicado).
-- **Función invocada:** `pistas.getPistasByLevel(level_id)`
+- **Objetivo:** consejos de un nivel (`?nivel=<id>`), o todos si no se pasa el query param.
+- **Función invocada:** `consejos.getConsejosByLevel(nivel)` si viene `?nivel=`, si no `consejos.getAllConsejos()`.
+- **Respuesta:** `200` → array de consejos, `500` error.
 
 ### `GET /:id`
-- **Objetivo:** una pista puntual. `200`/`404`/`500`.
+- **Objetivo:** un consejo puntual. `200`/`404`/`500`. A diferencia de la vieja `pistas.routes.js`, esta ruta ya no incrementa ningún contador (no existe `veces_usada`/`veces_visto` — ver la nota de `creado_en` en `backend/README.md`).
 
 ### `POST /`, `PUT /:id`, `DELETE /:id`
-- CRUD estándar sin validaciones, análogo a dificultad/levels. `level_id` no se valida contra la tabla `levels` antes de insertar (un id inexistente cae como `500` por FK constraint).
+- **Validaciones:** `level_id`/`texto`/`orden` obligatorios en `POST` (`texto`/`orden` en `PUT`); `level_id` se valida contra la tabla `levels` (`400` si no existe) — mismo criterio que ya tenía `pistas.routes.js`. `UNIQUE (level_id, orden)` en la base evita cargar dos consejos del mismo nivel con el mismo orden (un choque de unicidad cae como `500` genérico, no `400` — no se valida explícito antes del INSERT).
+- **Respuesta:** `201`/`200` con el registro, `400` en validación, `404` (PUT/DELETE) si no existe, `500` error.
 
 ---
 
-## `powerups.routes.js` — montado en `/powerups` ⚪ (fuera del API Contract actual)
+## `obstaculos.routes.js` — montado en `/obstaculos` ⚪ (fuera del API Contract original — pero, a diferencia de la vieja "pistas", sí está en uso real)
 
-Archivo: `backend/src/routes/powerups.routes.js`
-Queries usadas: `powerups.queries.js`
+Archivo: `backend/src/routes/obstaculos.routes.js`
+Queries usadas: `obstaculos.queries.js` + `dificultad.queries.js` (para validar `dificultad_id`)
 
-Mismo caso que pistas: no está en el contrato, existe como catálogo
-independiente (no referencia niveles ni scores). CRUD estándar:
+Reemplaza a la vieja tabla/ruta `powerups` (nunca se llegó a usar desde el
+frontend). `obstaculos` es el glosario de mecánicas del tablero — una fila
+por cada una (Lava, Pinchos, Láser, Puerta, etc., ver `db/init.sql`) — y
+**sí está conectado**: `Menu.jsx` pide `GET /` para armar el modal "Cómo
+jugar > Mecánicas" en vez de tener esa lista hardcodeada en el frontend.
 
-- `GET /` → todos los powerups. `200`/`500`.
-- `GET /:id` → uno puntual. `200`/`404`/`500`.
-- `POST /` → crea `{ nombre, descripcion, tipo, valor }`. `201`/`500`.
-- `PUT /:id` → actualiza. `200`/`404`/`500`.
-- `DELETE /:id` → borra. `204`/`404`/`500`.
-- Sin validaciones propias en ningún caso.
+### `GET /`
+- **Objetivo:** el glosario completo, ordenado por `orden` — el orden de lectura pensado para el modal.
+- **Función invocada:** `obstaculos.getAllObstaculos()`
+- **Respuesta:** `200` → array de obstáculos, `500` error.
+
+### `GET /:id`
+- **Objetivo:** un obstáculo puntual. `200`/`404`/`500`.
+
+### `POST /` / `PUT /:id`
+- **Objetivo:** crear/editar un obstáculo (uso administrativo, no lo llama el jugador).
+- **Body:** `nombre`, `nombre_visible`, `descripcion`, `tipo`, `orden`, `dificultad_id` (opcional).
+- **Validaciones:** `nombre`/`nombre_visible`/`descripcion`/`tipo`/`orden` obligatorios (`400` si falta alguno); si viene `dificultad_id`, se valida que exista de verdad contra la tabla `dificultad` (`400` si no) — mismo criterio que tenía `powerups.routes.js` antes de la migración.
+- **Respuesta:** `201`/`200` con el registro, `400` en validación, `404` (solo PUT) si no existe, `500` error.
+
+### `DELETE /:id`
+- Borra un obstáculo. `204`/`404`/`500`.
 
 ---
 
@@ -235,10 +209,9 @@ No define endpoints propios, solo monta cada sub-router en su prefijo:
 | `/dificultades` | `dificultad.routes.js` | 🟢 canónico |
 | `/levels` | `levels.routes.js` | 🟡 alias |
 | `/niveles` | `levels.routes.js` | 🟢 canónico |
-| `/scores` | `scores.routes.js` | 🟡 alias |
 | `/puntajes` | `puntajes.routes.js` | 🟢 canónico |
-| `/pistas` | `pistas.routes.js` | ⚪ fuera de contrato |
-| `/powerups` | `powerups.routes.js` | ⚪ fuera de contrato |
+| `/consejos` | `consejos.routes.js` | ⚪ fuera de contrato, pero en uso real (`Nivel.jsx`) |
+| `/obstaculos` | `obstaculos.routes.js` | ⚪ fuera de contrato, pero en uso real (`Menu.jsx`) |
 
 Nota: `/dificultad` y `/dificultades` son **el mismo router montado dos
 veces** (igual con `/levels`/`/niveles`) — no hay dos archivos, es el mismo
@@ -248,8 +221,8 @@ código respondiendo en dos rutas distintas.
 
 ## Resumen de hallazgos (para priorizar el refactor)
 
-1. **Validación desigual:** solo `puntajes.routes.js` valida en serio. `scores.routes.js` (mismo recurso, tabla `scores`) no valida nada — si el frontend llegara a usar el alias viejo por error, se cuelan datos corruptos.
-2. **Manejo de errores repetido:** el bloque `try { ... } catch (err) { res.status(500).json({ error: err.message }) }` está copiado en las ~30 rutas. Exponer `err.message` crudo también puede filtrar detalles internos de Postgres al cliente.
-3. **Endpoint duplicado dentro del mismo archivo:** `GET /pistas?nivel=` y `GET /pistas/level/:level_id` hacen exactamente lo mismo.
-4. **FKs sin validar antes del INSERT:** `dificultad_id` en levels/pistas y `level_id` en scores/pistas no se chequean contra su tabla padre antes de insertar — dependen de que Postgres tire el error de constraint, que después se devuelve como `500` en vez de `400`.
-5. **Orden de rutas correcto pero fragil:** `scores.routes.js` pone `/ranking/global` y `/level/:level_id/top` antes de `/:id` a propósito (para que Express no confunda el literal con un id) — cualquier ruta nueva con path literal tiene que respetar ese mismo orden.
+1. **Validación desigual:** `puntajes.routes.js`, `obstaculos.routes.js` y `consejos.routes.js` validan en serio (campos obligatorios + FKs). `dificultad`/`levels` no validan nada más allá de tipos implícitos de Postgres.
+2. **Manejo de errores repetido:** el bloque `try { ... } catch (err) { res.status(500).json({ error: err.message }) }` está copiado en las ~20 rutas. Exponer `err.message` crudo también puede filtrar detalles internos de Postgres al cliente.
+3. **FKs sí validadas donde importa:** `levels` (`dificultad_id`), `obstaculos` (`dificultad_id`) y `consejos` (`level_id`) chequean la FK contra su tabla padre antes de insertar/actualizar, devolviendo `400` con un mensaje claro en vez de dejar que Postgres tire un error de constraint crudo como `500`.
+4. **Ya no existe `/api/scores`:** el alias viejo (`scores.routes.js`/`scores.queries.js`) se borró del backend. `frontend/src/servicios/puntajeServicio.js` todavía exporta funciones que le apuntan (`getGlobalRanking`, `getScoresbyLevel`, etc.) — no las llama ninguna pantalla hoy, pero si se llegaran a usar, van a devolver 404. Ver la nota en `frontend/README.md`.
+5. **`pistas` se renombró a `consejos`** (mismo criterio que `powerups` → `obstaculos`): `level_id` ahora es `NOT NULL`, se sacó `veces_usada` (reemplazado por `creado_en`), se agregó `UNIQUE (level_id, orden)`, y se eliminó el endpoint `GET /pistas/level/:level_id` que duplicaba a `GET /consejos?nivel=`.

@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import BotonVuelta from "../../componentes/BotonVuelta/BotonVuelta.jsx";
 import BotonPixelar from "../../componentes/BotonPixelar/BotonPixelar.jsx";
 import { useMusica } from "../Musica/MusicaContext.jsx";
+import { getDificultades } from "../../servicios/dificultadServicio.js";
 import "./SeleccionModo.css";
 
 import botonNormal from "../../assets/SpriteSeleccionModo/BotonDificultadNormal/BotonDificultadNormal.png";
@@ -13,6 +14,16 @@ import botonDificil from "../../assets/SpriteSeleccionModo/BotonDificultadDifici
 import botonDificilHover from "../../assets/SpriteSeleccionModo/BotonDificultadDificil/BotonDificultadDificilHover.png";
 import botonDificilClick from "../../assets/SpriteSeleccionModo/BotonDificultadDificil/BotonDificultadDificilClick.png";
 
+// Fallback mientras se resuelve el fetch (o si falla): mismo texto que
+// antes estaba hardcodeado acá, ahora sale de dificultad.descripcion en la
+// base (ver servicios/dificultadServicio.js) — esto solo evita un parpadeo
+// de texto vacío en el primer render o un modal roto si el backend no
+// responde.
+const DESCRIPCION_POR_DEFECTO = {
+    normal: "Ritmo pausado, ideal para practicar",
+    dificil: "Más obstáculos, menos margen de error",
+};
+
 export default function SeleccionModo() {
     const navigate = useNavigate();
 
@@ -20,6 +31,16 @@ export default function SeleccionModo() {
     useEffect(() => {
         reproducir("menu");
     }, [reproducir]);
+
+    const [descripciones, setDescripciones] = useState(DESCRIPCION_POR_DEFECTO);
+    useEffect(() => {
+        getDificultades()
+            .then((data) => {
+                const porId = Object.fromEntries(data.map((d) => [d.id, d.descripcion]));
+                setDescripciones((prev) => ({ ...prev, ...porId }));
+            })
+            .catch(() => {});
+    }, []);
 
     return (
         <div className="selection-mode">
@@ -38,7 +59,7 @@ export default function SeleccionModo() {
                             alt="Normal"
                             onClick={() => navigate("/seleccion-nivel/normal")}
                         />
-                        <p className="selection-mode-descripcion">Ritmo pausado, ideal para practicar</p>
+                        <p className="selection-mode-descripcion">{descripciones.normal}</p>
                     </div>
                     <div className="selection-mode-opcion">
                         <BotonPixelar
@@ -48,7 +69,7 @@ export default function SeleccionModo() {
                             alt="Dificil"
                             onClick={() => navigate("/seleccion-nivel/dificil")}
                         />
-                        <p className="selection-mode-descripcion">Más obstáculos, menos margen de error</p>
+                        <p className="selection-mode-descripcion">{descripciones.dificil}</p>
                     </div>
                 </div>
             </div>

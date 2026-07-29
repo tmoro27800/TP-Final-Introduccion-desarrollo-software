@@ -47,6 +47,94 @@
   font-size: 1.15rem;
 }
 
+/* antes esta 3ra columna quedaba vacía a propósito, solo para centrar el
+   título (ver comentario de .game-header) — ahora la ocupa el botón de
+   consejos, así que ya no hace falta reservarla vacía. */
+.game-header-consejos {
+  grid-column: 3;
+  justify-self: end;
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--game-borde);
+  color: #ccc;
+  font-family: var(--font-pixel-secundario);
+  font-size: 0.8rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.game-header-consejos:hover {
+  border-color: #b31e1e;
+  color: #ffffff;
+}
+
+/* ------------------- modal de consejos ------------------- */
+
+.consejos-vacio {
+  color: #999;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.consejos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 1.25rem 0;
+}
+
+.consejo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background-color: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  border-left: 3px solid #b31e1e;
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+
+.consejo-item p {
+  margin: 0;
+  color: #f0f0f0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.consejo-numero {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #b31e1e;
+  color: #fff;
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+}
+
+.consejos-boton-siguiente {
+  width: 100%;
+  background-color: #b31e1e;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.consejos-boton-siguiente:hover {
+  background-color: #d63838;
+}
+
 /* ------------------- HUD: tiempo / movimientos / muertes ------------------- */
 
 .game-stats {

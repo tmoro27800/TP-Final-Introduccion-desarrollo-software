@@ -280,6 +280,28 @@ export function puertaConLlaveAbierta(estado) {
   return estado.llaves.length === 0;
 }
 
+// Los siguientes dos helpers existen para la capa de sonido (ver
+// useSonidosDeJuego.js): sin esto, EnEjecucion.js tendría que reimplementar
+// "cuál es la celda de destino" afuera del motor para poder distinguir un
+// choque contra una pared real de cualquier otro movimiento bloqueado, o
+// un paso seguro sobre un láser apagado de uno cualquiera.
+
+// true solo si el movimiento se bloquea específicamente por chocar contra
+// una pared (no por, por ejemplo, una puerta cerrada o una caja trabada).
+export function chocoConPared(estado, direccion) {
+  const destino = sumar(estado.jugador, direccion);
+  if (!dentroDeLimites(estado.terreno, destino)) return false;
+  return estado.terreno[destino.fila][destino.columna] === PARED && estado.habilidadActiva !== "fantasma";
+}
+
+// true si el jugador acaba de pisar (o va a pisar) una celda de láser
+// mientras está apagado — cruce seguro, pero "se lo escuchó cargando".
+export function pisoLaserApagado(estado, direccion) {
+  const destino = sumar(estado.jugador, direccion);
+  if (!dentroDeLimites(estado.terreno, destino)) return false;
+  return estado.terreno[destino.fila][destino.columna] === LASER && !laserActivo(estado.movimientos);
+}
+
 // Puente: al pisar por primera vez cualquier celda del grupo, arranca la
 // cuenta regresiva (ver avanzarPuentes, que la decrementa en cada
 // movimiento siguiente). Si el grupo ya colapsó, pisarlo mata como el

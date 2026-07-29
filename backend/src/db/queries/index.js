@@ -2,6 +2,6 @@ module.exports = {
   dificultad: require('./dificultad.queries'),
   levels: require('./levels.queries'),
   puntajes: require('./puntajes.queries'),
-  pistas: require('./pistas.queries'),
-  powerups: require('./powerups.queries'),
+  consejos: require('./consejos.queries'),
+  obstaculos: require('./obstaculos.queries'),
 }

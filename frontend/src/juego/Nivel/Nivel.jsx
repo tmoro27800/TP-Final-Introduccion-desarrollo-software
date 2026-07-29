@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Tablero from "../../componentes/Tablero/Tablero.jsx";
 import Ventana from "../../componentes/Ventana/Ventana.jsx";
@@ -6,7 +6,10 @@ import BotonVuelta from "../../componentes/BotonVuelta/BotonVuelta.jsx";
 import useJuego from "../Juego/EnEjecucion.js";
 import { crearPuntaje } from "../../servicios/puntajeServicio.js";
 import { getNivelesPorDificultad } from "../../servicios/nivelServicio.js";
+import { PUERTA, PUERTA_CON_LLAVE } from "../Juego/tiposCelda.js";
 import { useMusica } from "../Musica/MusicaContext.jsx";
+import { useSonidosDeJuego } from "../Musica/useSonidosDeJuego.js";
+import { useConsejos } from "../Consejos/useConsejos.js";
 import "./Nivel.css";
 
 // Texto del toast que se muestra un momento tras cada evento del motor
@@ -57,6 +60,33 @@ export default function Nivel({ nivel, onVolver }) {
     useEffect(() => {
         reproducir(nivel.dificultad);
     }, [reproducir, nivel.dificultad]);
+
+    // Para que useSonidosDeJuego.js sepa si vale la pena avisar "se abrió
+    // la puerta" — puertaAbierta/puertaConLlaveAbierta son banderas globales
+    // del estado (no dependen de que la puerta exista en el mapa), así que
+    // sin esto sonarían igual en un nivel que no tiene esa puerta.
+    const tienePuerta = useMemo(() => nivel.terreno.some((fila) => fila.includes(PUERTA)), [nivel.terreno]);
+    const tienePuertaConLlave = useMemo(
+        () => nivel.terreno.some((fila) => fila.includes(PUERTA_CON_LLAVE)),
+        [nivel.terreno]
+    );
+
+    useSonidosDeJuego({
+        ultimoIntento,
+        ultimoEvento,
+        llaves,
+        puertaAbierta,
+        puertaConLlaveAbierta,
+        tienePuerta,
+        tienePuertaConLlave,
+        estado,
+    });
+
+    // Consejos progresivos del nivel (ver useConsejos.js): se piden recién
+    // la primera vez que el jugador abre el modal, no antes.
+    const [mostrarConsejos, setMostrarConsejos] = useState(false);
+    const { consejosRevelados, hayMas, totalConsejos, cargando: cargandoConsejos, pedirConsejos, revelarSiguiente } =
+        useConsejos(nivel.id);
 
     const [primerMovimiento, setPrimerMovimiento] = useState(false);
     const [tiempo, setTiempo] = useState(0);
@@ -158,6 +188,16 @@ export default function Nivel({ nivel, onVolver }) {
                 <div className="game-header">
                     <BotonVuelta label="Volver" onClick={onVolver} className="game-header-volver" />
                     <span className="game-titulo">{nivel.nombre}</span>
+                    <button
+                        type="button"
+                        className="game-header-consejos"
+                        onClick={() => {
+                            pedirConsejos();
+                            setMostrarConsejos(true);
+                        }}
+                    >
+                        💡 Consejos
+                    </button>
                 </div>
 
                 <div className="game-stats">
@@ -212,6 +252,35 @@ export default function Nivel({ nivel, onVolver }) {
                 </div>
 
                 {mensajeToast && <div className="game-toast">{mensajeToast}</div>}
+
+                {/* Consejos progresivos (ver useConsejos.js): se van revelando de a
+                    uno con el botón de abajo, no vienen todos de entrada. */}
+                <Ventana visible={mostrarConsejos} onClose={() => setMostrarConsejos(false)}>
+                    <h2>Consejos</h2>
+
+                    {cargandoConsejos && <p className="consejos-vacio">Cargando...</p>}
+
+                    {!cargandoConsejos && totalConsejos === 0 && (
+                        <p className="consejos-vacio">Este nivel todavía no tiene consejos cargados.</p>
+                    )}
+
+                    {!cargandoConsejos && totalConsejos > 0 && (
+                        <div className="consejos-lista">
+                            {consejosRevelados.map((consejo, indice) => (
+                                <div className="consejo-item" key={consejo.id}>
+                                    <span className="consejo-numero">{indice + 1}</span>
+                                    <p>{consejo.texto}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {hayMas && (
+                        <button type="button" className="consejos-boton-siguiente" onClick={revelarSiguiente}>
+                            Ver siguiente consejo ({consejosRevelados.length}/{totalConsejos})
+                        </button>
+                    )}
+                </Ventana>
 
                 {/* Modal centrado con el resto de la pantalla de fondo, igual que
                     los modales de Configuración/Cómo jugar del menú (Ventana.jsx).

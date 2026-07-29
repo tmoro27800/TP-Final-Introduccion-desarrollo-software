@@ -1,11 +1,13 @@
 const express = require('express')
-const { powerups, dificultad: dificultadQueries } = require('../db/queries')
+const { obstaculos, dificultad: dificultadQueries } = require('../db/queries')
 
 const router = express.Router()
 
+// GET /api/obstaculos — glosario completo de mecánicas, ordenado (para el
+// modal "Cómo jugar > Mecánicas" del frontend, ver mecanicasInfo.js).
 router.get('/', async (req, res) => {
   try {
-    const data = await powerups.getAllPowerups()
+    const data = await obstaculos.getAllObstaculos()
     res.json(data)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -14,7 +16,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const data = await powerups.getPowerupById(req.params.id)
+    const data = await obstaculos.getObstaculoById(req.params.id)
     if (!data) return res.status(404).json({ error: 'No encontrado' })
     res.json(data)
   } catch (err) {
@@ -24,9 +26,11 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { nombre, descripcion, tipo, valor, dificultad_id } = req.body
-    if (!nombre || !tipo) {
-      return res.status(400).json({ error: 'Faltan campos: "nombre" y "tipo" son obligatorios' })
+    const { nombre, nombre_visible, descripcion, tipo, orden, dificultad_id } = req.body
+    if (!nombre || !nombre_visible || !descripcion || !tipo || orden === undefined) {
+      return res.status(400).json({
+        error: 'Faltan campos: "nombre", "nombre_visible", "descripcion", "tipo" y "orden" son obligatorios',
+      })
     }
     if (dificultad_id !== undefined && dificultad_id !== null) {
       const dif = await dificultadQueries.getDificultadById(dificultad_id)
@@ -34,7 +38,7 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ error: `dificultad_id inválido: "${dificultad_id}"` })
       }
     }
-    const data = await powerups.createPowerup({ nombre, descripcion, tipo, valor, dificultad_id })
+    const data = await obstaculos.createObstaculo({ nombre, nombre_visible, descripcion, tipo, orden, dificultad_id })
     res.status(201).json(data)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -43,12 +47,14 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const existente = await powerups.getPowerupById(req.params.id)
+    const existente = await obstaculos.getObstaculoById(req.params.id)
     if (!existente) return res.status(404).json({ error: 'No encontrado' })
 
-    const { nombre, descripcion, tipo, valor, dificultad_id } = req.body
-    if (!nombre || !tipo) {
-      return res.status(400).json({ error: 'Faltan campos: "nombre" y "tipo" son obligatorios' })
+    const { nombre, nombre_visible, descripcion, tipo, orden, dificultad_id } = req.body
+    if (!nombre || !nombre_visible || !descripcion || !tipo || orden === undefined) {
+      return res.status(400).json({
+        error: 'Faltan campos: "nombre", "nombre_visible", "descripcion", "tipo" y "orden" son obligatorios',
+      })
     }
     if (dificultad_id !== undefined && dificultad_id !== null) {
       const dif = await dificultadQueries.getDificultadById(dificultad_id)
@@ -57,11 +63,12 @@ router.put('/:id', async (req, res) => {
       }
     }
 
-    const data = await powerups.updatePowerup(req.params.id, {
+    const data = await obstaculos.updateObstaculo(req.params.id, {
       nombre,
+      nombre_visible,
       descripcion,
       tipo,
-      valor,
+      orden,
       dificultad_id,
     })
     res.json(data)
@@ -72,7 +79,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await powerups.deletePowerup(req.params.id)
+    const deleted = await obstaculos.deleteObstaculo(req.params.id)
     if (!deleted) return res.status(404).json({ error: 'No encontrado' })
     res.status(204).send()
   } catch (err) {
