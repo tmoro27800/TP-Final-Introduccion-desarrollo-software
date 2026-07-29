@@ -1,9 +1,46 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import BotonVuelta from "../../componentes/BotonVuelta/BotonVuelta.jsx";
+import BotonPixelar from "../../componentes/BotonPixelar/BotonPixelar.jsx";
+import { useMusica } from "../Musica/MusicaContext.jsx";
+import { getDificultades } from "../../servicios/dificultadServicio.js";
 import "./SeleccionModo.css";
+
+import botonNormal from "../../assets/SpriteSeleccionModo/BotonDificultadNormal/BotonDificultadNormal.png";
+import botonNormalHover from "../../assets/SpriteSeleccionModo/BotonDificultadNormal/BotonDificultadNormalHover.png";
+import botonNormalClick from "../../assets/SpriteSeleccionModo/BotonDificultadNormal/BotonDificultadNormalClick.png";
+
+import botonDificil from "../../assets/SpriteSeleccionModo/BotonDificultadDificil/BotonDificultadDificil.png";
+import botonDificilHover from "../../assets/SpriteSeleccionModo/BotonDificultadDificil/BotonDificultadDificilHover.png";
+import botonDificilClick from "../../assets/SpriteSeleccionModo/BotonDificultadDificil/BotonDificultadDificilClick.png";
+
+// Fallback mientras se resuelve el fetch (o si falla): mismo texto que
+// antes estaba hardcodeado acá, ahora sale de dificultad.descripcion en la
+// base (ver servicios/dificultadServicio.js) — esto solo evita un parpadeo
+// de texto vacío en el primer render o un modal roto si el backend no
+// responde.
+const DESCRIPCION_POR_DEFECTO = {
+    normal: "Ritmo pausado, ideal para practicar",
+    dificil: "Más obstáculos, menos margen de error",
+};
 
 export default function SeleccionModo() {
     const navigate = useNavigate();
+
+    const { reproducir } = useMusica();
+    useEffect(() => {
+        reproducir("menu");
+    }, [reproducir]);
+
+    const [descripciones, setDescripciones] = useState(DESCRIPCION_POR_DEFECTO);
+    useEffect(() => {
+        getDificultades()
+            .then((data) => {
+                const porId = Object.fromEntries(data.map((d) => [d.id, d.descripcion]));
+                setDescripciones((prev) => ({ ...prev, ...porId }));
+            })
+            .catch(() => {});
+    }, []);
 
     return (
         <div className="selection-mode">
@@ -11,53 +48,29 @@ export default function SeleccionModo() {
                 <BotonVuelta label="Volver al menú" onClick={() => navigate("/")} />
 
                 <h1>Elegí un modo</h1>
+                <p className="selection-mode-subtitulo">La dificultad define qué niveles vas a poder jugar</p>
 
                 <div className="selection-mode-opciones">
-                    <button
-                        className="selection-mode-boton selection-mode-boton--normal"
-                        onClick={() => navigate("/seleccion-nivel/normal")}
-                    >
-                        <span className="selection-mode-icono" aria-hidden="true"></span>
-                        <span className="selection-mode-texto">
-                            <span className="selection-mode-titulo">Normal</span>
-                            <span className="selection-mode-subtitulo">
-                                Ritmo pausado, ideal para practicar
-                            </span>
-                        </span>
-                    </button>
-
-                    <button
-                        className="selection-mode-boton selection-mode-boton--dificil"
-                        onClick={() => navigate("/seleccion-nivel/dificil")}
-                    >
-                        <span className="selection-mode-icono" aria-hidden="true"></span>
-                        <span className="selection-mode-texto">
-                            <span className="selection-mode-titulo">Dificil</span>
-                            <span className="selection-mode-subtitulo">
-                                Más obstáculos, menos margen de error
-                            </span>
-                        </span>
-                    </button>
-                </div>
-
-                {/* Debug/QA: niveles hardcodeados con las 8 mecánicas nuevas
-                    (cajas, fantasma, teletransportador, invulnerabilidad,
-                    lava, vacío, llaves, fuerza), no dependen del backend.
-                    Ver frontend/src/juego/Juego/nivelDePrueba.js y
-                    nivelDePruebaAislado.js. */}
-                <div className="selection-mode-debug-fila">
-                    <button
-                        className="selection-mode-debug"
-                        onClick={() => navigate("/juego/test")}
-                    >
-                        🧪 Nivel de prueba (recorrido completo)
-                    </button>
-                    <button
-                        className="selection-mode-debug"
-                        onClick={() => navigate("/juego/test-aislado")}
-                    >
-                        🧪 Nivel de prueba (mecánicas aisladas)
-                    </button>
+                    <div className="selection-mode-opcion">
+                        <BotonPixelar
+                            src={botonNormal}
+                            srcHover={botonNormalHover}
+                            srcActive={botonNormalClick}
+                            alt="Normal"
+                            onClick={() => navigate("/seleccion-nivel/normal")}
+                        />
+                        <p className="selection-mode-descripcion">{descripciones.normal}</p>
+                    </div>
+                    <div className="selection-mode-opcion">
+                        <BotonPixelar
+                            src={botonDificil}
+                            srcHover={botonDificilHover}
+                            srcActive={botonDificilClick}
+                            alt="Dificil"
+                            onClick={() => navigate("/seleccion-nivel/dificil")}
+                        />
+                        <p className="selection-mode-descripcion">{descripciones.dificil}</p>
+                    </div>
                 </div>
             </div>
         </div>

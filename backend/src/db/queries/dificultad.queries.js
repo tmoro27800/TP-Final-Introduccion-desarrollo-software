@@ -5,7 +5,9 @@ const pool = require('../pool')
 // texto para mostrar en pantalla ("Normal", "Dificil").
 // El contrato (GET /api/dificultades) pide {id, nombre} donde "id" es el
 // slug y "nombre" es el texto visible — por eso getAllDificultadesContrato()
-// devuelve las columnas renombradas así.
+// devuelve las columnas renombradas así. También suma "descripcion" (no
+// estaba en el contrato original, es una extensión aditiva) para que
+// SeleccionModo.jsx la muestre en vez de tenerla hardcodeada dos veces.
 
 async function getAllDificultades() {
   const { rows } = await pool.query(
@@ -14,10 +16,10 @@ async function getAllDificultades() {
   return rows
 }
 
-// Shape exacto que pide el API Contract: [{ id: "normal", nombre: "Normal" }, ...]
+// Shape del API Contract [{ id: "normal", nombre: "Normal" }, ...] + descripcion.
 async function getAllDificultadesContrato() {
   const { rows } = await pool.query(
-    'SELECT nombre AS id, nombre_visible AS nombre FROM dificultad ORDER BY orden ASC'
+    'SELECT nombre AS id, nombre_visible AS nombre, descripcion FROM dificultad ORDER BY orden ASC'
   )
   return rows
 }

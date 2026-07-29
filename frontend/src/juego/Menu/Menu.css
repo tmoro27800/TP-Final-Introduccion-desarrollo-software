@@ -1,7 +1,10 @@
 .menu {
+  min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 3rem 2rem;
 }
 
@@ -95,4 +98,90 @@
 .reasignar-footer .config-btn-guardar {
   flex: 1;
   width: auto;   /* pisa el width: 100% que .config-btn-guardar tiene por defecto */
+}
+
+/* Modal "Como jugar": selector Controles / Mecánicas */
+.ayuda-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 1.5rem;
+}
+
+.ayuda-tab {
+  flex: 1;
+  text-align: center;
+  padding: 8px;
+  background: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  color: #999;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.ayuda-tab:hover {
+  color: #ccc;
+}
+
+.ayuda-tab--activa {
+  background: #b31e1e;
+  border-color: #b31e1e;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Glosario de mecánicas: mismo look que .control-item, con el sprite (o
+   placeholder CSS del tablero) en vez de las teclas. */
+.mecanicas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mecanica-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  border-left: 3px solid #b31e1e;
+  border-radius: 10px;
+  padding: 12px 16px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.mecanica-item:hover {
+  border-left-color: #e04b4b;
+  background-color: #212121;
+}
+
+.mecanica-icono {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: #18151b;
+  overflow: hidden;
+  position: relative;
+}
+
+.mecanica-icono .tablero-celda {
+  width: 100%;
+  height: 100%;
+}
+
+.mecanica-texto h3 {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  margin: 0 0 3px;
+  color: #f0f0f0;
+}
+
+.mecanica-texto p {
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+  line-height: 1.4;
 }

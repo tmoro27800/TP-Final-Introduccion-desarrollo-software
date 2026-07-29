@@ -17,61 +17,37 @@
   text-align: center;
 }
 
+/* terreno: sprites de 32x32 (assets/SpriteCuboMapa/Escenario/), llenan la
+   celda entera. image-rendering:pixelated mantiene el look pixel art nítido
+   al escalar (las celdas pueden ser más grandes que el sprite original). */
 .tablero-celda {
-  border-radius: 4px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
 }
 
-.tablero-celda--piso {
-  background: #100e12;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-}
-
-/* pared: tiene que ser inconfundible con el piso a simple vista — mucho
-   más clara, con relieve, para que se note de lejos qué es transitable */
-.tablero-celda--pared {
-  background: linear-gradient(155deg, #5a5164, #3a3441);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), inset 0 -4px 6px rgba(0, 0, 0, 0.45),
-    inset 0 3px 4px rgba(255, 255, 255, 0.06);
-}
-
+/* meta: el glow pulsante es el único aporte de CSS que queda, para que se
+   note de lejos cuál es el objetivo. Rojo intenso (no dorado) porque el
+   sprite del compañero ya no es amarillo — el dorado desentonaba. */
 .tablero-celda--meta {
-  background: radial-gradient(circle, #e8b923 0%, #b3860f 65%, #18151b 100%);
-  box-shadow: 0 0 14px 2px rgba(232, 185, 35, 0.75), inset 0 0 0 2px #fff3c4;
+  box-shadow: 0 0 14px 2px rgba(226, 69, 63, 0.8);
   animation: meta-pulso 1.6s ease-in-out infinite;
 }
 
 @keyframes meta-pulso {
   0%, 100% {
-    box-shadow: 0 0 14px 2px rgba(232, 185, 35, 0.75), inset 0 0 0 2px #fff3c4;
+    box-shadow: 0 0 14px 2px rgba(226, 69, 63, 0.8);
   }
   50% {
-    box-shadow: 0 0 22px 6px rgba(232, 185, 35, 0.95), inset 0 0 0 2px #fff3c4;
+    box-shadow: 0 0 24px 7px rgba(255, 59, 59, 0.95);
   }
 }
 
-.tablero-celda--lava {
-  background: repeating-linear-gradient(
-    45deg,
-    #b31e1e,
-    #b31e1e 5px,
-    #e2453f 5px,
-    #e2453f 10px
-  );
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.tablero-celda--abismo {
-  background: #050308;
-  box-shadow: inset 0 0 12px 2px rgba(0, 0, 0, 0.9);
-}
-
-.tablero-celda--portal {
-  background: #18151b;
-  box-shadow: inset 0 0 0 2px #3fd0e2, inset 0 0 10px rgba(63, 208, 226, 0.6);
-}
-
-/* piezas todavía no implementadas: se ven distintas a propósito,
-   para detectar rápido si al mapa se le coló un número sin manejar */
+/* valor de mapa sin sprite todavía (mecánicas pendientes): se ve distinto
+   a propósito, para detectar rápido si al mapa se le coló un número sin
+   manejar */
 .tablero-celda--desconocido {
   background: repeating-linear-gradient(
     45deg,
@@ -82,53 +58,92 @@
   );
 }
 
-.tablero-jugador {
-  background: linear-gradient(135deg, #e2453f, #b31e1e);
-  border-radius: 4px;
-  box-shadow: 0 0 8px rgba(226, 69, 63, 0.6);
-  z-index: 3;
+/* puente en alerta (últimos 2 movimientos antes de colapsar): el sprite ya
+   muestra la grieta brillante, el parpadeo de brillo es lo que le suma
+   urgencia. Colapsado no necesita regla propia — reusa el sprite y la
+   animación del vacío (ver CeldaTerreno.jsx). */
+.tablero-celda--puente-alerta {
+  animation: puente-alerta 0.5s ease-in-out infinite alternate;
 }
 
+@keyframes puente-alerta {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(0.55) saturate(2.2) hue-rotate(-20deg);
+  }
+}
+
+/* .tablero-jugador (y las demás capas del personaje: estela, partículas,
+   viento) viven en Jugador.css — Jugador.jsx las renderiza todas. */
+
+/* caja: sprite de 32x32, llena la celda igual que el terreno */
 .tablero-caja {
-  background: linear-gradient(135deg, #c98a3f, #8a5a24);
-  border-radius: 4px;
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
   z-index: 1;
 }
 
+/* llave: sprite chico (12x10), se muestra como ícono centrado igual que los
+   pickups, no estirado a la celda entera */
 .tablero-llave {
-  background: transparent;
+  justify-self: center;
+  align-self: center;
+  width: 55%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 4px rgba(232, 185, 35, 0.7));
   z-index: 2;
 }
 
-.tablero-llave::after {
-  content: "";
-  display: block;
-  width: 45%;
-  height: 45%;
-  margin: 27.5%;
-  background: #e8b923;
-  border-radius: 2px;
-  transform: rotate(45deg);
-  box-shadow: 0 0 6px rgba(232, 185, 35, 0.8);
-}
-
+/* pickups: sprites más chicos que la celda (24x31) — se muestran como
+   ícono centrado, no estirados a la celda entera */
 .tablero-pickup {
-  border-radius: 4px;
+  justify-self: center;
+  align-self: center;
+  width: 70%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
   z-index: 2;
 }
 
-.tablero-pickup--fantasma {
-  background: rgba(155, 89, 226, 0.35);
-  box-shadow: inset 0 0 0 2px rgba(155, 89, 226, 0.8), 0 0 10px rgba(155, 89, 226, 0.6);
+/* efecto de power-up agarrado: sprite de 32x32 (tamaño normal de un tile),
+   se dibuja en la celda donde estaba el pickup. Transitorio, lo agrega y lo
+   saca solo useEfectoPowerUp.js. El sprite es gris y bastante translúcido
+   (se va desvaneciendo de frame a frame) — con mix-blend-mode: screen
+   quedaba lavado contra el fondo oscuro del tablero y prácticamente no se
+   notaba; ahora se dibuja normal, del tamaño de la celda (no más grande,
+   a diferencia de la caja destruida que sí desborda a propósito) y con un
+   glow blanco para que se note que "pasó algo" ahí. */
+.tablero-efecto-powerup {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.85));
+  z-index: 3;
+  pointer-events: none;
 }
 
-.tablero-pickup--invulnerabilidad {
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: inset 0 0 0 2px #e8b923, 0 0 10px rgba(232, 185, 35, 0.7);
-}
-
-.tablero-pickup--fuerza {
-  background: rgba(226, 69, 63, 0.25);
-  box-shadow: inset 0 0 0 2px #e2453f, 0 0 10px rgba(226, 69, 63, 0.6);
+/* efecto de caja destruida: sprite de 64x64 (el doble de un tile), se
+   dibuja centrado y desbordando la celda a propósito — mismo criterio que
+   el viento del personaje en Jugador.css. Transitorio, lo agrega y lo saca
+   solo useEfectosDestruccion.js. */
+.tablero-efecto-destruccion {
+  justify-self: center;
+  align-self: center;
+  width: 200%;
+  height: 200%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 3;
+  pointer-events: none;
 }
