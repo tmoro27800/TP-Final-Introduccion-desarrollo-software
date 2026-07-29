@@ -18,7 +18,4 @@ export const CONFIGURACION_DEFAULT = {
     musica: true,
     efectos: true,
   },
-  // Reservado para cuando se implemente i18n de verdad. Por ahora solo
-  // se guarda la preferencia; el texto de la UI sigue en español siempre.
-  idioma: "es",
 };

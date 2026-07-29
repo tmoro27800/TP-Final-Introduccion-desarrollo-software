@@ -16,7 +16,7 @@ import './App.css'
 export default function App() {
     return (
         // ConfiguracionProvider por fuera de todo: cualquier pantalla
-        // (Menu, Juego, etc.) puede leer/cambiar controles, audio e idioma
+        // (Menu, Juego, etc.) puede leer/cambiar controles y audio
         // con useConfiguracion(). Ver juego/Configuracion/ConfiguracionContext.jsx.
         // MusicaProvider necesita leer esa configuración (el toggle de
         // musica), por eso va adentro.

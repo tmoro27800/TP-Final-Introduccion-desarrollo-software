@@ -76,12 +76,14 @@
 .control-item {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 24px;
   background-color: #1e1e1e;
   border: 1px solid #2a2a2a;
   border-left: 3px solid #b31e1e;
   border-radius: 10px;
   padding: 18px 22px;
+  text-align: center;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
@@ -109,13 +111,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
-  border: 1px solid #3a3a3a;
-  border-radius: 7px;
+  background: #2c2c2c;
+  border: 2px solid #000;
+  border-radius: 0;
+  font-family: var(--font-pixel);
   font-weight: 700;
   font-size: 14px;
   color: #f0f0f0;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+  /* bisel "pixel art": sin degradé ni blur, un borde claro arriba/izq y uno
+     oscuro abajo/der, más una sombra sólida — imita el look de una tecla de
+     8 bits en vez de un botón plano de UI moderna. */
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.18),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.6),
+    0 3px 0 #000;
+}
+
+.control-texto {
+  text-align: center;
 }
 
 .control-texto h3 {
@@ -190,17 +203,6 @@
 .config-btn-secundario:hover {
   border-color: #b31e1e;
   color: #ffffff;
-}
-
-/* Select de idioma */
-.config-select {
-  background-color: #161616;
-  border: 1px solid #3a3a3a;
-  color: #f0f0f0;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  cursor: pointer;
 }
 
 /* Toggle switch (música / sonido) */

@@ -63,10 +63,10 @@ export default function Menu() {
             .catch(() => setMecanicas([]));
     }, []);
 
-    // Controles/audio/idioma viven en ConfiguracionContext (sesión-only,
-    // ver ConfiguracionContext.jsx) — no en estado local — para que el
+    // Controles/audio viven en ConfiguracionContext (sesión-only, ver
+    // ConfiguracionContext.jsx) — no en estado local — para que el
     // resto de la app (ej. EnEjecucion.js) vea los mismos valores.
-    const { controles, actualizarControl, restaurarControles, audio, actualizarAudio, idioma, setIdioma } =
+    const { controles, actualizarControl, restaurarControles, audio, actualizarAudio } =
         useConfiguracion();
 
     const { reproducir } = useMusica();
@@ -268,23 +268,6 @@ export default function Menu() {
                         >
                         Cambiar
                         </button>
-                    </div>
-
-                    <div className="config-item">
-                        <div className="config-info">
-                        <span className="config-icono">文</span>
-                        <div>
-                            <h3>Idioma</h3>
-                        </div>
-                        </div>
-                        <select
-                        className="config-select"
-                        value={idioma}
-                        onChange={(e) => setIdioma(e.target.value)}
-                        >
-                        <option value="es">Español</option>
-                        <option value="en">Inglés</option>
-                        </select>
                     </div>
 
                     <div className="config-item">

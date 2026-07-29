@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { CONFIGURACION_DEFAULT } from "./configuracionDefault.js";
 
-// Contexto global de configuración: controles, audio e idioma.
+// Contexto global de configuración: controles y audio.
 //
 // Vive en <ConfiguracionProvider> montado en App.jsx, por encima de todas
 // las rutas — así cualquier pantalla (Menu, Juego, etc.) puede leer o
@@ -15,7 +15,6 @@ const ConfiguracionContext = createContext(null);
 export function ConfiguracionProvider({ children }) {
   const [controles, setControles] = useState(CONFIGURACION_DEFAULT.controles);
   const [audio, setAudio] = useState(CONFIGURACION_DEFAULT.audio);
-  const [idioma, setIdioma] = useState(CONFIGURACION_DEFAULT.idioma);
 
   // Cambia una sola tecla (ej. "arriba") sin tocar las demás.
   function actualizarControl(accion, tecla) {
@@ -34,7 +33,6 @@ export function ConfiguracionProvider({ children }) {
   function restaurarTodo() {
     setControles(CONFIGURACION_DEFAULT.controles);
     setAudio(CONFIGURACION_DEFAULT.audio);
-    setIdioma(CONFIGURACION_DEFAULT.idioma);
   }
 
   const value = {
@@ -46,9 +44,6 @@ export function ConfiguracionProvider({ children }) {
     audio,
     setAudio,
     actualizarAudio,
-
-    idioma,
-    setIdioma,
 
     restaurarTodo,
   };
