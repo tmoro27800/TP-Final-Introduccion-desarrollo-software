@@ -171,12 +171,13 @@ INSERT INTO consejos (level_id, texto, orden) VALUES
     (5, 'Guardate la invulnerabilidad para más adelante, no la gastes en los pinchos.', 4),
     (5, 'Si no querés arriesgarte con la lava, un teletransportador te rodea gratis.', 5);
 
--- Nivel 6 (id 7, dificil): todas las mecánicas, incluida la puerta con llave.
+
+-- Nivel 6 (id 6, dificil): todas las mecánicas, incluida la puerta con llave.
 INSERT INTO consejos (level_id, texto, orden) VALUES
-    (7, 'Hacen falta las DOS llaves del nivel para que la puerta con llave se abra sola.', 1),
-    (7, 'El botón de este nivel es solo para practicar la mecánica, no hace falta para avanzar.', 2),
-    (7, 'Guardate el modo Fuerza para la segunda caja, o empujala directo al vacío si preferís.', 3),
-    (7, 'Con las dos llaves ya juntadas, la puerta con llave se abre sola al acercarte — no hace falta hacer nada especial.', 4);
+    (6, 'Hacen falta las DOS llaves del nivel para que la puerta con llave se abra sola.', 1),
+    (6, 'El botón de este nivel es solo para practicar la mecánica, no hace falta para avanzar.', 2),
+    (6, 'Guardate el modo Fuerza para la segunda caja, o empujala directo al vacío si preferís.', 3),
+    (6, 'Con las dos llaves ya juntadas, la puerta con llave se abre sola al acercarte — no hace falta hacer nada especial.', 4);
 
 --5. obstaculos
 -- Glosario de las mecánicas del juego (antes era "powerups", una tabla de
