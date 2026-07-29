@@ -1,20 +1,23 @@
 const pool = require('../pool')
 
-// Consejos progresivos por nivel (antes "pistas"). El frontend los pide
-// todos juntos por nivel (getConsejosByLevel, ya ordenados) y los va
-// revelando de a uno en el cliente — no hay endpoint de "marcar como
-// visto", por eso no hay contador de uso (ver "creado_en" en su lugar,
-// un timestamp que se llena solo).
+// "consejos" reemplaza a la vieja "pistas". Ahora level_id es obligatorio
+// (un consejo sin nivel no tiene sentido) y ya no hay contador de uso
+// ("veces_usada"): el frontend pide todos los consejos de un nivel juntos
+// y los va revelando de a uno en el cliente (ver
+// frontend/src/juego/Consejos/useConsejos.js), así que en vez de contar
+// vistas se guarda "creado_en" (timestamp automático).
 
 async function getAllConsejos() {
   const { rows } = await pool.query('SELECT * FROM consejos ORDER BY level_id ASC, orden ASC')
   return rows
 }
 
-async function getConsejosByLevel(level_id) {
+// Usado por GET /api/consejos?nivel=X — ver
+// frontend/src/servicios/consejoServicio.js (getConsejosPorNivel).
+async function getConsejosByLevel(levelId) {
   const { rows } = await pool.query(
     'SELECT * FROM consejos WHERE level_id = $1 ORDER BY orden ASC',
-    [level_id]
+    [levelId]
   )
   return rows
 }
@@ -27,8 +30,8 @@ async function getConsejoById(id) {
 async function createConsejo({ level_id, texto, orden, tipo }) {
   const { rows } = await pool.query(
     `INSERT INTO consejos (level_id, texto, orden, tipo)
-     VALUES ($1, $2, $3, $4) RETURNING *`,
-    [level_id, texto, orden, tipo || 'texto']
+     VALUES ($1, $2, $3, COALESCE($4, 'texto')) RETURNING *`,
+    [level_id, texto, orden, tipo]
   )
   return rows[0]
 }
@@ -36,9 +39,9 @@ async function createConsejo({ level_id, texto, orden, tipo }) {
 async function updateConsejo(id, { texto, orden, tipo }) {
   const { rows } = await pool.query(
     `UPDATE consejos
-     SET texto = $1, orden = $2, tipo = $3
+     SET texto = $1, orden = $2, tipo = COALESCE($3, tipo)
      WHERE id = $4 RETURNING *`,
-    [texto, orden, tipo || 'texto', id]
+    [texto, orden, tipo, id]
   )
   return rows[0] || null
 }

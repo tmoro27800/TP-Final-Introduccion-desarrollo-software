@@ -1,10 +1,11 @@
 const pool = require('../pool')
 
-// Glosario de mecánicas del juego (ver db/init.sql para el detalle de cada
-// columna). Se lee siempre ordenado por "orden" — es justamente el orden
-// de lectura pensado para el modal "Cómo jugar > Mecánicas" del frontend
-// (ver frontend/src/juego/Menu/mecanicasInfo.js), así el CRUD de admin
-// puede reordenar el glosario con solo cambiar ese número.
+// "obstaculos" es el glosario de mecánicas del tablero (ex "powerups",
+// tabla que nunca se llegó a usar desde el frontend y fue reemplazada).
+// Una fila por mecánica (piso, pared, lava, láser, etc.), para que el
+// modal "Cómo jugar > Mecánicas" del frontend arme su lista con datos
+// reales en vez de un array hardcodeado (ver
+// frontend/src/juego/Menu/mecanicasInfo.js y servicios/obstaculoServicio.js).
 
 async function getAllObstaculos() {
   const { rows } = await pool.query('SELECT * FROM obstaculos ORDER BY orden ASC')

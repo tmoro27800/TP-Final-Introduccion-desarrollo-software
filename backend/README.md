@@ -20,39 +20,27 @@ cp .env.example .env          # los defaults ya coinciden con docker-compose.yml
 npm run dev
 ```
 
-Si la base ya estaba levantada con un esquema viejo (de antes de que
-existieran `dificultad`, `consejos` y `obstaculos`), no hay un script de
-migración incremental — la forma más simple es recrearla desde cero con
-el `db/init.sql` actual (que ya incluye las 5 tablas). **Ojo: esto borra
-todos los datos que haya en esa base** (útil en desarrollo, no en una base
-con datos reales que quieras conservar):
+**⚠️ Si ya tenías la base levantada de antes** (con las tablas viejas
+`pistas`/`powerups`), Postgres NO va a recrear el esquema solo con hacer
+`docker compose up`: los scripts de `docker-entrypoint-initdb.d` (o sea,
+`db/init.sql`) sólo corren la primera vez que se crea el volumen de datos.
+Como `pistas` se renombró a `consejos` y `powerups` se reemplazó por
+`obstaculos` (tabla distinta, no un simple `ALTER TABLE`), hace falta
+recrear el volumen para que el nuevo esquema se aplique:
 
 ```bash
-docker compose down -v   # baja los contenedores y BORRA el volumen de datos de Postgres
-docker compose up -d db  # la vuelve a crear vacía, corriendo init.sql desde cero
+docker compose down -v        # -v borra también el volumen de Postgres
+docker compose up --build     # fuerza reconstrucción + init.sql desde cero
 ```
+
+Sin ese paso, vas a ver en los logs del contenedor `db` cosas como
+`relation "obstaculos" does not exist` o `relation "consejos" does not
+exist`: no es que falte una tabla, es que el volumen viejo nunca corrió el
+`init.sql` nuevo.
 
 `src/index.js` chequea la conexión a Postgres antes de levantar el
 servidor — si falla, imprime en consola qué revisar (`.env`, contenedor
 corriendo, base creada).
-
-### Variables de entorno (`.env`)
-
-| Variable | Default (`.env.example`) | Para qué |
-|---|---|---|
-| `PORT` | `3000` | Puerto donde escucha Express |
-| `DB_HOST` | `localhost` | Host de Postgres (`db` si el backend también corre en Docker, ver `docker-compose.yml`) |
-| `DB_PORT` | `5432` | Puerto de Postgres **dentro** de la red de Docker/tu máquina |
-| `DB_USER` / `DB_PASSWORD` / `DB_NAME` | `postgres` / `postgres` / `puzzle_game` | Credenciales |
-
-**Ojo con el puerto si conectás un cliente SQL (DBeaver, psql) desde tu
-máquina** en vez de desde el backend: `docker-compose.yml` expone Postgres
-en el **`5433`** del host (`"5433:5432"`), justamente para no pisar una
-instalación de Postgres nativa que ya tengas escuchando en el `5432` de
-siempre. El backend (corra en Docker o nativo apuntando a `localhost`)
-sigue usando `5432` porque, o bien habla con el contenedor desde *adentro*
-de la red de Docker (donde el mapeo de puertos no aplica), o bien apunta a
-un Postgres nativo tuyo que sí está en el `5432` de tu máquina.
 
 ## Estructura
 
@@ -65,18 +53,22 @@ backend/
       queries/
         index.js           # reexporta todo agrupado por tabla
         dificultad.queries.js
-        levels.queries.js  # incluye filtro por dificultad y el shape del contrato
+        levels.queries.js   # incluye filtro por dificultad y el shape del contrato
         puntajes.queries.js # queries del API Contract (alias /puntajes), CRUD completo
-        consejos.queries.js
-        obstaculos.queries.js
+        consejos.queries.js  # ex "pistas.queries.js"
+        obstaculos.queries.js # ex "powerups.queries.js"
     routes/
       index.js             # monta cada sub-router en /api
       dificultad.routes.js
       levels.routes.js
       puntajes.routes.js
-      consejos.routes.js
-      obstaculos.routes.js
+      consejos.routes.js    # ex "pistas.routes.js"
+      obstaculos.routes.js  # ex "powerups.routes.js"
 ```
+
+> `pistas.*` y `powerups.*` ya no existen (ni el `/scores` viejo): las
+> tablas se renombraron/reemplazaron en `db/init.sql`, así que los archivos
+> viejos se borraron para no dejar código apuntando a tablas que no están.
 
 ## Modelo de datos
 
@@ -87,14 +79,16 @@ propios (sin contar `id`) y al menos una relación por FK.
 |---|---|---|
 | `dificultad` | `nombre`, `nombre_visible`, `orden`, `descripcion`, `multiplicador_puntaje` | referenciada por `levels.dificultad_id` y `obstaculos.dificultad_id` |
 | `levels` | `name`, `order_index`, `dificultad_id`, `layout`, `created_at` | → `dificultad`; referenciada por `scores.level_id` y `consejos.level_id` |
-| `scores` | `level_id`, `player_name`, `moves`, `time_seconds`, `completed_at` | → `levels` |
-| `consejos` | `level_id`, `texto`, `orden`, `tipo`, `creado_en` | → `levels` (`NOT NULL`) |
-| `obstaculos` | `nombre`, `nombre_visible`, `descripcion`, `tipo`, `orden`, `dificultad_id` | → `dificultad` (nullable) |
+| `scores` (`/api/puntajes`) | `level_id`, `player_name`, `moves`, `time_seconds`, `completed_at` | → `levels` |
+| `consejos` (ex `pistas`) | `level_id`, `texto`, `orden`, `tipo`, `creado_en` | → `levels` |
+| `obstaculos` (ex `powerups`) | `nombre`, `nombre_visible`, `descripcion`, `tipo`, `orden`, `dificultad_id` | → `dificultad` |
 
-Reglas de negocio detrás de los campos nuevos:
+Reglas de negocio detrás de los campos:
 - `dificultad.multiplicador_puntaje`: pondera el puntaje en un futuro ranking global según la dificultad jugada (dificil vale más que normal a igual cantidad de movimientos).
-- `consejos` (antes "pistas") son consejos progresivos por nivel: `orden` define en qué secuencia se revelan — el frontend los pide todos juntos (`GET /api/consejos?nivel=`) y los va mostrando de a uno del lado del cliente (ver `frontend/src/juego/Consejos/useConsejos.js`), así que no hace falta un endpoint de "marcar como visto" ni un contador — por eso `veces_usada` se reemplazó por `creado_en` (se llena solo, mismo criterio que `levels.created_at`). `consejos.tipo` queda reservado para variantes futuras (`resaltado`, `camino`) que hoy no se usan. A diferencia de la vieja `pistas`, `level_id` es `NOT NULL` (un consejo siempre pertenece a un nivel) y hay una restricción `UNIQUE (level_id, orden)` para no cargar dos consejos del mismo nivel con el mismo orden por error.
-- `obstaculos` es el glosario de mecánicas del tablero (Lava, Pinchos, Láser, Puerta, etc. — una fila por cada una, ver `db/init.sql`). Reemplaza a la vieja tabla `powerups`, que nunca se llegó a usar desde el frontend. `obstaculos.nombre` es el slug interno (ej. `"lava"`) que el frontend usa para emparejar cada fila con su sprite local (ver `frontend/src/juego/Menu/mecanicasInfo.js`); `obstaculos.dificultad_id` indica la dificultad mínima en la que aparece esa mecánica (`NULL` = aparece en todas, como piso/pared/meta).
+- `consejos.level_id` es `NOT NULL` (a diferencia de la vieja `pistas`): un consejo sin nivel no tiene sentido. Además tiene `UNIQUE (level_id, orden)` para no repetir el número de orden dentro del mismo nivel.
+- `consejos.creado_en`: reemplaza al viejo `pistas.veces_usada`. El frontend ahora pide todos los consejos de un nivel juntos (`GET /api/consejos?nivel=`) y los va revelando de a uno del lado del cliente (ver `useConsejos.js`), así que no tiene sentido contar vistas backend-side; en cambio se guarda cuándo se creó el registro.
+- `obstaculos` es el glosario de mecánicas del tablero (piso, pared, lava, láser, teletransportador, etc.), una fila por mecánica, para que el modal "Cómo jugar > Mecánicas" del frontend arme su lista con datos reales (ver `mecanicasInfo.js`) en vez de un array hardcodeado. Reemplaza a `powerups`, que nunca se llegó a usar desde el frontend.
+- `obstaculos.dificultad_id`: dificultad mínima en la que aparece esa mecánica (`NULL` = aparece en todas).
 
 ## Endpoints
 
@@ -102,7 +96,7 @@ Todos bajo `/api`. Dificultades: `normal` y `dificil` (2). Modo libre se descart
 
 | Método | Ruta | Estado | Qué hace |
 |---|---|---|---|
-| GET | `/api/dificultades` | 🟢 canónico | `[{ id: "normal", nombre: "Normal", descripcion }, ...]` — `id` es el slug. `descripcion` es una extensión aditiva sobre el contrato original, la usa `SeleccionModo.jsx` |
+| GET | `/api/dificultades` | 🟢 canónico | `[{ id: "normal", nombre: "Normal" }, ...]` — `id` es el slug |
 | GET/POST/PUT/DELETE | `/api/dificultades/:id` | 🟢 canónico | CRUD completo (incluye `descripcion`, `multiplicador_puntaje`) |
 | GET | `/api/niveles` | 🟢 canónico | `[{ id, nombre, dificultad }]` |
 | GET | `/api/niveles?dificultad=normal\|dificil` | 🟢 canónico | Igual, filtrado |
@@ -110,16 +104,11 @@ Todos bajo `/api`. Dificultades: `normal` y `dificil` (2). Modo libre se descart
 | GET | `/api/puntajes?nivel=<id>&dificultad=` | 🟢 canónico | `[{ jugador, movimientos, tiempo }]`, ordenado |
 | POST | `/api/puntajes` | 🟢 canónico | Crea un puntaje, valida nivel/dificultad/jugador/movimientos/tiempo |
 | GET/PUT/DELETE | `/api/puntajes/:id` | 🟢 canónico | Ver, corregir o borrar un puntaje ya guardado |
-| GET/POST/PUT/DELETE | `/api/consejos` | 🔵 en uso (`Nivel.jsx`) | CRUD completo; `GET /?nivel=<id>` ordenado por `orden`, son los consejos progresivos del botón "💡 Consejos" |
-| GET/POST/PUT/DELETE | `/api/obstaculos` | 🔵 en uso (`Menu.jsx`) | CRUD completo; `GET /` ordenado por `orden`, es el glosario "Cómo jugar > Mecánicas" del frontend |
+| GET | `/api/consejos?nivel=<id>` | 🟢 canónico | Consejos de un nivel, ordenados por `orden` |
+| GET/POST/PUT/DELETE | `/api/consejos/:id` | 🟢 canónico | CRUD completo |
+| GET | `/api/obstaculos` | 🟢 canónico | Glosario completo, ordenado por `orden` |
+| GET/POST/PUT/DELETE | `/api/obstaculos/:id` | 🟢 canónico | CRUD completo |
 | * | `/api/dificultad`, `/api/levels` | 🟡 alias viejo | Mismo recurso en inglés, sin las validaciones del contrato. Candidatos a borrar. |
-
-> El alias viejo `/api/scores` (y sus archivos `scores.routes.js`/
-> `scores.queries.js`) ya se borraron del backend. Si ves referencias a
-> `/api/scores`, `getGlobalRanking`, `ranking/global` o `level/:id/top` en
-> otro lado del repo (`frontend/src/servicios/puntajeServicio.js` todavía
-> las tiene), son restos muertos de esa limpieza — no llaman a nada que
-> exista.
 
 **Validaciones implementadas en `POST`/`PUT /api/puntajes`:**
 - `nivel` faltante o inexistente → `400`.
@@ -136,5 +125,6 @@ Todos bajo `/api`. Dificultades: `normal` y `dificil` (2). Modo libre se descart
 
 ## Pendiente para el equipo
 
-- **Pantallas de administración en el frontend** para el CRUD de las 5 entidades (alta/edición/borrado de niveles, dificultades, consejos y obstáculos) — el backend ya soporta todo, falta que el frontend lo llame. `obstaculos` y `consejos` ya se leen (`Menu.jsx`/`Nivel.jsx`), pero crear/editar/borrar desde una pantalla de admin sigue pendiente.
-- **Decidir si se borran `/levels`, `/dificultad`** (alias viejos, mismo recurso que las rutas canónicas en español) antes de la entrega, para no tener endpoints duplicados en la defensa oral. `/scores` ya se borró — falta limpiar del lado del frontend las funciones muertas que todavía lo llaman (ver nota en `frontend/README.md`).
+- **Recrear el volumen de Postgres** (`docker compose down -v && docker compose up --build`) en todas las máquinas del equipo — el cambio `pistas→consejos` / `powerups→obstaculos` no se aplica solo.
+- **Pantallas de administración en el frontend** para el CRUD de las 5 entidades — el backend ya soporta todo, falta que el frontend lo llame (hoy sólo hace `GET`s de consejos/obstaculos/niveles/dificultades y `POST` de puntajes).
+- **Decidir si se borran `/api/dificultad`, `/api/levels`** (alias viejos en inglés) antes de la entrega, para no tener endpoints duplicados en la defensa oral.
