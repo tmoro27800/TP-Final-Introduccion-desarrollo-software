@@ -991,3 +991,9 @@ README de cada carpeta, que son más cortos y sirven de referencia rápida.
 Si algo de acá queda desactualizado con el código, el código manda —
 revisar los comentarios de cada archivo mencionado, que suelen explicar el
 "por qué" de decisiones puntuales.*
+
+**req.body:** req.body va en el "cuerpo" del mensaje, no en la URL — es invisible si solo mirás la dirección. Se usa en POST/PUT, cuando el front manda un objeto JSON completo: POST /api/puntajes con body {"jugador": "Dante", "movimientos": 20, ...} → req.body.jugador es "Dante".
+
+**req.query:** req.query va pegado en la URL, después del ?: GET /api/niveles?dificultad=normal → req.query.dificultad es "normal". Se ve a simple vista si mirás la URL. Se usa para filtros u opciones en pedidos que no mandan cuerpo (típicamente GET).
+
+**req.params:** son los pedazos de la URL marcados con :algo en la ruta (/:id). GET /api/niveles/5 → req.params.id es "5". Ojo que ninguno de los tres es lo mismo: params identifica UN recurso puntual, query filtra una lista, body manda datos para crear/actualizar.
