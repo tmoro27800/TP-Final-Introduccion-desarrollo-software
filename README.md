@@ -21,7 +21,7 @@ pendiente.
 - Dante Luca Ortega
 - Tomas Valentin Muruchi
 - German Barrionuevo
-- Esteban (completar apellido)
+- Esteban Emanuel Angel Suarez
 
 ## Tecnologías
 
