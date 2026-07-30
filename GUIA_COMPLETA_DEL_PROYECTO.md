@@ -155,7 +155,7 @@ Para tocar solo un servicio: `docker compose up --build backend`,
 `docker compose up --build frontend`, etc. — Compose entiende que los otros
 ya están corriendo y no los toca.
 
-### 3.3. `init.sql` solo corre UNA VEZ — la trampa más común
+### 3.3. `init.sql` solo corre UNA VEZ por primera ejecución
 
 Esto es la causa del 80% de los "¿por qué en mi compu no aparecen los
 niveles nuevos?": la imagen oficial de Postgres ejecuta automáticamente
