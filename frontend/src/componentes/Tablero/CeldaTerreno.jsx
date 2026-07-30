@@ -1,6 +1,6 @@
 import { useCicloDeFrames } from "../useCicloDeFrames.js";
 import { usePuertaAnimada } from "./usePuertaAnimada.js";
-import { LASER, LAVA, VACIO, BOTON, META, TELETRANSPORTADOR, PUERTA, PUERTA_CON_LLAVE, PUENTE } from "../../juego/Juego/tiposCelda.js";
+import { LASER, LAVA, VACIO, BOTON, META, TELETRANSPORTADOR, PUERTA, PUERTA_CON_LLAVE, PUENTE, PINCHOS, PISO } from "../../juego/Juego/tiposCelda.js";
 import {
     SPRITES_TERRENO,
     SPRITES_LAVA,
@@ -113,6 +113,20 @@ export default function CeldaTerreno({
                 className="tablero-celda"
                 style={posicion}
             />
+        );
+    }
+
+    // Pinchos: el sprite (6_Pinchos.png) es mayormente transparente — son
+    // solo los 3-4 pinchitos, no un tile completo — así que sin nada debajo
+    // se veía el fondo oscuro de la página a través suyo en vez de piso.
+    // Se dibuja el piso primero y los pinchos encima, mismo criterio que el
+    // cubo+efecto del personaje (Jugador.jsx).
+    if (valor === PINCHOS) {
+        return (
+            <>
+                <img src={SPRITES_TERRENO[PISO]} alt="" draggable={false} className="tablero-celda" style={posicion} />
+                <img src={SPRITES_TERRENO[PINCHOS]} alt="" draggable={false} className="tablero-celda" style={posicion} />
+            </>
         );
     }
 
