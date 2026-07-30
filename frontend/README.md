@@ -16,7 +16,8 @@ npm run dev
 ```
 
 Abre en `http://localhost:5173`. Necesita el backend corriendo (ver
-`../backend/README.md`) para poder listar/jugar niveles y guardar puntajes.
+`../backend/README.md`) para listar/jugar niveles y guardar puntajes.
+Referencia de la API: [`../ENDPOINTS.MD`](../ENDPOINTS.MD).
 
 Otros scripts (`package.json`):
 - `npm run build` — build de producción a `dist/` (Vite).
@@ -247,8 +248,10 @@ cada dificultad ("Ritmo pausado...") ahora sale de `dificultad.descripcion`
 
 ## Consejos progresivos (`juego/Consejos/useConsejos.js`)
 
-Cada nivel tiene 2-5 consejos cargados en la tabla `consejos` (antes
-`pistas`, ver `db/README.md`), ordenados del más vago al más específico.
+Los niveles 1 a 6 tienen entre 2 y 5 consejos cargados en la tabla
+`consejos` (ver `db/README.md`). El resto de los 36 niveles aún no tiene
+consejos precargados. Donde existen, están ordenados del más vago al más
+específico.
 El botón "💡 Consejos" del HUD (`Nivel.jsx`) pide **todos** los del nivel
 actual en una sola llamada (`GET /api/consejos?nivel=<id>`, ver
 `servicios/consejoServicio.js`) recién la primera vez que se abre el modal
@@ -262,15 +265,14 @@ vez de un contador: ver `backend/README.md`).
 ## Cosas para tener en cuenta / pendientes
 
 - **`servicios/puntajeServicio.js`** todavía exporta funciones para
-  `/api/scores` (`getAllScores`, `getGlobalRanking`, etc.) — ese alias
-  **ya no existe en el backend** (se sacó junto con `scores.routes.js`,
-  ver `../backend/README.md`). Ninguna pantalla las llama hoy, pero si se
-  llegan a usar van a devolver 404.
+  `/api/scores` (`getAllScores`, `getGlobalRanking`, etc.). Ese alias
+  **ya no existe en el backend**. Ninguna pantalla las llama hoy; devolverían
+  404 si se usaran. Ver [`../ENDPOINTS.MD`](../ENDPOINTS.MD).
 - **`dificultadServicio.js`** ya tiene `getDificultades()` en uso
   (`SeleccionModo.jsx`), pero `createDificultad`/`updateDificultad`/
   `deleteDificultad` siguen sin ninguna pantalla que los llame — el
   backend los soporta, falta la UI de administración (trabajo pendiente
-  compartido con el backend, ver su README). Mismo caso para crear/editar/
+  compartido con el backend, ver [`../ENDPOINTS.MD`](../ENDPOINTS.MD)). Mismo caso para crear/editar/
   borrar consejos u obstáculos: se leen (`consejoServicio.js`/
   `obstaculoServicio.js`), pero no se escriben desde ninguna pantalla.
 - **`componentes/Boton/Boton.jsx`** no se usa en ningún lado (no hay que

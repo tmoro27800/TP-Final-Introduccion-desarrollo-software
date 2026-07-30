@@ -1,6 +1,6 @@
 import { api } from './api';
 
-// Canónico (API Contract): GET /api/puntajes?nivel=&dificultad=
+// Canónico: GET /api/puntajes?nivel=&dificultad= (ver ENDPOINTS.MD)
 // Devuelve [{ jugador, movimientos, tiempo }], usado por Puntaje.jsx.
 // "nivel" es obligatorio del lado del backend (no hay modo libre).
 export const getPuntajesPorNivel = async (nivelId, dificultadId) => {
@@ -10,7 +10,7 @@ export const getPuntajesPorNivel = async (nivelId, dificultadId) => {
   return response.data;
 };
 
-// Canónico (API Contract): POST /api/puntajes { nivel, dificultad, jugador, movimientos, tiempo }
+// Canónico: POST /api/puntajes { nivel, dificultad, jugador, movimientos, tiempo }
 // Guarda el resultado de una partida recién completada. Usado por Juego.jsx
 // al ganar un nivel.
 export const crearPuntaje = async ({ nivel, dificultad, jugador, movimientos, tiempo }) => {
@@ -18,8 +18,8 @@ export const crearPuntaje = async ({ nivel, dificultad, jugador, movimientos, ti
   return response.data;
 };
 
-// --- Alias viejo (/scores, en inglés) — se mantiene por compatibilidad,
-// no usar en código nuevo. Ver backend/src/routes/README.md. ---
+// --- Alias viejo (/scores) eliminado del backend. Funciones muertas abajo.
+// Ver ENDPOINTS.MD en la raíz del repo. ---
 
 export const getAllScores = async () => {
     return api.get('/api/scores');
