@@ -62,8 +62,6 @@ backend/
       obstaculos.routes.js
 ```
 
-> `pistas.*`, `powerups.*` y `/api/scores` ya no existen. Los archivos viejos
-> se eliminaron para no apuntar a tablas o rutas que no están.
 
 ## Modelo de datos
 
@@ -128,9 +126,3 @@ Detalle función por función, validaciones y ejemplos de respuesta:
 - **Nunca se concatena texto en el SQL.** Todas las queries usan parámetros (`$1`, `$2`, ...).
 - **Una función = una operación concreta.** Las rutas de Express quedan cortas, sin SQL mezclado con lógica HTTP.
 
-## Pendiente para el equipo
-
-- **Recrear el volumen de Postgres** (`docker compose down -v && docker compose up --build`) en todas las máquinas del equipo si el esquema cambió.
-- **Pantallas de administración en el frontend** para el CRUD de las 5 entidades. Hoy el juego solo hace GET (y POST de puntajes).
-- **Decidir si se borran** `/api/dificultad` y `/api/levels` (alias en inglés) antes de la entrega.
-- **Cargar consejos** para los niveles 7 a 36 (hoy solo hay consejos en niveles 1 a 6).
