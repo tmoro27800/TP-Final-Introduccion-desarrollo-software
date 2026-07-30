@@ -12,23 +12,30 @@ import { useSonidosDeJuego } from "../Musica/useSonidosDeJuego.js";
 import { useConsejos } from "../Consejos/useConsejos.js";
 import "./Nivel.css";
 
-// Texto del toast que se muestra un momento tras cada evento del motor
-// (ver motorJuego.js: ultimoEvento). No cubre "reinicio-manual" a propósito
-// (la tecla R ya es una acción explícita del jugador, no hace falta avisar).
+// Texto del toast que se muestra un momento tras cada evento del motor (ver
+// motorJuego.js: ultimoEvento). No cubre "reinicio-manual" a propósito (la
+// tecla R ya es una acción explícita del jugador, no hace falta avisar).
+//
+// Antes cada mensaje llevaba un emoji de prefijo — con la tipografía pixel
+// del juego se veían borrosos/desalineados (no son parte de esa fuente) y no
+// aportaban nada que el texto no dijera ya. En vez de eso, cada mensaje
+// declara una "categoria" que el toast usa para pintarse con un color/acento
+// distinto (ver .game-toast en Nivel.css) — la misma idea que ya usa
+// game-habilidad para fantasma/invulnerabilidad/fuerza, aplicada acá también.
 const MENSAJES_EVENTO = {
-    "muerte-lava": "💀 Te derritió la lava — nivel reiniciado",
-    "muerte-vacio": "💀 Caíste al vacío — nivel reiniciado",
-    "muerte-laser": "💀 Te atravesó el láser — nivel reiniciado",
-    "muerte-puente": "💀 El puente colapsó bajo tus pies — nivel reiniciado",
-    "caja-destruida": "📦 Caja destruida",
-    llave: "🔑 Llave recolectada",
-    "pickup-fantasma": "👻 Modo fantasma activado",
-    "pickup-invulnerabilidad": "✨ Invulnerabilidad activada",
-    "pickup-fuerza": "💥 Modo fuerza activado",
-    pinchos: "🩹 Pinchos: +3 movimientos",
-    boton: "🔘 Botón presionado — puerta abierta",
-    "puente-activado": "🌉 Puente activado — cruzalo rápido",
-    "puente-alerta": "⚠️ ¡El puente está por colapsar!",
+    "muerte-lava": { texto: "Te derritió la lava — nivel reiniciado", categoria: "peligro" },
+    "muerte-vacio": { texto: "Caíste al vacío — nivel reiniciado", categoria: "peligro" },
+    "muerte-laser": { texto: "Te atravesó el láser — nivel reiniciado", categoria: "peligro" },
+    "muerte-puente": { texto: "El puente colapsó bajo tus pies — nivel reiniciado", categoria: "peligro" },
+    "caja-destruida": { texto: "Caja destruida", categoria: "logro" },
+    llave: { texto: "Llave recolectada", categoria: "logro" },
+    "pickup-fantasma": { texto: "Modo fantasma activado", categoria: "habilidad-fantasma" },
+    "pickup-invulnerabilidad": { texto: "Invulnerabilidad activada", categoria: "habilidad-invulnerabilidad" },
+    "pickup-fuerza": { texto: "Modo fuerza activado", categoria: "habilidad-fuerza" },
+    pinchos: { texto: "Pinchos: +3 movimientos", categoria: "alerta" },
+    boton: { texto: "Botón presionado — puerta abierta", categoria: "logro" },
+    "puente-activado": { texto: "Puente activado — cruzalo rápido", categoria: "logro" },
+    "puente-alerta": { texto: "El puente está por colapsar", categoria: "alerta" },
 };
 
 // Una partida en curso: motor de juego (useJuego), HUD, y guardado de
@@ -88,6 +95,14 @@ export default function Nivel({ nivel, onVolver }) {
     const { consejosRevelados, hayMas, totalConsejos, cargando: cargandoConsejos, pedirConsejos, revelarSiguiente } =
         useConsejos(nivel.id);
 
+    // Flash rojo de pantalla completa al morir (lava/láser/vacío/puente) —
+    // puramente visual, no bloquea el movimiento. Se remonta con un `key`
+    // distinto por cada muerte (el propio id de ultimoEvento) para que la
+    // animación CSS arranque de cero incluso si se muere dos veces seguido
+    // muy rápido; se anima solo con CSS (forwards, sin JS de por medio) así
+    // que no hay ningún timeout que limpiar ni riesgo de que quede pegado.
+    const muerteFlashId = ultimoEvento?.tipo?.startsWith("muerte-") ? ultimoEvento.id : null;
+
     const [primerMovimiento, setPrimerMovimiento] = useState(false);
     const [tiempo, setTiempo] = useState(0);
     const [mensajeToast, setMensajeToast] = useState(null);
@@ -118,13 +133,21 @@ export default function Nivel({ nivel, onVolver }) {
 
     // efecto 3: muestra un toast breve cada vez que el motor reporta un
     // evento nuevo (muerte, pickup, llave, caja destruida — ver motorJuego.js)
+    //
+    // A propósito NO se devuelve `() => clearTimeout(timeout)` como cleanup:
+    // en un juego de movimientos rápidos, ultimoEvento cambia con cada paso
+    // (aunque no tenga mensaje), y React ejecuta ese cleanup ANTES de la
+    // siguiente pasada del efecto — cancelando el timeout que iba a esconder
+    // el toast, sin llegar a programar uno nuevo (el siguiente paso no
+    // siempre trae un evento con mensaje). El toast se quedaba pegado en
+    // pantalla para siempre. Mismo bug ya visto y resuelto en
+    // useEfectosDestruccion.js / useEfectoPowerUp.js.
     useEffect(() => {
         if (!ultimoEvento) return;
         const mensaje = MENSAJES_EVENTO[ultimoEvento.tipo];
         if (!mensaje) return;
         setMensajeToast(mensaje);
-        const timeout = setTimeout(() => setMensajeToast(null), 2000);
-        return () => clearTimeout(timeout);
+        setTimeout(() => setMensajeToast(null), 2000);
     }, [ultimoEvento]);
 
     // efecto 4: al ganar, busca cuál es el próximo nivel de la misma
@@ -184,6 +207,8 @@ export default function Nivel({ nivel, onVolver }) {
 
     return (
         <div className="game">
+            {muerteFlashId && <div key={muerteFlashId} className="game-muerte-flash" />}
+
             <div className="game-container">
                 <div className="game-header">
                     <BotonVuelta label="Volver" onClick={onVolver} className="game-header-volver" />
@@ -196,7 +221,7 @@ export default function Nivel({ nivel, onVolver }) {
                             setMostrarConsejos(true);
                         }}
                     >
-                        💡 Consejos
+                        Consejos
                     </button>
                 </div>
 
@@ -251,7 +276,9 @@ export default function Nivel({ nivel, onVolver }) {
                     />
                 </div>
 
-                {mensajeToast && <div className="game-toast">{mensajeToast}</div>}
+                {mensajeToast && (
+                    <div className={`game-toast game-toast--${mensajeToast.categoria}`}>{mensajeToast.texto}</div>
+                )}
 
                 {/* Consejos progresivos (ver useConsejos.js): se van revelando de a
                     uno con el botón de abajo, no vienen todos de entrada. */}

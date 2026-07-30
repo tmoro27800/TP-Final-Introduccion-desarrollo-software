@@ -1,10 +1,21 @@
-.tablero-jugador {
+/* cuerpo del personaje (el cubo) — va debajo del efecto de la habilidad,
+   que se pinta encima/"adentro" suyo (ver .tablero-jugador) */
+.tablero-jugador-cubo {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
   image-rendering: pixelated;
   z-index: 4;
+}
+
+.tablero-jugador {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 5;
 }
 
 /* imagen residual: queda un instante en la celda que el jugador acaba de

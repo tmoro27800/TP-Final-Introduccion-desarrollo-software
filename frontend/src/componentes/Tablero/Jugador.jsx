@@ -3,9 +3,10 @@ import "./Jugador.css";
 
 // Todas las capas visuales del personaje: estela (imagen residual de la
 // celda anterior, se desvanece), partículas ambiente, viento direccional
-// al caminar, y el sprite del cuerpo en sí — de atrás para adelante.
+// al caminar, el cubo (cuerpo) y el efecto de la habilidad encima/adentro
+// suyo — de atrás para adelante.
 export default function Jugador({ jugador, habilidadActiva, ultimoIntento }) {
-    const { spritePersonaje, spriteParticulas, spriteViento, ventoDireccion, spriteEstela, estelas } =
+    const { spritePersonaje, spriteCubo, spriteParticulas, spriteViento, ventoDireccion, spriteEstela, estelas } =
         useAnimacionJugador({ habilidadActiva, ultimoIntento });
 
     const posicionActual = { gridRow: jugador.fila + 1, gridColumn: jugador.columna + 1 };
@@ -42,6 +43,10 @@ export default function Jugador({ jugador, habilidadActiva, ultimoIntento }) {
                     className={`jugador-viento jugador-viento--${ventoDireccion}`}
                     style={posicionActual}
                 />
+            )}
+
+            {spriteCubo && (
+                <img src={spriteCubo} alt="" draggable={false} className="tablero-jugador-cubo" style={posicionActual} />
             )}
 
             {spritePersonaje && (

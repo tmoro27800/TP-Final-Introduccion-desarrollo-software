@@ -114,6 +114,12 @@ export default function useJuego(nivelPreparado) {
             const pisoLaserSeguro = exitoso && !murio && pisoLaserApagado(estadoActual, direccion);
             const atravesoPared =
                 exitoso && !murio && estadoActual.habilidadActiva === "fantasma" && siguiente.habilidadActiva !== "fantasma";
+            // Pisar pinchos no mata (solo penaliza movimientos, ver
+            // manejarPinchos en motorJuego.js) así que no cae en "murio", pero
+            // sigue siendo un golpe: useAnimacionJugador.js usa esto para
+            // mostrar la reacción de "error" en todo el cubo en vez de la
+            // animación normal de caminar.
+            const pisoPinchos = exitoso && !murio && tipoEvento === "pinchos";
 
             setUltimoIntento({
                 id: `${Date.now()}-${Math.random()}`,
@@ -125,6 +131,7 @@ export default function useJuego(nivelPreparado) {
                 chocoPared,
                 pisoLaserSeguro,
                 atravesoPared,
+                pisoPinchos,
                 posicionFinal: siguiente.jugador,
                 posicionAnterior: estadoActual.jugador,
             });

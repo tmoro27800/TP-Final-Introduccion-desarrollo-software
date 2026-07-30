@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import BotonVuelta from "../../componentes/BotonVuelta/BotonVuelta.jsx";
 import FilaPuntaje from "../../componentes/FilaPuntaje/FilaPuntaje.jsx";
 import { getNivelesPorDificultad } from "../../servicios/nivelServicio.js";
 import { getPuntajesPorNivel } from "../../servicios/puntajeServicio.js";
@@ -54,10 +55,9 @@ export default function Puntaje() {
 
     return (
         <div className="score">
+            <BotonVuelta onClick={() => navigate("/")} className="back-button--flotante" />
+
             <div className="score-container">
-                <button className="score-volver" onClick={() => navigate("/")}>
-                    <span aria-hidden="true">←</span> Volver al menú
-                </button>
                 <h1>Tabla de puntajes</h1>
 
                 <div className="score-filtros">

@@ -209,22 +209,97 @@
   color: var(--game-rojo-brillo);
 }
 
+/* ------------------- flash de muerte ------------------- */
+
+/* Rojo intenso a pantalla completa que se desvanece solo: puramente
+   decorativo (pointer-events:none, no bloquea nada) y puramente animado por
+   CSS (forwards, sin setTimeout de JS) — no hay nada que limpiar a mano ni
+   riesgo de que quede pegado como pasaba con los efectos viejos de
+   caja/power-up. z-index por debajo de .modal-overlay (1000, Ventana.css)
+   a propósito: si el jugador ya está mirando un modal no debería tapar nada. */
+.game-muerte-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: #ff1414;
+  pointer-events: none;
+  animation: game-muerte-flash-fade 350ms ease-out forwards;
+}
+
+@keyframes game-muerte-flash-fade {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 /* ------------------- toast de eventos ------------------- */
 
+/* Sin emoji de prefijo (no son parte de la fuente pixel del juego, quedaban
+   borrosos/desalineados) — en vez de eso, un punto + borde izquierdo con el
+   color de --game-toast-color, que cada modificador de categoría pisa más
+   abajo. Mismo lenguaje visual que .game-habilidad--fantasma/invulnerabilidad
+   /fuerza (border-left de acento + color), aplicado acá también. */
 .game-toast {
+  --game-toast-color: var(--game-texto-tenue);
+
   position: fixed;
   bottom: 1.5rem;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: var(--game-panel);
   border: 1px solid var(--game-borde);
-  border-radius: 999px;
+  border-left: 3px solid var(--game-toast-color);
+  border-radius: 10px;
   padding: 0.55rem 1.1rem;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--game-texto);
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
   z-index: 10;
+}
+
+.game-toast::before {
+  content: "";
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--game-toast-color);
+}
+
+/* muerte (lava/láser/vacío/puente): mismo rojo que el resto del juego usa
+   para peligro */
+.game-toast--peligro {
+  --game-toast-color: var(--game-rojo-brillo);
+}
+
+/* avisos que no matan pero conviene notar (pinchos, puente por colapsar) */
+.game-toast--alerta {
+  --game-toast-color: #f2a93b;
+}
+
+/* progreso positivo: llave, botón, caja destruida, puente activado */
+.game-toast--logro {
+  --game-toast-color: var(--game-oro);
+}
+
+/* pickups de habilidad: mismo color que su badge en .game-habilidad--* */
+.game-toast--habilidad-fantasma {
+  --game-toast-color: #9b59e2;
+}
+
+.game-toast--habilidad-invulnerabilidad {
+  --game-toast-color: var(--game-oro);
+}
+
+.game-toast--habilidad-fuerza {
+  --game-toast-color: var(--game-rojo-brillo);
 }
 
 /* ------------------- tablero ------------------- */

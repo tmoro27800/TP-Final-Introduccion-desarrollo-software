@@ -92,11 +92,17 @@
   background-color: #212121;
 }
 
+/* ancho fijo (el de una fila de 3 teclas: 34px*3 + 5px*2 de gap = 112px) en
+   vez de achicarse al contenido — la fila de "R" tiene una sola tecla y sin
+   esto su columna quedaba más angosta que la de WASD/Flechas, corriendo el
+   texto de esa fila hacia la izquierda respecto de las otras dos. */
 .teclas-grupo {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 5px;
+  width: 112px;
   flex-shrink: 0;
 }
 
@@ -127,8 +133,16 @@
     0 3px 0 #000;
 }
 
+/* Ancho fijo (no shrink-to-fit) para que WASD/Flechas/R terminen con el
+   mismo ancho total de fila (.teclas-grupo ya es fijo, ver arriba) y por lo
+   tanto queden centradas en la misma posición las tres — y el texto adentro
+   va a la izquierda (no centrado): con textos de largo tan distinto entre
+   filas ("Alternativa a WASD" vs "R"), centrarlos hacía que ninguno arranque
+   en la misma columna. */
 .control-texto {
-  text-align: center;
+  width: 200px;
+  flex-shrink: 0;
+  text-align: left;
 }
 
 .control-texto h3 {
@@ -167,13 +181,6 @@
   display: flex;
   align-items: center;
   gap: 14px;
-}
-
-.config-icono {
-  font-size: 18px;
-  color: #b31e1e;
-  width: 24px;
-  text-align: center;
 }
 
 .config-info h3 {

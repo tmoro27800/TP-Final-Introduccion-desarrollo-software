@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { SPRITES_JUGADOR, FRAMES } from "./spritesJugador.js";
+import { SPRITES_JUGADOR, SPRITES_CUBO, FRAMES } from "./spritesJugador.js";
 
 const MS_POR_FRAME = 90; // caminar / error — snappy, pixel art
 const MS_POR_FRAME_QUIETO = 220; // reposo/partículas — más lento, "respirando"
@@ -35,12 +35,13 @@ export function useAnimacionJugador({ habilidadActiva, ultimoIntento }) {
         setDireccionMirando(direccionTexto);
         setFrame(0);
 
-        // "error" cubre dos casos: un movimiento sin efecto (chocar contra
-        // una pared, empujar una caja trabada) y morir (lava/láser/vacío/
-        // puente colapsado) — ambos son "algo salió mal", y morir además
-        // mueve al jugador de vuelta al inicio, así que sin este chequeo se
+        // "error" cubre tres casos: un movimiento sin efecto (chocar contra
+        // una pared, empujar una caja trabada), morir (lava/láser/vacío/
+        // puente colapsado) y pisar pinchos (duele pero no mata) — los tres
+        // son "algo salió mal, el cubo lo sufre", y morir además mueve al
+        // jugador de vuelta al inicio, así que sin este chequeo se
         // confundía con un paso caminando normal.
-        if (!ultimoIntento.exitoso || ultimoIntento.murio) {
+        if (!ultimoIntento.exitoso || ultimoIntento.murio || ultimoIntento.pisoPinchos) {
             setAccion("error");
             return;
         }
@@ -99,11 +100,26 @@ export function useAnimacionJugador({ habilidadActiva, ultimoIntento }) {
               ? grupo[direccionMirando][frame]
               : grupo.quieto[frameQuieto];
 
-    const spriteParticulas = grupo.particulas[frameQuieto % FRAMES.particulas];
+    // El cubo es el cuerpo de fondo: misma acción/dirección/frame que el
+    // efecto de arriba, para que las dos capas queden sincronizadas, pero
+    // sale de SPRITES_CUBO (no depende de la habilidad — ver spritesJugador.js).
+    const spriteCubo =
+        accion === "error"
+            ? SPRITES_CUBO.error[frame]
+            : accion === "caminando"
+              ? SPRITES_CUBO[direccionMirando][frame]
+              : SPRITES_CUBO.quieto;
+
+    // Sin habilidad activa no hay partículas ambiente (se sacó el uso de
+    // Efectos/Particulas0-3.png, el set "base") — solo quedan las de cada
+    // habilidad (Fantasma/Fuerza/Invulnerabilidad tienen su propio set con
+    // el mismo nombre de archivo, en su propia subcarpeta).
+    const spriteParticulas = habilidadActiva ? grupo.particulas[frameQuieto % FRAMES.particulas] : null;
     const spriteViento = ventoDireccion ? grupo.viento[ventoDireccion][Math.min(frame, FRAMES.viento - 1)] : null;
 
     return {
         spritePersonaje,
+        spriteCubo,
         spriteParticulas,
         spriteViento,
         ventoDireccion,

@@ -39,13 +39,16 @@ export default function CeldaTerreno({
     puenteVariante,
     modificador,
 }) {
-    const spriteLava = useCicloDeFrames(valor === LAVA ? SPRITES_LAVA : SIN_ANIMAR, MS_POR_FRAME_LAVA);
-    // el puente colapsado se ve igual que el vacío (mismo hueco, misma
-    // animación) — de ahí el "|| modificador === 'colapsado'"
-    const spriteVacio = useCicloDeFrames(
-        valor === VACIO || (valor === PUENTE && modificador === "colapsado") ? SPRITES_VACIO : SIN_ANIMAR,
-        MS_POR_FRAME_VACIO
+    // el puente colapsado se ve como lava (mismo criterio que la lava real,
+    // no como el vacío) — de ahí el "|| modificador === 'colapsado'". Pisarlo
+    // sigue matando siempre (sin excepción de invulnerabilidad), igual que
+    // antes con el vacío: es solo un cambio visual, ver manejarPuente en
+    // motorJuego.js.
+    const spriteLava = useCicloDeFrames(
+        valor === LAVA || (valor === PUENTE && modificador === "colapsado") ? SPRITES_LAVA : SIN_ANIMAR,
+        MS_POR_FRAME_LAVA
     );
+    const spriteVacio = useCicloDeFrames(valor === VACIO ? SPRITES_VACIO : SIN_ANIMAR, MS_POR_FRAME_VACIO);
     const spriteMeta = useCicloDeFrames(valor === META ? SPRITES_META : SIN_ANIMAR, MS_POR_FRAME_META);
     const spriteLaser = useCicloDeFrames(
         valor === LASER ? (laserEncendido ? SPRITES_LASER.encendido : SPRITES_LASER.apagado) : SIN_ANIMAR,
@@ -85,7 +88,7 @@ export default function CeldaTerreno({
 
     if (valor === PUENTE) {
         if (modificador === "colapsado") {
-            return <img src={spriteVacio} alt="" draggable={false} className="tablero-celda" style={posicion} />;
+            return <img src={spriteLava} alt="" draggable={false} className="tablero-celda" style={posicion} />;
         }
         if (modificador === "alerta") {
             return (

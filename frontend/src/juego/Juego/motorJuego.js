@@ -196,9 +196,11 @@ function recogerPickup(estado, pos, pickup) {
   });
 }
 
-// Hazard que mata salvo con invulnerabilidad activa (lava). El láser NO usa
-// esto — es instantáneo, sin excepción de invulnerabilidad (ver
-// manejarLaser). Los pinchos tampoco — no matan, ver manejarPinchos.
+// Hazard que mata salvo con invulnerabilidad activa (lava). El láser repite
+// el mismo chequeo de invulnerabilidad en manejarLaser en vez de reusar esto
+// porque primero tiene que resolver si está prendido o apagado (su propio
+// ciclo, ver laserActivo) — acá no hay ese paso previo. Los pinchos no matan
+// (ver manejarPinchos), así que tampoco pasan por acá.
 function manejarHazard(estado, pos, motivo) {
   if (estado.habilidadActiva === "invulnerabilidad") {
     return moverJugadorA(estado, pos, { habilidadActiva: null });
@@ -228,11 +230,14 @@ function manejarMeta(estado, pos) {
 }
 
 // Láser: prendido/apagado en ciclos de DURACION_CICLO_LASER movimientos
-// (ver laserActivo). Si está prendido cuando el jugador entra, muere sin
-// excepción de invulnerabilidad — es instantáneo, no una "quemadura" como
-// la lava.
+// (ver laserActivo). Si está prendido cuando el jugador entra, muere — salvo
+// con invulnerabilidad activa, que ahora protege igual que contra lava/
+// pinchos (antes el láser era la única excepción que no cubría).
 function manejarLaser(estado, pos) {
   if (laserActivo(estado.movimientos)) {
+    if (estado.habilidadActiva === "invulnerabilidad") {
+      return moverJugadorA(estado, pos, { habilidadActiva: null });
+    }
     return reiniciarNivel(estado, { porMuerte: "laser" });
   }
   return moverJugadorA(estado, pos);

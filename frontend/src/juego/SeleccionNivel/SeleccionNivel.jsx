@@ -39,9 +39,9 @@ export default function SeleccionNivel() {
 
     return (
         <div className="selection-level">
-            <div className="selection-level-container">
-                <BotonVuelta label="Volver" onClick={() => navigate("/seleccion-modo")} />
+            <BotonVuelta onClick={() => navigate("/seleccion-modo")} className="back-button--flotante" />
 
+            <div className="selection-level-container">
                 <h1>Niveles {NOMBRE_MODO[modoId] ?? modoId}</h1>
 
                 {cargando && <PantallaCarga mensaje="Cargando niveles..." />}

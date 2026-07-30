@@ -44,9 +44,9 @@ export default function SeleccionModo() {
 
     return (
         <div className="selection-mode">
-            <div className="selection-mode-container">
-                <BotonVuelta label="Volver al menú" onClick={() => navigate("/")} />
+            <BotonVuelta onClick={() => navigate("/")} className="back-button--flotante" />
 
+            <div className="selection-mode-container">
                 <h1>Elegí un modo</h1>
                 <p className="selection-mode-subtitulo">La dificultad define qué niveles vas a poder jugar</p>
 

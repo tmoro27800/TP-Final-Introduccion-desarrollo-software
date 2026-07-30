@@ -1,18 +1,26 @@
-// Registro de todos los sprites del personaje (assets/SpriteCuboMapa/
-// CuboPrincipal/Cubo/). Son ~150 archivos con nombres consistentes, así que
-// en vez de escribir un import por archivo usamos import.meta.glob (Vite) y
-// los organizamos acá una sola vez, en un objeto fácil de consultar:
+// Registro de todos los sprites del personaje (assets/SpriteCuboMapa/). Son
+// DOS carpetas que se combinan al dibujar al jugador (ver Jugador.jsx): el
+// cubo va de fondo y el efecto se pinta encima/adentro suyo.
 //
-//   SPRITES_JUGADOR.base.quieto[frame]
-//   SPRITES_JUGADOR.fantasma.arriba[frame]
-//   SPRITES_JUGADOR.fuerza.viento.derecha[frame]
-//   SPRITES_JUGADOR.error[frame]  (compartido, no depende de la habilidad)
+//   - Efectos/  el estado (fantasma/fuerza/invulnerabilidad, o "base" sin
+//     nada activo) — es lo único que se venía dibujando hasta ahora.
+//   - Cubo/     el cuerpo del personaje en sí. No tiene variantes por
+//     habilidad (la habilidad solo cambia el efecto, no la forma del cubo).
 //
-// Antes había dos carpetas (Cubo/ con un set viejo/incompleto, Efectos/ con
-// el set completo que realmente usábamos para todo salvo Error0-3) — se
-// unificaron en una sola Cubo/ (la que antes era Efectos/), así que ahora
-// Error0-3 también sale de acá en vez del set viejo.
-const modulos = import.meta.glob("../../assets/SpriteCuboMapa/CuboPrincipal/Cubo/**/*.png", {
+//   SPRITES_JUGADOR.base.quieto[frame]        (efecto)
+//   SPRITES_JUGADOR.fantasma.arriba[frame]    (efecto)
+//   SPRITES_JUGADOR.fuerza.viento.derecha[frame]  (efecto)
+//   SPRITES_JUGADOR.error[frame]               (efecto, compartido)
+//   SPRITES_CUBO.quieto / .arriba[frame] / .error[frame]  (cuerpo)
+//
+// ~150 archivos con nombres consistentes, así que en vez de un import por
+// archivo se usa import.meta.glob (Vite).
+const modulos = import.meta.glob("../../assets/SpriteCuboMapa/Efectos/**/*.png", {
+  eager: true,
+  import: "default",
+});
+
+const modulosCubo = import.meta.glob("../../assets/SpriteCuboMapa/Cubo/*.png", {
   eager: true,
   import: "default",
 });
@@ -48,10 +56,10 @@ function insertarEnFrame(lista, indice, url) {
 for (const [ruta, url] of Object.entries(modulos)) {
   const partes = ruta.split("/");
   const archivo = partes[partes.length - 1].replace(".png", "");
-  const indiceCubo = partes.indexOf("Cubo");
+  const indiceEfectos = partes.indexOf("Efectos");
 
-  // ¿Cubo/<Habilidad>/archivo, o Cubo/archivo (base)?
-  const posibleHabilidad = partes[indiceCubo + 1];
+  // ¿Efectos/<Habilidad>/archivo, o Efectos/archivo (base)?
+  const posibleHabilidad = partes[indiceEfectos + 1];
   const esHabilidad = HABILIDADES.includes(posibleHabilidad);
   const grupo = esHabilidad ? GRUPOS_POR_CARPETA[posibleHabilidad] : base;
 
@@ -72,6 +80,36 @@ for (const [ruta, url] of Object.entries(modulos)) {
 }
 
 export const SPRITES_JUGADOR = { base, fantasma, fuerza, invulnerabilidad, error };
+
+// Cubo/ es plano (sin subcarpetas por habilidad) y trae un caso especial:
+// el frame 2 de caminar es un único dibujo (Desplazamiento2.png, sin
+// dirección) compartido por las 4 direcciones, en vez de 4 archivos como
+// las demás — así vino de assets. Quieto tampoco tiene variantes (Quieto.png
+// a secas): el cuerpo del cubo no "respira" en reposo, solo el efecto de
+// arriba lo hace.
+const cubo = { quieto: null, arriba: [], abajo: [], izquierda: [], derecha: [], error: [] };
+let frameGiroCompartido = null;
+
+for (const [ruta, url] of Object.entries(modulosCubo)) {
+  const archivo = ruta.split("/").pop().replace(".png", "");
+
+  let m;
+  if (archivo === "Quieto") {
+    cubo.quieto = url;
+  } else if (archivo === "Desplazamiento2") {
+    frameGiroCompartido = url;
+  } else if ((m = archivo.match(/^Error(\d+)$/))) {
+    insertarEnFrame(cubo.error, m[1], url);
+  } else if ((m = archivo.match(/^Desplazamiento(Arriba|Abajo|Izquierda|Derecha)(\d+)$/))) {
+    insertarEnFrame(cubo[DIRECCIONES[m[1]]], m[2], url);
+  }
+}
+
+for (const direccion of ["arriba", "abajo", "izquierda", "derecha"]) {
+  cubo[direccion][2] = frameGiroCompartido;
+}
+
+export const SPRITES_CUBO = cubo;
 
 // Cantidad de frames de cada animación, para que el hook no tenga que
 // adivinar (las 4 variantes son consistentes entre sí, así que alcanza con

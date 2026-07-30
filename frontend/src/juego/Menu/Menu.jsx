@@ -128,7 +128,7 @@ export default function Menu() {
                         src={botonAyuda}
                         srcHover={botonAyudaHover}
                         srcActive={botonAyudaClick}
-                        alt="Como jugar"
+                        alt="Como Jugar"
                         onClick={() => setMostrarInstrucciones(true)}
                     />
                     <BotonPixelar
@@ -143,7 +143,7 @@ export default function Menu() {
 
             {/* Modal: Como jugar */}
             <Ventana visible={mostrarInstrucciones} onClose={cerrarInstrucciones}>
-                <h2>Como jugar</h2>
+                <h2>Como Jugar</h2>
 
                 <div className="ayuda-tabs">
                 <button
@@ -256,8 +256,7 @@ export default function Menu() {
                     <div className="config-lista">
                     <div className="config-item">
                         <div className="config-info">
-                        <span className="config-icono">⌨</span>
-                        <div>
+                        <div className="config-titulo">
                             <h3>Controles</h3>
                             <p>Reasignar teclas (WASD)</p>
                         </div>
@@ -272,7 +271,6 @@ export default function Menu() {
 
                     <div className="config-item">
                         <div className="config-info">
-                        <span className="config-icono">♪</span>
                         <div>
                             <h3>Música</h3>
                         </div>
@@ -289,7 +287,6 @@ export default function Menu() {
 
                     <div className="config-item">
                         <div className="config-info">
-                        <span className="config-icono">🔊</span>
                         <div>
                             <h3>Efectos de sonido</h3>
                         </div>

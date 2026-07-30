@@ -135,6 +135,13 @@ export const SPRITES_PORTAL = [portal0, portal1, portal2, portal3];
 // caja sobre la placa de presión (puertaAbierta en motorJuego.js);
 // PUERTA_CON_LLAVE se abre juntando todas las llaves del nivel
 // (puertaConLlaveAbierta).
+//
+// El frame 8 de ambas animaciones (el "final" original de cada archivo) es
+// un flash de luz que se desvanece hasta quedar casi transparente (alpha
+// ~11/255) — con eso como último frame, la celda terminaba mostrando el
+// fondo oscuro del tablero por detrás en vez de piso transitable. Por eso
+// se agrega `piso` como frame 9: la transición ahora termina de verdad en
+// el piso normal, en vez de quedarse en ese flash casi invisible.
 export const SPRITES_PUERTA_PLACA = [
     puertaPlaca0,
     puertaPlaca1,
@@ -145,6 +152,7 @@ export const SPRITES_PUERTA_PLACA = [
     puertaPlaca6,
     puertaPlaca7,
     puertaPlaca8,
+    piso,
 ];
 
 export const SPRITES_PUERTA_CON_LLAVE = [
@@ -157,14 +165,16 @@ export const SPRITES_PUERTA_CON_LLAVE = [
     puertaConLlave6,
     puertaConLlave7,
     puertaConLlave8,
+    piso,
 ];
 
 // puente: 2 variantes "normales" (se alterna por posición para que una
 // fila de 3 celdas no se vea repetida) y una variante "alerta" (grieta
 // brillante) para cuando le quedan pocos movimientos antes de colapsar —
 // ver avanzarPuentes en motorJuego.js. Colapsado no tiene sprite propio:
-// se ve igual que el vacío (SPRITES_VACIO), porque termina siendo lo mismo
-// (un agujero, muerte instantánea).
+// se ve igual que la lava (SPRITES_LAVA) — comunica visualmente que el
+// puente se quemó/derritió. Sigue matando siempre al pisarlo (sin excepción
+// de invulnerabilidad, a diferencia de la lava real), ver manejarPuente.
 export const SPRITES_PUENTE = [puente0, puente1];
 export const SPRITE_PUENTE_ALERTA = puenteAlerta;
 

@@ -94,17 +94,30 @@
   gap: 10px;
 }
 
+/* column, no row (el default) — sin esto "Controles" y su descripción
+   quedaban lado a lado en vez de uno arriba del otro, y la descripción se
+   achicaba al ancho que le sobraba y se cortaba en dos líneas, angosta y
+   como recentrada en vez de alineada a la izquierda con el resto de filas. */
+.config-titulo {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 2px;
+}
+
 .reasignar-footer .config-btn-secundario,
 .reasignar-footer .config-btn-guardar {
   flex: 1;
   width: auto;   /* pisa el width: 100% que .config-btn-guardar tiene por defecto */
 }
 
-/* Modal "Como jugar": selector Controles / Mecánicas */
+/* Modal "Como Jugar": selector Controles / Mecánicas — separado del título
+   con margin-top (antes quedaban pegados, sin aire entre el texto y los
+   botones) */
 .ayuda-tabs {
   display: flex;
   gap: 6px;
-  margin: 0 0 1.5rem;
+  margin: 1.25rem 0 1.5rem;
 }
 
 .ayuda-tab {
@@ -170,6 +183,19 @@
 .mecanica-icono .tablero-celda {
   width: 100%;
   height: 100%;
+}
+
+/* flex:1 (no shrink-to-fit) + texto a la izquierda: el ícono ya es un
+   tamaño fijo (40x40) en todas las filas, pero sin esto el bloque de texto
+   se achicaba al ancho de su propio contenido — como cada mecánica tiene una
+   descripción de largo distinto, el título quedaba centrado en un ancho
+   distinto por fila (ej. "Piso", con descripción corta de una línea, no
+   terminaba en la misma columna que "Pared", con descripción más larga que
+   ocupa dos líneas). Mismo criterio que .control-texto en Ventana.css. */
+.mecanica-texto {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
 }
 
 .mecanica-texto h3 {

@@ -11,6 +11,13 @@ const DURACION_MS = SPRITES_POWERUP_DESTRUIDO.length * MS_POR_FRAME;
 // GASTARSE la habilidad (fantasma cruzando una pared, etc.), pero la
 // animación representa al power-up desapareciendo del mapa, así que
 // corresponde al momento de agarrarlo, no al de usarlo.
+//
+// OJO: a propósito NO se devuelve `() => clearTimeout(timeout)` como cleanup
+// de este efecto — mismo motivo que en useEfectosDestruccion.js: React lo
+// ejecutaría en CUALQUIER cambio futuro de ultimoEvento (el siguiente
+// movimiento del jugador, sin relación con este pickup), cancelando el
+// timeout antes de que dispare y dejando el sprite pegado para siempre si
+// el jugador se movía de nuevo enseguida.
 export function useEfectoPowerUp(ultimoEvento) {
     const [efecto, setEfecto] = useState(null);
     const idProcesadoRef = useRef(null);
@@ -22,10 +29,9 @@ export function useEfectoPowerUp(ultimoEvento) {
 
         const nuevoEfecto = { id: ultimoEvento.id, ...ultimoEvento.posicion };
         setEfecto(nuevoEfecto);
-        const timeout = setTimeout(() => {
+        setTimeout(() => {
             setEfecto((actual) => (actual?.id === nuevoEfecto.id ? null : actual));
         }, DURACION_MS);
-        return () => clearTimeout(timeout);
     }, [ultimoEvento]);
 
     return efecto;

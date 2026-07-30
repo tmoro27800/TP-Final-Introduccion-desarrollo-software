@@ -45,3 +45,30 @@
   outline-offset: 4px;
   border-radius: 4px;
 }
+
+/* Variante flotante: fija en la esquina superior izquierda de la pantalla,
+   afuera del flujo normal — para pantallas donde el botón no debería empujar
+   el título hacia abajo (selección de modo/nivel, tabla de puntajes). Se usa
+   sin "label" (ver BotonVuelta.jsx), así que es solo el sprite — que ya
+   trae su propio marco dibujado, no hace falta texto al lado. Un poco más
+   grande que el tamaño "en línea" porque acá no tiene texto que lo acompañe
+   para marcar su tamaño. */
+.back-button--flotante {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  margin-bottom: 0;
+  z-index: 20;
+}
+
+.back-button--flotante .back-button-icono {
+  width: 3.25rem;
+}
+
+.back-button--flotante:hover {
+  transform: translateX(-3px);
+}
+
+.back-button--flotante:active {
+  transform: translateX(-3px) scale(0.96);
+}
